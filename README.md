@@ -5,8 +5,6 @@
 
 ## About
 
-<!-- Plugin description -->
-
 AdmStorm is a PhpStorm plugin that adds VK internal tools directly to the IDE and adds knowledge about the development
 server.
 
@@ -20,8 +18,6 @@ server.
 - PHPUnit and PHPLinter run configurations
 - Built-in KPHP Playground and Hastebin
 - Ability to view the generated C++ code for the entire site
-
-<!-- Plugin description end -->
 
 This plugin aims to reduce the necessary context switches when working. It implements this through synchronization
 checks, as well as built-in tools that can now be run directly from the IDE and additional push and pull actions
