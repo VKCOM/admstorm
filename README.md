@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/jetbrains/plugin/v/XXXX-admstorm.svg)](https://plugins.jetbrains.com/plugin/XXXX-admstorm)
+[![Version](https://img.shields.io/jetbrains/plugin/v/18535-admstorm.svg)](https://plugins.jetbrains.com/plugin/18535-admstorm)
 [![Build](https://github.com/i582/admstorm/actions/workflows/build.yml/badge.svg)](https://github.com/i582/admstorm/actions/workflows/build.yml)
 
 # <img src="src/main/resources/META-INF/pluginIcon.svg"> AdmStorm plugin for PhpStorm
@@ -27,7 +27,7 @@ This plugin aims to reduce the necessary context switches when working. It imple
 checks, as well as built-in tools that can now be run directly from the IDE and additional push and pull actions
 directly from the IDE, taking into account all the hooks on the development server.
 
-You can find this plugin on the official [JetBrains plugins](https://plugins.jetbrains.com/plugin/XXXX-admstorm)
+You can find this plugin on the official [JetBrains plugins](https://plugins.jetbrains.com/plugin/18535-admstorm)
 website.
 
 ## Installation
