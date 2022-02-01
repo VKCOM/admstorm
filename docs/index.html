@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <meta property="og:title" content="AdmStorm Plugin" />
+    <meta property="og:description" content="Page about AdmStorm plugin." />
+    <meta property="og:image" content="images/preview.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://i582.github.io/admstorm/index.html" />
+
+    <title>AdmStorm Plugin</title>
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<header>
+    <div class="header__inner">
+        <a href="#" class="header__title inner-link">AdmStorm</a>
+        <nav class="header__navbar">
+            <ul class="header__links">
+                <li>
+                    <a class="inner-link" href="#">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="install.html">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="faq.html">FAQ</a>
+                </li>
+                <li class="header__github-link">
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="first-page">
+    <div class="first-page__background">
+        <svg class="beam" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M797.5 307L651 608.5L597.5 563.5L703 307H797.5Z" fill="url(#paint0_linear_1:15)" />
+            <path d="M992.5 143L598 564L651 608.5L1069 257L992.5 143Z" fill="url(#paint1_linear_1:15)" />
+            <path d="M1069 257L306 508.5L189 401.5L1073.5 113.5L1069 257Z" fill="url(#paint2_linear_1:15)" />
+            <path d="M189 401.5L372 0H707.5L306 508.5L189 401.5Z" fill="url(#paint3_linear_1:15)" />
+            <defs>
+                <linearGradient id="paint0_linear_1:15" x1="725" y1="323" x2="626" y2="609"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF2281" />
+                    <stop offset="1" stop-color="#FF2181" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_1:15" x1="965.5" y1="275" x2="648.5" y2="571.5"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#694BF7" />
+                    <stop offset="1" stop-color="#FF2180" />
+                </linearGradient>
+                <linearGradient id="paint2_linear_1:15" x1="995" y1="176.5" x2="277.001" y2="483.5"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#694BF7" />
+                    <stop offset="1" stop-color="#AA36F0" />
+                </linearGradient>
+                <linearGradient id="paint3_linear_1:15" x1="755.5" y1="-54.5" x2="219" y2="414"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#F336F0" />
+                    <stop offset="1" stop-color="#AB35EF" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+
+    <div class="first-page__inner">
+        <a class="first-page__vk_logo">
+            <img src="https://kphp.me/admstorm/images/vk_logo.svg" alt="">
+        </a>
+        <h1 class="first-page__title">AdmStorm</h1>
+        <p class="first-page__description">Плагин для работы с <span class="server-name"></span> из IDE</p>
+        <div class="first-page__download-block">
+            <a href="install.html" class="first-page__download-button inner-link">Установить</a>
+            <a href="https://github.com/VKCOM/admstorm" target="_blank" class="first-page__source-link">
+                Исходный код
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="chapter light two-column-layout no-bottom-padding">
+    <div class="chapter_inner">
+        <div class="chapter__text-col">
+            <h2 class="chapter__big-title">
+                Зачем нам<br> AdmStorm?
+            </h2>
+
+            <p class="chapter__text">
+                Летом 2020 года на свет появился плагин <a class="chapter__external-link" target="_blank"
+                                                           href="https://unserialize.github.io/kphpstorm/">KPHPStorm</a>,
+                который привнёс в разработку на
+                KPHP множество улучшений. Он позволил разработчикам удобно работать из IDE, которая отныне
+                знала многие тонкости <a class="chapter__external-link" target="_blank"
+                                         href="https://github.com/VKCOM/kphp">KPHP</a>.
+
+                <br>
+                <br>
+
+                Но наши внутренние инструменты не ограничиваются KPHP, и идея сделать их использование более
+                удобным всегда витала где-то рядом.
+
+                <br>
+                <br>
+
+                Вся наша разработка разделена на две части: локальный репозиторий и <span class="server-name"></span>.
+                В локальном репозитории
+                мы пишем код, а на <span class="server-name"></span> запускаем инструменты, тесты и пушим в Gitlab.
+
+                <br>
+                <br>
+
+                Цель этого плагина — сделать так, чтобы повседневные задачи на этом стыке
+                решались не выходя из IDE.
+            </p>
+        </div>
+        <div class="chapter__image-col with-big-title">
+            <img class="js-security-image" src="https://kphp.me/admstorm/images/main.png" alt="">
+        </div>
+    </div>
+</div>
+
+<div class="chapter dark titled-block-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title">
+            Серверный PHPUnit
+        </h2>
+
+        <p class="chapter__title-description">
+            Запускайте тесты привычными средствами, будто локально — <br>
+            только исполняться они будут удалённо.
+        </p>
+
+        <div class="chapter__block">
+            <div class="chapter__three-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Тесты напрямую в IDE
+                        </h2>
+
+                        <p class="chapter__text">
+                            Работают кнопки Run — как для класса, так и для отдельного метода.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phpunit-tests-in-ide.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Навигация по тестам
+                        </h2>
+
+                        <p class="chapter__text">
+                            По клику из дерева тестов — мгновенный переход к исходникам.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phpunit-test-navigation.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Запуск только упавших тестов
+                        </h2>
+
+                        <p class="chapter__text">
+                            Тоже делается в один клик. И мы даже не логируем, у кого там тесты фейлятся :)
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phpunit-fail-tests.png" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter__two-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Запуск всех тестов из директории
+                        </h2>
+
+                        <p class="chapter__text">
+                            Через нативное контекстное меню.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/phpunit-dir-tests.png"
+                             alt="">
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Специфические флаги для запуска
+                        </h2>
+
+                        <p class="chapter__text">
+                            При необходимости указываются в настройках конфигурации.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/phpunit-flags.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter light three-row-layout">
+    <div class="chapter_inner">
+        <div class="chapter__header-row">
+            <h2 class="chapter__middle-title">
+                KPHP Playground прямо в IDE
+            </h2>
+
+            <p class="chapter__header-text">
+                Иногда возникает необходимость проверить, как отработает тот или иной код на KPHP.
+                Плагин встраивает возможность запускать любой файл как скрипт.
+                <br>
+                <br>
+                Любой php-файл — новый или существующий — теперь можно запустить
+                через контекстное меню →
+                <span class="chapter__action__inline">Run 'KPHP Script 'filename.php'</span>.
+            </p>
+        </div>
+
+        <div class="chapter__image-row">
+            <img class="js-security-image" src="https://kphp.me/admstorm/images/kphp-playground-main.png" alt="">
+        </div>
+
+        <div class="chapter__description-row">
+            <div class="chapter__two-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Можно использовать любые классы <br> и функции из vkcom
+                        </h2>
+
+                        <p class="chapter__text">
+                            Для этого достаточно подключить два файла <code
+                                class="chapter__code-block__inline">autoload</code>.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/kphp-playground-php-autoload.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Плагин разделяет стадию компиляции <br> и запуска скрипта
+                        </h2>
+
+                        <p class="chapter__text">
+                            Чтобы видеть их вывод на разных вкладках.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/kphp-playground-output.png"
+                             alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Вместе с KPHP плагин запускает <br> скрипт и на PHP
+                        </h2>
+
+                        <p class="chapter__text">
+                            Но это можно отключить в настройках конфигурации.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image"
+                             src="https://kphp.me/admstorm/images/kphp-playground-php-output.png" alt="">
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Удобно просматривайте diff между <br> выводом KPHP и PHP
+                        </h2>
+
+                        <p class="chapter__text">
+                            Хотя мы конечно же считаем, что его не должно быть :)
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/kphp-playground-diff.png"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter dark two-column-layout no-bottom-padding">
+    <div class="chapter_inner">
+        <div class="chapter__text-col">
+            <h2 class="chapter__small-title">
+                Просматривайте сгенерированный С++ код
+            </h2>
+
+            <p class="chapter__text padding-top-20">
+                Плагин встраивает знания об
+                <a class="chapter__external-link" target="_blank"
+                   href="https://github.com/VKCOM/kphp-tools">инспекторе KPHP</a>,
+                который к тому же теперь умеет искать в строгом режиме.
+
+                <br>
+                <br>
+
+                Чтобы перейти к С++ коду, просто поставьте курсор на нужную
+                строчку и вызовите контекстное меню →
+                <span class="chapter__action__inline"> Go To Compiled C++</span>.
+
+                <br>
+                <br>
+
+                Плагин откроет файл на строчке C++ кода, которая
+                соответствует строчке на PHP.
+
+                <br>
+                <br>
+
+                Для некоторых вещей плагин не сможет найти исходный код
+                (например, для лямбд), в таком случае он покажет уведомление.
+
+                <br>
+                <br>
+
+                В С++ коде, встроенные функции, макросы, типы и ключевые слова будут
+                подсвечены своими цветами для удобства чтения.
+            </p>
+        </div>
+        <div class="chapter__image-col">
+            <img src="https://kphp.me/admstorm/images/kphp-inspector.png" alt="">
+        </div>
+    </div>
+</div>
+
+<div class="chapter light three-row-layout">
+    <div class="chapter_inner">
+        <div class="chapter__header-row">
+            <h2 class="chapter__middle-title">
+                Локальный git <span>==</span> git на <span class="server-name"></span>
+            </h2>
+
+            <p class="chapter__header-text">
+                Плагин внедряет проверки, что состояние гита локально равно состоянию гита
+                на <span class="server-name"></span>. Благодаря этому, перейдя на
+                <span class="server-name"></span> с локали или наоборот, вы можете быть уверены, что находитесь
+                в одном и том же окружении.
+
+                <br>
+                <br>
+
+                В дополнение к этому, плагин добавляет несколько функций для работы с Gitlab.
+            </p>
+        </div>
+
+        <div class="chapter__image-row">
+            <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-main.png" alt="">
+        </div>
+
+        <div class="chapter__description-row">
+            <div class="chapter__three-block-row chapter__three-block-row--with-header">
+                <h2 class="chapter__middle-big-title">Три уровня синхронизации</h2>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Что совпадают ветки
+                        </h2>
+
+                        <p class="chapter__text">
+                            Делали необходимые правки на <span class="server-name"></span> и затем переключились
+                            в IDE? Плагин подскажет, если ветки различаются.
+                            <br>
+                            <br>
+                            Вы можете выбрать, куда переключиться, а при конфликтах здесь же их разрешить.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-branches.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Что совпадают коммиты
+                        </h2>
+
+                        <p class="chapter__text">
+                            Возможно, вы создали несколько коммитов непосредственно на
+                            <span class="server-name"></span>?
+                            Плагин подскажет, какие коммиты отсутствуют локально.
+
+                            <br>
+                            <br>
+
+                            Вы сможете увидеть эти коммиты и сразу подтянуть их.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-commits.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Что нет диффа по файлам
+                        </h2>
+
+                        <p class="chapter__text">
+                            Изменили или удалили несколько файлов на <span class="server-name"></span>?
+                            Плагин подскажет, какие файлы различаются.
+
+                            <br>
+                            <br>
+
+                            Их можно сразу синхронизировать,
+                            использовав локальную версию или скачав с <span class="server-name"></span>.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-files.png" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter__line-block">
+                <p class="chapter__text">
+                    <b>Плагин старается автоматически поддерживать синхронизацию</b> — в рамках того, насколько удалость
+                    встроиться в IDE.
+
+                    <br>
+                    <br>
+
+                    Например, при переключении ветки она также переключается и на <span class="server-name"></span>.
+                    Считается, что у вас включен SFTP upload — а значит, при изменении локальных файлов они будут
+                    заливаться средствами IDE.
+
+                    <br>
+                    <br>
+                    В идеале, рассинхрон появляется только если что-то делать в консоли на <span
+                        class="server-name"></span>.
+                    А если работать только из IDE, то вообще не придётся сталкиваться с этими окошками.
+                </p>
+
+                <div class="chapter__text-image-block-image">
+                    <img src="https://kphp.me/admstorm/images/git-change-branch.png" alt="">
+                </div>
+            </div>
+
+            <div class="chapter__three-block-row chapter__three-block-row--with-header">
+                <h2 class="chapter__middle-big-title">
+                    Автоматические проверки
+                </h2>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            При открытии IDE
+                        </h2>
+
+                        <p class="chapter__text">
+                            Если вы работали на <span class="server-name"></span>, а
+                            потом перешли в IDE для дальнейшей работы — плагин сразу проверит, совпадает ли окружение.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-startup-check.png"
+                             alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Перед запуском инструментов
+                        </h2>
+
+                        <p class="chapter__text">
+                            Если вы что-то меняли локально и не загрузили изменения на
+                            <span class="server-name"></span>,
+                            плагин найдёт расхождения и покажет вам окно для синхронизации.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-tool-run.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            После возвращения в IDE
+                        </h2>
+
+                        <p class="chapter__text">
+                            Если вы что-то поменяли через консоль на <span class="server-name"></span>,
+                            а потом вернулись обратно в IDE для дальнейшей работы — плагин сразу проверит, совпадает ли
+                            окружение.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-after-focus.png"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter__block">
+                <div class="chapter__two-block-row chapter__two-block-row--with-header">
+                    <h2 class="chapter__middle-big-title">Быстрый pull и push</h2>
+
+                    <div class="chapter__text-image-block">
+                        <div class="chapter__text-image-block-text">
+                            <h2 class="chapter__small-title">
+                                Pull Gitlab → <span class="server-name"></span> → local
+                            </h2>
+
+                            <p class="chapter__text">
+                                Новая кнопка подтягивает Gitlab в один клик.
+                                Плагин сначала подгрузит изменения на <span class="server-name"></span>,
+                                а затем оттуда в локальный репозиторий.
+                            </p>
+                        </div>
+                        <div class="chapter__text-image-block-image height-150px">
+                            <img class="js-security-image"
+                                 src="https://kphp.me/admstorm/images/sync-pull-from-server.png" alt="">
+                        </div>
+                    </div>
+                    <div class="chapter__text-image-block">
+                        <div class="chapter__text-image-block-text">
+                            <h2 class="chapter__small-title">
+                                Push local → <span class="server-name"></span> → Gitlab
+                            </h2>
+
+                            <p class="chapter__text">
+                                И наоборот тоже. Все pre-push хуки запускаются на <span class="server-name"></span>,
+                                а их вывод показывается в отдельной консоли внутри IDE.
+                            </p>
+                        </div>
+                        <div class="chapter__text-image-block-image height-150px">
+                            <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-push-to-server.png"
+                                 alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapter__three-block-row">
+                    <div class="chapter__text-image-block">
+                        <div class="chapter__text-image-block-text">
+                            <h2 class="chapter__small-title">
+                                Сразу создавайте Merge Request
+                            </h2>
+
+                            <p class="chapter__text">
+                                После успешного пуша будет быстрое действие с созданием
+                                нового Merge Request из запушенной ветки.
+                            </p>
+                        </div>
+                        <div class="chapter__text-image-block-image">
+                            <img src="https://kphp.me/admstorm/images/sync-mr.png" alt="">
+                        </div>
+                    </div>
+                    <div class="chapter__text-image-block">
+                        <div class="chapter__text-image-block-text">
+                            <h2 class="chapter__small-title">
+                                Проверка git status
+                            </h2>
+
+                            <p class="chapter__text">
+                                Для консистентности, git status на <span class="server-name"></span> должен быть пустым.
+                                Если нет, будет диалоговое окно с действиями.
+                            </p>
+                        </div>
+                        <div class="chapter__text-image-block-image">
+                            <img class="js-security-image" src="https://kphp.me/admstorm/images/sync-git-status.png"
+                                 alt="">
+                        </div>
+                    </div>
+                    <div class="chapter__text-image-block">
+                        <div class="chapter__text-image-block-text">
+                            <h2 class="chapter__small-title">
+                                <code class="chapter__code-block__inline">--no-phplinter</code> и другие
+                            </h2>
+
+                            <p class="chapter__text">
+                                Их можно разово указать в Push parameters.
+                                Там же есть force push в выпадающем списке кнопки push.
+                            </p>
+                        </div>
+                        <div class="chapter__text-image-block-image">
+                            <img src="https://kphp.me/admstorm/images/sync-push-params.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter dark titled-block-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title">
+            PHP Linter
+        </h2>
+
+        <div class="chapter__block">
+            <div class="chapter__three-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">Предупреждения в удобном формате</h2>
+
+                        <p class="chapter__text">
+                            Плагин покажет найденные предупреждения на отдельной вкладке.
+                            Для каждого предупреждения есть несколько дополнительных действий.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phplinter-warnings.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Быстро переходите к найденным предупреждениям
+                        </h2>
+
+                        <p class="chapter__text">
+                            Откройте контекстное меню для выбранного предупреждения и выберите
+                            <span class="chapter__action__inline">Jump To Source</span>
+                            или используйте сочетание <span class="chapter__action__inline">⌘↓ (Cmd+↓)</span>.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phplinter-warning-links.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Просматривайте описание проверки прямо в IDE
+                        </h2>
+
+                        <p class="chapter__text">
+                            В контекстном меню выберите пункт
+                            <span class="chapter__action__inline">Show Problem Description</span>
+                            или <span class="chapter__action__inline">⌘I (Cmd+I)</span>,
+                            и плагин покажет краткое описание проверки.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phplinter-checker.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="chapter__three-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Создавайте различные конфигурации линтера
+                        </h2>
+
+                        <p class="chapter__text">
+                            Для проверки всего сайта или только отдельных файлов.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phplinter-configurations.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Запускайте линтер в полном режиме как в Teamcity
+                        </h2>
+
+                        <p class="chapter__text">
+                            Это занимает больше времени, но результаты точно будут идентичны билд-агентам.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/phplinter-teamcity.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Запускайте линтер как в Teamcity во время пуша в Gitlab
+                        </h2>
+
+                        <p class="chapter__text">
+                            Для этого в настройках поставьте галочку около пункта
+                            <span class="chapter__action__inline">Run PHP Linter as in Teamcity</span>.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/phplinter-push-teamcity.png"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter light titled-block-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title">
+            Запуск KPHP — привычные способы
+        </h2>
+
+        <div class="chapter__block">
+            <div class="chapter__three-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">Ошибки компиляции в удобном формате</h2>
+
+                        <p class="chapter__text">
+                            Плагин покажет найденные ошибки на отдельной вкладке.
+                            Весь вывод компиляции будет доступен на первой вкладке.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/kphp-errors.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Быстро переходите к найденным ошибкам
+                        </h2>
+
+                        <p class="chapter__text">
+                            Выберите <span class="chapter__action__inline">Jump To Source</span>
+                            в контекстном меню
+                            или нажмите <span class="chapter__action__inline">⌘↓ (Cmd+↓)</span>,
+                            чтобы перейти к строке с ошибкой.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/kphp-errors-link.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Различные конфигурации запуска KPHP
+                        </h2>
+
+                        <p class="chapter__text">
+                            Сохраняйте частоиспользуемые конфигурации для быстрого запуска.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/kphp-configuration.png"
+                             alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter dark titled-block-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title">
+            Hastebin
+        </h2>
+
+        <div class="chapter__block">
+            <div class="chapter__two-block-row">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Для любого файла
+                        </h2>
+
+                        <p class="chapter__text">
+                            В контекстном меню любого файла теперь есть пункт
+                            <span class="chapter__action__inline">Create Hastebin</span>.
+                            Плагин загрузит файл и скопирует ссылку в буфер обмена.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/hastebin-file.png" alt="">
+                    </div>
+                </div>
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Из вывода инструментов
+                        </h2>
+
+                        <p class="chapter__text">
+                            На тулбаре в окне вывода также появилась кнопка.
+                            Это удобно, если вы хотите поделиться им, например, в чате.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/hastebin-output.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chapter no-padding titled-block-text-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__medium-title">
+            Хотите добавить свой инструмент <br> или есть идея?
+        </h2>
+
+        <div class="chapter__block">
+            <p class="chapter__text">
+                Пишите в личные сообщения <a class="chapter__external-link" href="https://vk.com/petrmakhnev">petrmakhnev</a>
+                или приходите в команду KPHP.
+                <br>
+                Мы всегда рады новым идеям.
+            </p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer__inner">
+        <div class="footer__menu">
+            <h3>
+                Ссылки
+            </h3>
+            <ul>
+                <li>
+                    <a class="inner-link" href="#">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="install.html">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="faq.html">FAQ</a>
+                </li>
+                <li>
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer__end-line">
+            <div class="footer__copyright">
+                <a href="https://vk.com" target="_blank">vk.com</a> © 2021-2022
+            </div>
+            <div class="footer__code">
+                <img src="https://kphp.me/admstorm/images/code_with.svg" alt="">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

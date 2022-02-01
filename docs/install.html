@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <meta property="og:title" content="AdmStorm | Установка" />
+    <meta property="og:description" content="AdmStorm plugin installation guide page." />
+    <meta property="og:image" content="images/preview.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://i582.github.io/admstorm/install.html" />
+
+    <title>AdmStorm | Установка</title>
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<header>
+    <div class="header__inner">
+        <a href="index.html" class="header__title inner-link">AdmStorm</a>
+        <nav class="header__navbar">
+            <ul class="header__links">
+                <li>
+                    <a class="inner-link" href="index.html">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="#">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="faq.html">FAQ</a>
+                </li>
+                <li class="header__github-link">
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="chapter no-padding titled-block-text-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title chapter__big-title--bold">
+            Установка и настройка
+        </h2>
+
+        <div class="chapter__block">
+            <div class="chapter__install-block">
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Откройте файл <code class="chapter__code-block__inline">~/.ssh/config</code>
+                        </h2>
+                        <p class="chapter__text">
+                            Удостоверьтесь, что у вас есть запись для хоста <span class="server-name"></span> с примерно
+                            следующим содержанием:
+                            <code class="chapter__code-block">
+                                Host <span class="server-name"></span>
+                                HostName &lt;ip address&gt;
+                                User &lt;user name&gt;
+                                Port &lt;port&gt;
+                                PKCS11Provider /usr/local/lib/opensc-pkcs11.so
+                            </code>
+
+                            Это понадобится, чтобы плагин смог сам настроить <b>git remote</b>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Перейдите в настройки → Tools → SSH Configurations
+                        </h2>
+                        <p class="chapter__text">
+                            Удостоверьтесь, что у вас здесь есть нужное подключение к <span class="server-name"></span>.
+
+                            <br>
+                            <br>
+
+                            Если у вас нет нужной конфигурации, то создайте новую и заполните поля, как показано
+                            на скриншоте ниже.
+
+                            <br>
+                            <br>
+
+                            Если у вас несколько конфигураций, то сделайте подключение к
+                            <span class="server-name"></span>
+                            первым, чтобы при запуске IDE могла сразу же подключаться к нужному серверу.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img class="js-security-image" src="https://kphp.me/admstorm/images/install-ssh.png" alt="">
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Перейдите в настройки → Build, Execution, Deployment → Deployment → Options
+                        </h2>
+                        <p class="chapter__text">
+                            Удостоверьтесь, что в пункте
+                            <span class="chapter__action__inline">Upload changed files automatically to the default server</span>
+                            установлено значение <span class="chapter__action__inline">Always</span> или
+                            <span class="chapter__action__inline">On explicit save action</span>.
+
+                            <br>
+                            <br>
+
+                            Это нужно, чтобы уменьшить количество необходимых ручных синхронизаций связанных
+                            с файлами. Если этот пункт будет установлен в значение
+                            <span class="chapter__action__inline">Never</span>, то каждое изменение
+                            в файлах необходимо будет загружать вручную, когда вам понадобиться, например,
+                            запустить KPHP.
+                        </p>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/install-upload.png" alt="">
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Откройте настройки → Plugins →
+                            <br>
+                            В поиске введите AdmStorm →
+                            Install → Restart IDE
+                        </h2>
+                    </div>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.me/admstorm/images/install-search.png" alt="">
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Первый запуск
+                        </h2>
+                        <p class="chapter__text">
+                            После того, как плагин установлен, а конфигурация SSH настроена, запускаем
+                            IDE. При каждом запуске плагин автоматически начнёт подключаться к серверу.
+                            Если в этот момент сеть будет недоступна, то он покажет уведомление о том, что
+                            подключиться не удалось.
+
+                            <br>
+                            <br>
+
+                            В этом случае, чтобы использовать возможности плагина, вам необходимо будет
+                            подключиться вручную. Для этого перейдите в меню Tools → <span class="server-name"></span>
+                            → Connect to Adm via SSH.
+                            После клика вам будет предложен список конфигураций SSH к которым можно подключиться.
+                            Выберите нужный, и плагин снова начнёт автоматическую настройку.
+
+                            <br>
+                            <br>
+
+                            Во время первой настройки плагин создаст новый <b>git remote</b> с именем
+                            <span class="server-name"></span> через который
+                            он будет совершать все действия с сервером. Если такой remote уже существует, он будет
+                            использовать его.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            Про юбик
+                        </h2>
+                        <p class="chapter__text">
+                            Наш юбик любит частенько отваливаться, из-за чего выполнение некоторых команд
+                            может быть прервано. Обычно в такие моменты IDE показывает окно, где предлагает
+                            ввести пароль от SSH. В таком случае необходимо сбросить юбик и заново запустить
+                            действие.
+
+                            <br>
+                            <br>
+
+                            Некоторые такие моменты мы отлавливаем сами и вам будет показано окно с уведомлением, что
+                            соединение потеряно. Тогда вам нужно сбросить юбик и нажать
+                            <b>Try Again</b>, плагин сам перезапустит действие.
+
+                            <br>
+                            <br>
+
+                            Не забывайте трогать юбик, когда будете использовать возможности плагина. Так как
+                            всё делается через SSH, это нужно будет делать довольно часто.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chapter__text-image-block">
+                    <div class="chapter__text-image-block-text">
+                        <h2 class="chapter__small-title">
+                            На этом установка и настройка завершена, вы великолепны.
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer__inner">
+        <div class="footer__menu">
+            <h3>
+                Ссылки
+            </h3>
+            <ul>
+                <li>
+                    <a class="inner-link" href="index.html">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="#">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="faq.html">FAQ</a>
+                </li>
+                <li>
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer__end-line">
+            <div class="footer__copyright">
+                <a href="https://vk.com" target="_blank">vk.com</a> © 2021-2022
+            </div>
+            <div class="footer__code">
+                <img src="https://kphp.me/admstorm/images/code_with.svg" alt="">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

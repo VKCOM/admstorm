@@ -1,0 +1,142 @@
+<idea-plugin>
+  <id>com.vk.admstorm</id>
+  <name>AdmStorm</name>
+  <vendor email="mr.makhneff@gmail.com" url="https://vk.com/petrmakhnev">Petr Makhnev</vendor>
+
+  <description><![CDATA[
+<p><b>About</b></p>
+<p>AdmStorm is a PhpStorm plugin that adds VK internal tools directly to the IDE and adds knowledge about the development server.</p>
+<p>This plugin is intended only for VK employees.</p>
+<br>
+<p><b>Features</b></p>
+<ul>
+  <li>Checking the synchronization of the local repository and the repository on the development server</li>
+  <li>Additional actions for push and pull, taking into account hooks on the development server</li>
+  <li>Various configurations for launching KPHP</li>
+  <li>PHPUnit and PHPLinter run configurations</li>
+  <li>Built-in KPHP Playground and Hastebin</li>
+  <li>Ability to view the generated C++ code for the entire site</li>
+</ul>
+<br>
+<p><b>Homepage</b></p>
+<p><a href="https://vkcom.github.io/admstorm/">Landing</a> (in russian)</p>
+<p><a href="https://github.com/vkcom/admstorm">GitHub</a></p>
+]]></description>
+
+  <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>org.jetbrains.plugins.remote-run</depends>
+  <depends>org.jetbrains.plugins.terminal</depends>
+  <depends>Git4Idea</depends>
+  <depends>com.jetbrains.php</depends>
+
+  <projectListeners>
+    <listener class="com.vk.admstorm.git.AdmBranchContextTracker"
+              topic="com.intellij.openapi.vcs.BranchChangeListener"/>
+  </projectListeners>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceImplementation="com.vk.admstorm.settings.AdmStormSettingsState"/>
+    <applicationConfigurable parentId="tools" instance="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                             id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                             displayName="AdmStorm"/>
+
+    <projectService serviceImplementation="com.vk.admstorm.AdmService"/>
+    <projectService serviceImplementation="com.vk.admstorm.ssh.SshConnectionService"/>
+    <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
+    <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
+
+    <!-- KPHP Benchmarks Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationType"/>
+    <runConfigurationProducer
+      implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationProducer"/>
+    <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
+                              implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
+
+    <!-- KPHP Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.kphp.KphpConfigurationType"/>
+    <runConfigurationProducer implementation="com.vk.admstorm.configuration.kphp.KphpConfigurationProducer"/>
+
+    <!-- PHP Linter Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.phplinter.PhpLinterConfigurationType"/>
+    <runConfigurationProducer
+      implementation="com.vk.admstorm.configuration.phplinter.PhpLinterConfigurationProducer"/>
+
+    <!-- Remote PHPUnit Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationType"/>
+    <runConfigurationProducer
+      implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
+
+    <postStartupActivity implementation="com.vk.admstorm.AdmStormStartupActivity"/>
+
+    <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
+
+    <notificationGroup id="AdmStorm" displayType="BALLOON"/>
+    <notificationGroup id="AdmStorm Important" displayType="STICKY_BALLOON"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <group id="com.vk.admstorm.adm.actions" class="com.vk.admstorm.actions.AdmActionsGroup" popup="true">
+      <add-to-group group-id="ToolsMenu" anchor="first"/>
+
+      <action id="com.vk.admstorm.connect.to.adm.via.ssh" class="com.vk.admstorm.actions.ConnectToAdmViaSshAction"
+              text="Connect to Adm via SSH">
+      </action>
+
+      <action id="com.vk.admstorm.check.git.sync" class="com.vk.admstorm.actions.CheckGitSyncAction"
+              text="Check Git Sync">
+      </action>
+    </group>
+
+    <action id="com.vk.admstorm.create.haste" class="com.vk.admstorm.actions.CreateHasteAction"
+            text="Create Hastebin...">
+      <add-to-group group-id="EditorPopupMenu"/>
+      <add-to-group group-id="ProjectViewPopupMenu"/>
+      <add-to-group group-id="EditorTabPopupMenu"/>
+    </action>
+
+    <action id="com.vk.admstorm.show.kphp.sources" class="com.vk.admstorm.actions.ShowKphpSourcesAction"
+            text="Go To Compiled C++">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.adm.toolbar.label" class="com.vk.admstorm.actions.AdmToolbarLabelAction">
+      <add-to-group group-id="VcsNavBarToolbarActions" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.pull.from.gitlab" class="com.vk.admstorm.actions.git.PullFromGitlabAction"
+            text="Pull Gitlab → Server → Local" icon="AllIcons.Actions.CheckOut">
+      <add-to-group group-id="VcsToolbarActions" anchor="last"/>
+      <add-to-group group-id="VcsNavBarToolbarActions" anchor="last"/>
+      <add-to-group group-id="SegmentedVcsActionsBarGroup" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.push.to.gitlab" class="com.vk.admstorm.actions.git.PushToGitlabAction"
+            text="Push Local → Server → Gitlab" icon="AllIcons.Vcs.Push">
+      <add-to-group group-id="VcsToolbarActions" anchor="last"/>
+      <add-to-group group-id="VcsNavBarToolbarActions" anchor="last"/>
+      <add-to-group group-id="SegmentedVcsActionsBarGroup" anchor="last"/>
+    </action>
+
+    <!-- Problems viewer popup -->
+    <group id="AdmProblemsView.ToolWindow.TreePopup">
+      <action id="AdmProblemsView.ShowProblemDescription"
+              icon="AllIcons.Actions.ShowImportStatements"
+              text="Show Problem Description"
+              description="Show problem description in popup"
+              use-shortcut-of="$SearchWeb"
+              class="com.vk.admstorm.configuration.problems.actions.ShowProblemDescriptionAction">
+        <keyboard-shortcut keymap="$default" first-keystroke="control I"/>
+      </action>
+      <action id="AdmProblemsView.CopyProblemShortDescription"
+              icon="AllIcons.Actions.Copy"
+              text="Copy Problem Short Description"
+              description="Copy problem short description to clipboard"
+              use-shortcut-of="$Copy"
+              class="com.vk.admstorm.configuration.problems.actions.CopyProblemShortDescriptionAction"/>
+      <reference ref="EditSource"/>
+    </group>
+  </actions>
+</idea-plugin>

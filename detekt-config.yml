@@ -1,0 +1,12 @@
+# Default detekt configuration:
+# https://github.com/detekt/detekt/blob/master/detekt-core/src/main/resources/default-detekt-config.yml
+
+formatting:
+  Indentation:
+    continuationIndentSize: 4
+  ParameterListWrapping:
+    indentSize: 4
+
+style:
+  ReturnCount:
+    active: false

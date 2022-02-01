@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <meta property="og:title" content="AdmStorm | FAQ" />
+    <meta property="og:description" content="AdmStorm plugin FAQ page." />
+    <meta property="og:image" content="images/preview.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://i582.github.io/admstorm/faq.html" />
+
+    <title>AdmStorm | FAQ</title>
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<header>
+    <div class="header__inner">
+        <a href="index.html" class="header__title inner-link">AdmStorm</a>
+        <nav class="header__navbar">
+            <ul class="header__links">
+                <li>
+                    <a class="inner-link" href="index.html">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="install.html">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="#">FAQ</a>
+                </li>
+                <li class="header__github-link">
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="chapter no-padding titled-block-text-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title chapter__big-title--bold">
+            FAQ
+        </h2>
+
+        <div class="chapter__block">
+            <div class="chapter__faq-block">
+                <h2 class="chapter__faq-title chapter__small-title">
+                    Как долго разрабатывался плагин?
+                </h2>
+                <p class="chapter__text chapter__faq-text">
+                    С учётом тестирования, порядка 2-х месяцев. Плагин получился значительно больше по необходимому
+                    коду, чем ожидалось вначале. Также документации по внутренностям IDE не так много, а похожих
+                    плагинов просто нет и подсмотреть некуда. Поэтому всё время разработки плагина сопровождалось
+                    копанием в исходниках IDE и другом декомпилированном коде.
+                </p>
+            </div>
+
+            <div class="chapter__faq-block">
+                <h2 class="chapter__faq-title chapter__small-title">
+                    Как плагин работает?
+                </h2>
+                <p class="chapter__text chapter__faq-text">
+                    Ядро плагина — это запуск команд на <span class="server-name"></span> по SSH. Благодаря этому, мы
+                    можем запускать необходимые инструменты и работать с их выводом в реальном времени. Но
+                    для этого нужно иметь подключение по SSH, а с нашим юбиком это не всегда удобно.
+                    Мы постарались предусмотреть такие ситуации, и плагин вам подскажет, когда юбик перестал работать и
+                    его нужно перезапустить.
+
+                    <br>
+                    <br>
+
+                    Что касается синхронизации, то тут всё довольно просто. У нас есть два git репозитория,
+                    которые мы можем сравнивать и находить в них места, где они отличаются, с помощью команд
+                    самого git. Пришлось подумать, как это реализовать так, чтобы это не занимало много времени,
+                    но в конечном счёте получилось сделать проверку синхронизации довольно быстрой.
+                </p>
+            </div>
+
+            <div class="chapter__faq-block">
+                <h2 class="chapter__faq-title chapter__small-title">
+                    Будет ли плагин мешать, если я разрабатываю другой проект на PHP?
+                </h2>
+                <p class="chapter__text chapter__faq-text">
+                    Нет, плагин при запуске IDE проверяет, является ли проект VKCOM, и если нет, то не добавляет
+                    никаких действий или подключения по SSH.
+                </p>
+            </div>
+
+            <div class="chapter__faq-block">
+                <h2 class="chapter__faq-title chapter__small-title">
+                    В плагине нет внутреннего инструмента X, можно ли добавить?
+                </h2>
+                <p class="chapter__text chapter__faq-text">
+                    Да, можно, приходите в личные сообщения <a class="chapter__external-link" target="_blank"
+                                                               href="https://vk.com/petrmakhnev">petrmakhnev</a>
+                    или приходите в команду KPHP, обсудим внедрение вашего инструмента.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer__inner">
+        <div class="footer__menu">
+            <h3>
+                Ссылки
+            </h3>
+            <ul>
+                <li>
+                    <a class="inner-link" href="index.html">Главная</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="whatsnew.html">Что нового</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="install.html">Установка</a>
+                </li>
+                <li>
+                    <a class="inner-link" href="#">FAQ</a>
+                </li>
+                <li>
+                    <a href="https://github.com/VKCOM/admstorm" target="_blank">Github</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer__end-line">
+            <div class="footer__copyright">
+                <a href="https://vk.com" target="_blank">vk.com</a> © 2021-2022
+            </div>
+            <div class="footer__code">
+                <img src="https://kphp.me/admstorm/images/code_with.svg" alt="">
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

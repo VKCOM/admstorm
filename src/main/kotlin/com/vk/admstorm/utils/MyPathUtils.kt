@@ -1,0 +1,92 @@
+package com.vk.admstorm.utils
+
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
+import com.vk.admstorm.CommandRunner
+import com.vk.admstorm.env.Env
+import java.io.File
+
+object MyPathUtils {
+    private var remoteRoot = ""
+
+    private fun resolveProjectDir(project: Project): String? {
+        return project.guessProjectDir()?.path ?: return null
+    }
+
+    fun relativeLocalPath(project: Project, path: String): String {
+        val projectDir = resolveProjectDir(project) ?: return path
+        return File(path).relativeTo(File(projectDir)).path
+    }
+
+    fun absoluteLocalPath(project: Project, path: String): String {
+        if (path.startsWith("/")) return path
+        val projectDir = resolveProjectDir(project) ?: return path
+        return "${projectDir}/$path"
+    }
+
+    fun resolveRemoteRoot(project: Project): String? {
+        if (remoteRoot.isNotEmpty()) {
+            return remoteRoot
+        }
+
+        val res = CommandRunner.runRemotely(project, "echo ${Env.data.projectRoot}", 500)
+        if (res.exitCode != 0) {
+            return null
+        }
+        remoteRoot = res.stdout.trimEnd()
+        return remoteRoot
+    }
+
+    fun absoluteDataBasedRemotePath(project: Project, relativePath: String): String? {
+        val remoteRoot = resolveRemoteRoot(project) ?: return null
+        return "$remoteRoot/$relativePath"
+    }
+
+    fun absoluteLocalPathByRemotePath(project: Project, remotePath: String): String? {
+        if (File(remotePath).isAbsolute) {
+            return absoluteLocalPathByAbsoluteRemotePath(project, remotePath)
+        }
+        return absoluteLocalPathByRelativePhpFolderRemotePath(project, remotePath)
+    }
+
+    private fun absoluteLocalPathByRelativePhpFolderRemotePath(project: Project, remoteRelativePath: String): String? {
+        val remoteRoot = resolveRemoteRoot(project) ?: return null
+        val remoteAbsolutePath =
+            if (remoteRelativePath.startsWith("${Env.data.phpSourceFolder}/"))
+                "$remoteRoot/$remoteRelativePath"
+            else
+                "$remoteRoot/${Env.data.phpSourceFolder}/$remoteRelativePath"
+        return absoluteLocalPathByAbsoluteRemotePath(project, remoteAbsolutePath)
+    }
+
+    fun absoluteLocalPathByAbsoluteRemotePath(project: Project, remotePath: String): String? {
+        var remoteRoot = resolveRemoteRoot(project) ?: return null
+
+        if (remotePath.startsWith(Env.data.kphpRelatedPathBegin)) {
+            remoteRoot = remoteRoot.replace("/home/", "${Env.data.kphpRelatedPathBegin}/")
+        }
+
+        val remoteFile = File(remotePath)
+        val remoteRootFile = File(remoteRoot)
+        if (!remoteFile.isAbsolute) {
+            return null
+        }
+
+        val relativeRemotePathFile = remoteFile.relativeTo(remoteRootFile)
+        val projectDir = resolveProjectDir(project) ?: return null
+
+        return "${projectDir}/$relativeRemotePathFile"
+    }
+
+    fun remotePathByLocalPath(project: Project, path: String): String {
+        val rel = relativeLocalPath(project, path)
+        return "$remoteRoot/$rel"
+    }
+
+    fun remotePhpFolderRelativePathByLocalPath(project: Project, path: String): String {
+        if (Env.data.phpSourceFolder == "") return ""
+
+        val rel = relativeLocalPath(project, path)
+        return File(rel).relativeTo(File("${Env.data.phpSourceFolder}/")).path
+    }
+}
