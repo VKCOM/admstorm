@@ -23,7 +23,7 @@ class PhpLinterExecutor(project: Project, command: String) :
         }
 
         ApplicationManager.getApplication().invokeLater {
-            val problems = PhpLinterWarningsParser.parse(myProject, myOutputListener!!.output.stderr)
+            val problems = PhpLinterWarningsParser.parse(myProject, myOutputListener.output.stderr)
             val panel = ProblemsPanel(myProject, problems)
             myProblemsTab.panel.addToCenter(panel)
         }

@@ -46,7 +46,7 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
                 """.trimIndent()
             )
                 .withTitle("Branch is not switched on ${Env.data.serverName.ifEmpty { "dev-server" }}")
-                .withActions(AdmNotification.Action("Reconnect and switch...") { event, notification ->
+                .withActions(AdmNotification.Action("Reconnect and switch...") { _, notification ->
                     notification.expire()
 
                     SshConnectionService.getInstance(myProject).connect {

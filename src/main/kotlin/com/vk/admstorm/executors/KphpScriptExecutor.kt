@@ -45,7 +45,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
     }
 
     override fun onReady() {
-        val output = myOutputListener!!.output
+        val output = myOutputListener.output
 
         myKphpOutputTab.console.clear()
 

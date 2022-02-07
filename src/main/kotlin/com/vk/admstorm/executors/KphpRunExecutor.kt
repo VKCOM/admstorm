@@ -24,7 +24,7 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
         }
 
         ApplicationManager.getApplication().invokeLater {
-            val problems = KphpErrorsParser.parse(myProject, myOutputListener!!.output.stdout)
+            val problems = KphpErrorsParser.parse(myProject, myOutputListener.output.stdout)
             val panel = ProblemsPanel(myProject, problems)
             myCompilationErrorsTab.panel.addToCenter(panel)
         }
