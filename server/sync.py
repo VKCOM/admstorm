@@ -179,6 +179,7 @@ def parse_git_status(git_status_output) -> List[StatusRecord]:
     files = []
     for idx, part in enumerate(parts):
         if need_pass_next_part:
+            need_pass_next_part = False
             continue
 
         if len(part.strip()) == 0:
