@@ -22,10 +22,14 @@ abstract class AdmActionBase : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
+        beforeUpdate(e)
+
         if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
             e.presentation.isEnabledAndVisible = false
         }
     }
+
+    open fun beforeUpdate(e: AnActionEvent) {}
 
     /**
      * Implement this method to provide your action handler.
