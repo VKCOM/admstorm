@@ -45,7 +45,7 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     protected lateinit var myProcessHandler: ColoredRemoteProcessHandler<SshExecProcess>
     protected lateinit var myOutputListener: OutputListener
 
-    private val myTabs: MutableMap<String, Tab> = mutableMapOf()
+    private val myTabs = mutableListOf<Tab>()
 
     private val myRestartAction = object : ActionToolbarFastEnableAction(
         myConfig.name + " Start", "",
@@ -117,7 +117,7 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     }
 
     fun withTab(tab: Tab): BaseRunnableExecutor {
-        myTabs[tab.getName()] = tab
+        myTabs.add(tab)
         return this
     }
 
@@ -202,18 +202,18 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
             consoleComponent
         )
         rawOutputTab.description = "Launch output"
+        rawOutputTab.isCloseable = false
 
         Disposer.register(myProject, descriptor)
         Disposer.register(descriptor, this)
         Disposer.register(descriptor, rawOutputTab)
 
         myLayout.addContent(rawOutputTab, 0, PlaceInGrid.right, false)
-
-        myTabs.forEach {
-            it.value.addTo(myLayout)
-        }
-
         myLayout.options.setLeftToolbar(myActionGroup, "RunnerToolbar")
+
+        myTabs.forEach { tab ->
+            tab.addAsContentTo(myLayout)
+        }
 
         RunContentManager.getInstance(myProject).showRunContent(executor!!, descriptor)
 
@@ -221,14 +221,10 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     }
 
     private fun clearTabs() {
-        myTabs.forEach {
-            when (it.value) {
-                is ConsoleTab -> {
-                    (it.value as ConsoleTab).console.clear()
-                }
-                is ProblemsTab -> {
-                    (it.value as ProblemsTab).panel = JBUI.Panels.simplePanel()
-                }
+        myTabs.forEach { tab ->
+            when (tab) {
+                is ConsoleTab -> tab.console.clear()
+                is ProblemsTab -> tab.panel = JBUI.Panels.simplePanel()
             }
         }
     }

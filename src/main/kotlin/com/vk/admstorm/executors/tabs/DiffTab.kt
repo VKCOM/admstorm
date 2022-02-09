@@ -10,25 +10,23 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.SimpleComponentWithActions
 
 class DiffTab(private val myProject: Project, name: String) : BaseTab(name) {
-    private val myDiffViewer: SimpleDiffViewer
+    private val myDiffViewer: SimpleDiffViewer = SimpleDiffViewer(
+        object : DiffContext() {
+            override fun isFocusedInWindow() = false
+            override fun requestFocusInWindow() {}
+            override fun getProject() = myProject
+            override fun isWindowFocused() = false
+        },
+        SimpleDiffRequest(
+            "Diff",
+            DiffContentFactory.getInstance().create(myProject, ""),
+            DiffContentFactory.getInstance().create(myProject, ""),
+            "KPHP output",
+            "PHP output"
+        )
+    )
 
     init {
-        myDiffViewer = SimpleDiffViewer(
-            object : DiffContext() {
-                override fun isFocusedInWindow() = false
-                override fun requestFocusInWindow() {}
-                override fun getProject() = myProject
-                override fun isWindowFocused() = false
-            },
-            SimpleDiffRequest(
-                "Diff",
-                DiffContentFactory.getInstance().create(myProject, ""),
-                DiffContentFactory.getInstance().create(myProject, ""),
-                "KPHP output",
-                "PHP output"
-            )
-        )
-
         myDiffViewer.init()
     }
 

@@ -19,7 +19,7 @@ class PhpLinterExecutor(project: Project, command: String) :
 
     override fun onReady() {
         ApplicationManager.getApplication().invokeLater {
-            myLayout.selectAndFocus(myProblemsTab.getContent(), true, true)
+            myLayout.selectAndFocus(myProblemsTab.content, true, true)
         }
 
         ApplicationManager.getApplication().invokeLater {
