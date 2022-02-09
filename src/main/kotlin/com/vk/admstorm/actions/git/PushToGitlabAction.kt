@@ -32,10 +32,14 @@ import git4idea.util.GitUIUtil.code
 
 class PushToGitlabAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
-        SyncChecker(e.project!!).doOnlyBranchAndCommitsCheckSyncTask({
+        runAction(e.project!!)
+    }
+
+    fun runAction(project: Project) {
+        SyncChecker(project).doOnlyBranchAndCommitsCheckSyncTask({
             onCanceledSync()
         }) { needPushToServer ->
-            pushAction(e.project!!, needPushToServer)
+            pushAction(project, needPushToServer)
         }
     }
 
