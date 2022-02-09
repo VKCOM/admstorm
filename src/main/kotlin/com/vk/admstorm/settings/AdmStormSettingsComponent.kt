@@ -21,6 +21,7 @@ class AdmStormSettingsComponent {
 
     private lateinit var myCheckSyncOnFocusCheckBox: JBCheckBox
     private lateinit var myConnectWhenProjectStartsCheckBox: JBCheckBox
+    private lateinit var myAutoPushToServerAfterCommit: JBCheckBox
 
     private lateinit var myRunPhpLinterAsInTeamcityCheckBox: JBCheckBox
 
@@ -60,6 +61,12 @@ class AdmStormSettingsComponent {
             myConnectWhenProjectStartsCheckBox.isSelected = value
         }
 
+    var autoPushToServerAfterCommit: Boolean
+        get() = myAutoPushToServerAfterCommit.isSelected
+        set(value) {
+            myAutoPushToServerAfterCommit.isSelected = value
+        }
+
     var runPhpLinterAsInTeamcity: Boolean
         get() = myRunPhpLinterAsInTeamcityCheckBox.isSelected
         set(value) {
@@ -77,6 +84,9 @@ class AdmStormSettingsComponent {
         myBranchSyncSettingsPanel.border = IdeBorderFactory.createTitledBorder("Branch synchronization")
         mySyncBranchCheckoutCheckBox.text =
             "Automatically switch branches on ${Env.data.serverName.ifEmpty { "server" }}"
+
+        myAutoPushToServerAfterCommit.text =
+            "Automatically push to the ${Env.data.serverName.ifEmpty { "server" }} after a successful commit"
 
         myPushToGitlabPanel.border = IdeBorderFactory.createTitledBorder("Push to Gitlab")
     }

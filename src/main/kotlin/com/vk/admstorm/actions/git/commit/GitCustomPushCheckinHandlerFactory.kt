@@ -1,4 +1,4 @@
-package com.vk.admstorm.actions.git.checkout
+package com.vk.admstorm.actions.git.commit
 
 import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext
@@ -8,6 +8,7 @@ import com.vk.admstorm.AdmStormStartupActivity
 import com.vk.admstorm.actions.git.PushToGitlabAction
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
+import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 
 class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
@@ -15,6 +16,9 @@ class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
         return object : CheckinHandler() {
             override fun checkinSuccessful() {
                 if (!commitContext.isPushToGitlabAfterCommit) {
+                    if (AdmStormSettingsState.getInstance().autoPushToServerAfterCommit) {
+                        pushToServer()
+                    }
                     return
                 }
 
@@ -34,6 +38,10 @@ class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
                 }
 
                 PushToGitlabAction().runAction(panel.project)
+            }
+
+            private fun pushToServer() {
+                PushToGitlabAction.doForcePushOrNotToServerTask(panel.project, force = true)
             }
         }
     }

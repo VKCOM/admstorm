@@ -72,10 +72,10 @@
 
     <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
     <vcs.changes.localCommitExecutor
-      implementation="com.vk.admstorm.actions.git.checkout.GitCommitAndPushToGitlabExecutor"
+      implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
       id="git.commit.and.push.to.gitlab"/>
 
-    <checkinHandlerFactory implementation="com.vk.admstorm.actions.git.checkout.GitCustomPushCheckinHandlerFactory"/>
+    <checkinHandlerFactory implementation="com.vk.admstorm.actions.git.commit.GitCustomPushCheckinHandlerFactory"/>
 
     <notificationGroup id="AdmStorm" displayType="BALLOON"/>
     <notificationGroup id="AdmStorm Important" displayType="STICKY_BALLOON"/>
@@ -96,7 +96,7 @@
     </group>
 
     <action id="git.commit.and.push.adm.executor"
-            class="com.vk.admstorm.actions.git.checkout.GitCommitAndPushToAdmExecutorAction">
+            class="com.vk.admstorm.actions.git.commit.GitCommitAndPushToAdmExecutorAction">
       <add-to-group group-id="Vcs.Commit.PrimaryCommitActions"/>
       <keyboard-shortcut first-keystroke="control alt U" keymap="$default"/>
     </action>

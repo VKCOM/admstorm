@@ -1,4 +1,4 @@
-package com.vk.admstorm.actions.git.checkout
+package com.vk.admstorm.actions.git.commit
 
 import com.intellij.dvcs.commit.getCommitAndPushActionName
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -44,7 +44,7 @@ class GitCommitAndPushToAdmExecutorAction : BaseCommitExecutorAction() {
             val templateText = workflowHandler.getCommitAndPushActionName()
 
             e.presentation.text =
-                templateText.removeSuffix("…") + "→ ${Env.data.serverName.ifEmpty { "server" }} → Gitlab…"
+                templateText.removeSuffix("…") + " → ${Env.data.serverName.ifEmpty { "server" }} → Gitlab…"
         }
 
         super.update(e)
