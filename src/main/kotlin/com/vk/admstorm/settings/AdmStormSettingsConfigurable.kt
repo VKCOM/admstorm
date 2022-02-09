@@ -18,7 +18,8 @@ class AdmStormSettingsConfigurable : Configurable {
                 mySettingsComponent.gitConflictResolutionStrategy != settings.gitConflictResolutionStrategy ||
                 mySettingsComponent.checkSyncOnFocus != settings.checkSyncOnFocus ||
                 mySettingsComponent.connectWhenProjectStarts != settings.connectWhenProjectStarts ||
-                mySettingsComponent.runPhpLinterAsInTeamcity != settings.runPhpLinterAsInTeamcityWhenPushToGitlab
+                mySettingsComponent.runPhpLinterAsInTeamcity != settings.runPhpLinterAsInTeamcityWhenPushToGitlab ||
+                mySettingsComponent.autoPushToServerAfterCommit != settings.autoPushToServerAfterCommit
     }
 
     override fun apply() {
@@ -28,6 +29,7 @@ class AdmStormSettingsConfigurable : Configurable {
         settings.checkSyncOnFocus = mySettingsComponent.checkSyncOnFocus
         settings.connectWhenProjectStarts = mySettingsComponent.connectWhenProjectStarts
         settings.runPhpLinterAsInTeamcityWhenPushToGitlab = mySettingsComponent.runPhpLinterAsInTeamcity
+        settings.autoPushToServerAfterCommit = mySettingsComponent.autoPushToServerAfterCommit
     }
 
     override fun reset() {
@@ -37,5 +39,6 @@ class AdmStormSettingsConfigurable : Configurable {
         mySettingsComponent.checkSyncOnFocus = settings.checkSyncOnFocus
         mySettingsComponent.connectWhenProjectStarts = settings.connectWhenProjectStarts
         mySettingsComponent.runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
+        mySettingsComponent.autoPushToServerAfterCommit = settings.autoPushToServerAfterCommit
     }
 }
