@@ -23,7 +23,7 @@ class PushToRemoteExecutor(project: Project, command: String) :
     }
 
     override fun onReady() {
-        val output = myOutputListener!!.output
+        val output = myOutputListener.output
 
         ApplicationManager.getApplication().invokeLater {
             myOutputHandler.accept(output, Console(myProject))
@@ -43,10 +43,10 @@ class PushToRemoteExecutor(project: Project, command: String) :
 
                 if (problems.isNotEmpty()) {
                     val problemsTab = ProblemsTab()
-                    problemsTab.addTo(myLayout)
+                    problemsTab.addAsContentTo(myLayout)
 
                     ApplicationManager.getApplication().invokeLater {
-                        myLayout.selectAndFocus(problemsTab.getContent(), true, true)
+                        myLayout.selectAndFocus(problemsTab.content, true, true)
                     }
 
                     val panel = ProblemsPanel(myProject, problems)

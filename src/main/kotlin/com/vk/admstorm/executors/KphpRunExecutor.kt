@@ -20,7 +20,7 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
 
     override fun onReady() {
         ApplicationManager.getApplication().invokeLater {
-            myLayout.selectAndFocus(myCompilationErrorsTab.getContent(), true, true)
+            myLayout.selectAndFocus(myCompilationErrorsTab.content, true, true)
         }
 
         ApplicationManager.getApplication().invokeLater {

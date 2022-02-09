@@ -51,12 +51,12 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
 
         ApplicationManager.getApplication().invokeLater {
             if (output.exitCode != 0) {
-                myKphpOutputTab.getContent()?.displayName = "Compilation Errors"
+                myKphpOutputTab.content?.displayName = "Compilation Errors"
                 myKphpOutputTab.console.println(KphpScriptOutputParser.parse(output))
                 myKphpOutputTab.console.view().scrollTo(0)
             }
 
-            myLayout.selectAndFocus(myKphpOutputTab.getContent(), true, true)
+            myLayout.selectAndFocus(myKphpOutputTab.content, true, true)
         }
 
         ApplicationManager.getApplication().executeOnPooledThread {
