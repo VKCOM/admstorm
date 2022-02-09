@@ -9,19 +9,10 @@ import java.io.File
 object MyPathUtils {
     private var remoteRoot = ""
 
+    private fun String.normalizeSlashes() = replace("\\", "/")
+
     private fun resolveProjectDir(project: Project): String? {
         return project.guessProjectDir()?.path ?: return null
-    }
-
-    fun relativeLocalPath(project: Project, path: String): String {
-        val projectDir = resolveProjectDir(project) ?: return path
-        return File(path).relativeTo(File(projectDir)).path
-    }
-
-    fun absoluteLocalPath(project: Project, path: String): String {
-        if (path.startsWith("/")) return path
-        val projectDir = resolveProjectDir(project) ?: return path
-        return "${projectDir}/$path"
     }
 
     fun resolveRemoteRoot(project: Project): String? {
@@ -33,8 +24,20 @@ object MyPathUtils {
         if (res.exitCode != 0) {
             return null
         }
+
         remoteRoot = res.stdout.trimEnd()
         return remoteRoot
+    }
+
+    fun relativeLocalPath(project: Project, path: String): String {
+        val projectDir = resolveProjectDir(project) ?: return path.normalizeSlashes()
+        return File(path).relativeTo(File(projectDir)).path.normalizeSlashes()
+    }
+
+    fun absoluteLocalPath(project: Project, path: String): String {
+        if (File(path).isAbsolute) return path
+        val projectDir = resolveProjectDir(project) ?: return path
+        return "${projectDir}/$path"
     }
 
     fun absoluteDataBasedRemotePath(project: Project, relativePath: String): String? {
@@ -75,7 +78,7 @@ object MyPathUtils {
         val relativeRemotePathFile = remoteFile.relativeTo(remoteRootFile)
         val projectDir = resolveProjectDir(project) ?: return null
 
-        return "${projectDir}/$relativeRemotePathFile"
+        return "${projectDir.normalizeSlashes()}/$relativeRemotePathFile"
     }
 
     fun remotePathByLocalPath(project: Project, path: String): String {

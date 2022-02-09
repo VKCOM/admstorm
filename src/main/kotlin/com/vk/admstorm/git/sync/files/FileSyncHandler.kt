@@ -133,7 +133,7 @@ class FileSyncHandler(
                         
                         ${output.stderr}
                         """.trimIndent(),
-                        "Add File Fail"
+                        "Problem with git add"
                     )
                     return@uploadFile
                 }
@@ -143,11 +143,11 @@ class FileSyncHandler(
                     if (setPermOutput.exitCode != 0) {
                         MessageDialog.showWarning(
                             """
-                        Can't set permission ${GitUIUtil.code(perm)} for ${GitUIUtil.code(remotePath)}:
-                        
-                        ${output.stderr}
-                        """.trimIndent(),
-                            "Set Permission for File Fail"
+                            Can't set permission ${GitUIUtil.code(perm)} for ${GitUIUtil.code(remotePath)}:
+                            
+                            ${output.stderr}
+                            """.trimIndent(),
+                            "Problems with setting permission"
                         )
                         return@uploadFile
                     }
@@ -176,7 +176,7 @@ class FileSyncHandler(
                             
                             ${renameOutput.stderr}
                         """.trimIndent(),
-                        "Rename Fail"
+                        "Problems with file rename"
                     )
                 }
 
@@ -207,7 +207,7 @@ class FileSyncHandler(
                             
                             ${output.stderr}
                         """.trimIndent(),
-                        "Rename Fail"
+                        "Problems with file rename"
                     )
                     return
                 }
