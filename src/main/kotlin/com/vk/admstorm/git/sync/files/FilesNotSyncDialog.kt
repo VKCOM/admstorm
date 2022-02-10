@@ -15,6 +15,7 @@ import com.intellij.util.ui.UIUtil
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyPathUtils.foldUserHome
 import com.vk.admstorm.utils.MyUiUtils
 import com.vk.admstorm.utils.MyUtils
 import git4idea.util.GitUIUtil.code
@@ -38,10 +39,10 @@ class FilesNotSyncDialog(
     private val myFilesTable = JBTable(FilesTableModel())
     private val myUnresolvedFiles = mutableListOf<RemoteFile>()
 
-    private val mySyncHandler = FileSyncHandler(myProject)
+    private val mySyncHandler = RemoteFileManager(myProject)
 
     init {
-        myUnresolvedFiles.addAll(files)
+        myUnresolvedFiles.addAll(files.sortedBy { it.status() })
 
         title = "Files not Synchronized"
 
@@ -194,11 +195,11 @@ class FilesNotSyncDialog(
 
         val localFile = MyUtils.virtualFileByRelativePath(myProject, remoteFile.path)
         val localFileText =
-            if (localFile == null) "<file not found>"
+            if (localFile == null) null
             else LoadTextUtil.loadText(localFile).toString()
 
-        val viewer = FilesDiffViewer(myProject, remoteFile, localFileText)
-        viewer.showAndGet()
+        val factory = NotSyncFilesViewerFactory(myProject, remoteFile, localFile?.path ?: "", localFileText)
+        factory.viewer.showAndGet()
     }
 
     override fun createCenterPanel() = myContentPanel
@@ -231,35 +232,28 @@ class FilesNotSyncDialog(
 
             when (column) {
                 1 -> append(
-                    when {
-                        file.isRenamed -> "Renamed on local"
-                        file.isNotFound -> "Only on local"
-                        file.isRemoved -> "Removed on ${Env.data.serverName}"
-                        file.localFile.isRemoved -> "Only on ${Env.data.serverName}"
-                        else -> "Modified"
-                    },
+                    file.status(),
                     file.statusTextAttributes()
                 )
                 0 -> {
                     icon = MyUiUtils.fileTypeIcon(file.path)
 
                     if (file.isRenamed && file.origPath != null) {
-                        val origFile = File(file.origPath)
+                        val absOrigPath = MyPathUtils.absoluteLocalPath(myProject, file.origPath)
+                        val origFile = File(absOrigPath)
 
                         append(origFile.name, file.statusTextAttributes())
                         append(" ")
-                        append(origFile.parent, SimpleTextAttributes.GRAY_ATTRIBUTES)
+                        append(foldUserHome(origFile.parent), SimpleTextAttributes.GRAY_ATTRIBUTES)
 
                         append(" ${UIUtil.rightArrow()} ")
 
-                        val newFile = File(file.path)
+                        val absNewPath = MyPathUtils.absoluteLocalPath(myProject, file.path)
+                        val newFile = File(absNewPath)
 
-                        append(
-                            newFile.name,
-                            SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, FileStatus.ADDED.color)
-                        )
+                        append(newFile.name)
                         append(" ")
-                        append(newFile.parent, SimpleTextAttributes.GRAY_ATTRIBUTES)
+                        append(foldUserHome(newFile.parent), SimpleTextAttributes.GRAY_ATTRIBUTES)
 
                         return
                     }
@@ -269,7 +263,7 @@ class FilesNotSyncDialog(
 
                     append(iofile.name, file.statusTextAttributes())
                     append(" ")
-                    append(iofile.parent, SimpleTextAttributes.GRAY_ATTRIBUTES)
+                    append(foldUserHome(iofile.parent), SimpleTextAttributes.GRAY_ATTRIBUTES)
                 }
             }
         }

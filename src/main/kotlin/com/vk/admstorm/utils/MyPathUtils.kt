@@ -9,10 +9,18 @@ import java.io.File
 object MyPathUtils {
     private var remoteRoot = ""
 
-    private fun String.normalizeSlashes() = replace("\\", "/")
-
     private fun resolveProjectDir(project: Project): String? {
         return project.guessProjectDir()?.path ?: return null
+    }
+
+    fun String.normalizeSlashes() = replace("\\", "/")
+
+    fun foldUserHome(path: String): String {
+        val userHome = System.getProperty("user.home")
+        if (path.startsWith(userHome)) {
+            return "~" + path.removePrefix(userHome)
+        }
+        return path
     }
 
     fun resolveRemoteRoot(project: Project): String? {

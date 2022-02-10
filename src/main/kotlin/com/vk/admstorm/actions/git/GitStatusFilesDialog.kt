@@ -12,6 +12,7 @@ import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.JBUI
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.files.GitStatus.isDeleted
+import com.vk.admstorm.utils.MyPathUtils.foldUserHome
 import com.vk.admstorm.utils.MyUiUtils
 import git4idea.index.GitFileStatus
 import java.awt.event.ActionEvent
@@ -91,9 +92,9 @@ class GitStatusFilesDialog(
     private fun onSelect() {
         val selectedRow = myFilesTable.selectedRow
         val file = myGitStatusFiles.getOrNull(selectedRow) ?: return
-        val content = myFilesContents.getOrNull(selectedRow) ?: return
+        val remoteFileContent = myFilesContents.getOrNull(selectedRow) ?: return
 
-        GitStatusFileViewer(myProject, file, content).showAndGet()
+        GitStatusFilesViewerFactory(myProject, file, file.path.path, remoteFileContent).viewer.showAndGet()
     }
 
     override fun getPreferredFocusedComponent() = myFilesTable
@@ -126,7 +127,7 @@ class GitStatusFilesDialog(
                     val parentPath = value.path.parentPath
                     if (parentPath != null) {
                         append(" ")
-                        append(parentPath.path, SimpleTextAttributes.GRAY_ATTRIBUTES)
+                        append(foldUserHome(parentPath.path), SimpleTextAttributes.GRAY_ATTRIBUTES)
                     }
                 }
             }

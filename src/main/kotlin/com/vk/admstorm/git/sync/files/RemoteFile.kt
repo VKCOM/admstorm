@@ -2,6 +2,7 @@ package com.vk.admstorm.git.sync.files
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
 
 data class RemoteFile(
@@ -50,6 +51,14 @@ data class RemoteFile(
                 localFile = LocalFile.create(project, filename),
             )
         }
+    }
+
+    fun status() = when {
+        isRenamed -> "Renamed on local"
+        isNotFound -> "Only on local"
+        isRemoved -> "Removed on ${Env.data.serverName}"
+        localFile.isRemoved -> "Only on ${Env.data.serverName}"
+        else -> "Modified"
     }
 
     fun equalWithLocal(): Boolean {
