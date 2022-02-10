@@ -42,7 +42,6 @@ class TransferService(private var myProject: Project) {
     }
 
     private val mySshService = SshConnectionService.getInstance(myProject)
-    private val myTransferring = ArrayList<TransferFileModel>(100)
     private val myRemoteEditingFiles = HashMap<RemoteFileObject, String>(100)
 
     /**
@@ -233,29 +232,12 @@ class TransferService(private var myProject: Project) {
         val remoteFilePath = remoteFile.path()
         val localFileAbsPath = localFile.absolutePath
 
-        myTransferring.forEach { exists ->
-            if (exists.result !== TransferResult.TRANSFERRING) {
-                ApplicationManager.getApplication().invokeLater { myTransferring.remove(exists) }
-            } else if (type === exists.type && exists.target == if (type === TransferType.UPLOAD) normalizedRemotePath else localFileAbsPath) {
-                exists.result = TransferResult.CANCELLED
-            }
-        }
-
         val transferFileModel = TransferFileModel(
             type = type,
             source = if (type === TransferType.UPLOAD) localFileAbsPath else normalizedRemotePath,
             target = if (type === TransferType.UPLOAD) normalizedRemotePath else localFileAbsPath,
             size = if (type === TransferType.UPLOAD) localFile.length() else remoteFile.size(),
         )
-
-        myTransferring.add(transferFileModel)
-
-        val onResultProxy = object : OnTransferResult {
-            override fun onResult(result: TransferFileModel) {
-                myTransferring.remove(transferFileModel)
-                onTransferResult?.accept(result)
-            }
-        }
 
         try {
             if (type === TransferType.UPLOAD) {
@@ -315,15 +297,15 @@ class TransferService(private var myProject: Project) {
                         }
 
                         transferFileModel.result = TransferResult.SUCCESS
-                        onResultProxy.onResult(transferFileModel)
+                        onTransferResult?.accept(transferFileModel)
                     } catch (e: TransferCancelledException) {
                         transferFileModel.result = TransferResult.CANCELLED
                         transferFileModel.exception = e.message ?: "cancelled"
-                        onResultProxy.onResult(transferFileModel)
+                        onTransferResult?.accept(transferFileModel)
                     } catch (e: Exception) {
                         transferFileModel.result = TransferResult.FAIL
                         transferFileModel.exception = e.message ?: "failed"
-                        onResultProxy.onResult(transferFileModel)
+                        onTransferResult?.accept(transferFileModel)
 
                         AdmWarningNotification(
                             "Error occurred while transferring ${transferFileModel.source} to ${transferFileModel.target}, ${e.message}",
@@ -342,7 +324,7 @@ class TransferService(private var myProject: Project) {
         } catch (e: Exception) {
             transferFileModel.result = TransferResult.FAIL
             transferFileModel.exception = e.message ?: "transfer failed"
-            onResultProxy.onResult(transferFileModel)
+            onTransferResult?.accept(transferFileModel)
 
             LOG.warn("Transfer file exception (localFile: ${localFile.name}, remoteFile: ${remoteFile.path()}) ", e)
         }
