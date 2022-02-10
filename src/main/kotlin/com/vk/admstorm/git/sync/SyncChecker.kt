@@ -36,8 +36,8 @@ class SyncChecker(private var myProject: Project) {
     private var myRemoteBranch: String = ""
     private var myRemoteCommit: Commit? = null
 
-    private var myCommitsDistance: Int = 0
-    private var myDifferingFiles: MutableList<RemoteFile> = mutableListOf()
+    private var myCommitsDistance = 0
+    private var myDifferingFiles = mutableListOf<RemoteFile>()
 
     enum class State {
         BranchNotSync,
@@ -47,6 +47,8 @@ class SyncChecker(private var myProject: Project) {
 
         Unknown
     }
+
+    fun getDiffFiles() = myDifferingFiles
 
     /**
      * Returns the current sync state of the repositories.

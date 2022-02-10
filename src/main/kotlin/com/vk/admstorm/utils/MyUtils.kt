@@ -1,6 +1,7 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -103,6 +104,23 @@ object MyUtils {
                 indicator.isIndeterminate = true
                 task(indicator)
                 LOG.info("End Backgroundable task ('$title')")
+            }
+        })
+    }
+
+    inline fun runConditionalModal(
+        project: Project,
+        @NlsContexts.ProgressTitle title: String,
+        crossinline task: (indicator: ProgressIndicator) -> Unit
+    ) {
+        ProgressManager.getInstance().run(object : Task.ConditionalModal(
+            project, title, true, PerformInBackgroundOption.DEAF,
+        ) {
+            override fun run(indicator: ProgressIndicator) {
+                LOG.info("Start ConditionalModal task ('$title')")
+                indicator.isIndeterminate = true
+                task(indicator)
+                LOG.info("End ConditionalModal task ('$title')")
             }
         })
     }

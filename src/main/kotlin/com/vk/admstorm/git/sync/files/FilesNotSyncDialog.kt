@@ -155,7 +155,7 @@ class FilesNotSyncDialog(
 
     private fun doResolveLocalFileRenamed(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            mySyncHandler.renameRemoteFile(remoteFile, onReady)
+            mySyncHandler.revertRemoteFileToOriginal(remoteFile, onReady)
         } else {
             mySyncHandler.renameLocalFile(remoteFile, onReady)
         }
@@ -183,7 +183,7 @@ class FilesNotSyncDialog(
 
     private fun doResolveLocalFileRemoved(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            mySyncHandler.removeFileOnServer(remoteFile, onReady)
+            mySyncHandler.removeRemoteFile(remoteFile, onReady)
         } else {
             mySyncHandler.createLocalFileFromRemote(remoteFile, onReady)
         }
