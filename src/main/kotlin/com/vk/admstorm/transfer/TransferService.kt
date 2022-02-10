@@ -1,6 +1,7 @@
 package com.vk.admstorm.transfer
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -250,77 +251,80 @@ class TransferService(private var myProject: Project) {
                 }
             }
 
-            ProgressManager.getInstance().run(object : Task.Backgroundable(
-                myProject,
-                "Admstorm: " + if (type === TransferType.UPLOAD) "Uploading" else "Downloading",
-            ) {
-                override fun run(indicator: ProgressIndicator) {
-                    indicator.isIndeterminate =
-                        if (type === TransferType.UPLOAD)
-                            localFile.isDirectory
-                        else
-                            remoteFile.isDir()
+            // run in EDT to start the download while the dialog is open
+            ApplicationManager.getApplication().invokeLater({
+                ProgressManager.getInstance().run(object : Task.Backgroundable(
+                    myProject,
+                    "Admstorm: " + if (type === TransferType.UPLOAD) "Uploading" else "Downloading",
+                ) {
+                    override fun run(indicator: ProgressIndicator) {
+                        indicator.isIndeterminate =
+                            if (type === TransferType.UPLOAD)
+                                localFile.isDirectory
+                            else
+                                remoteFile.isDir()
 
-                    try {
-                        val fileTransfer = SFTPFileTransfer(sftpClient!!.sftpEngine)
+                        try {
+                            val fileTransfer = SFTPFileTransfer(sftpClient!!.sftpEngine)
 
-                        fileTransfer.transferListener = object : TransferListener {
-                            override fun directory(name: String): TransferListener {
-                                return this
-                            }
+                            fileTransfer.transferListener = object : TransferListener {
+                                override fun directory(name: String): TransferListener {
+                                    return this
+                                }
 
-                            override fun file(name: String, size: Long): StreamCopier.Listener {
-                                val total = FileUtils.byteCountToDisplaySize(size)
-                                return StreamCopier.Listener { transferred: Long ->
-                                    if (indicator.isCanceled || transferFileModel.result === TransferResult.CANCELLED) {
-                                        throw TransferCancelledException("Operation cancelled!")
+                                override fun file(name: String, size: Long): StreamCopier.Listener {
+                                    val total = FileUtils.byteCountToDisplaySize(size)
+                                    return StreamCopier.Listener { transferred: Long ->
+                                        if (indicator.isCanceled || transferFileModel.result === TransferResult.CANCELLED) {
+                                            throw TransferCancelledException("Operation cancelled!")
+                                        }
+                                        transferFileModel.transferred = transferred
+                                        indicator.text2 =
+                                            "${(if (type === TransferType.UPLOAD) "Uploading" else "Downloading")} " +
+                                                    "${transferFileModel.source} to ${transferFileModel.target}"
+                                        val percent = transferred.toDouble() / size
+
+                                        if (!indicator.isIndeterminate) {
+                                            indicator.fraction = percent
+                                        }
+                                        indicator.text = "${((percent * 10000).roundToInt() / 100)}% " +
+                                                "${FileUtils.byteCountToDisplaySize(transferred)}/$total"
                                     }
-                                    transferFileModel.transferred = transferred
-                                    indicator.text2 =
-                                        "${(if (type === TransferType.UPLOAD) "Uploading" else "Downloading")} " +
-                                                "${transferFileModel.source} to ${transferFileModel.target}"
-                                    val percent = transferred.toDouble() / size
-
-                                    if (!indicator.isIndeterminate) {
-                                        indicator.fraction = percent
-                                    }
-                                    indicator.text = "${((percent * 10000).roundToInt() / 100)}% " +
-                                            "${FileUtils.byteCountToDisplaySize(transferred)}/$total"
                                 }
                             }
-                        }
 
-                        if (type === TransferType.UPLOAD) {
-                            fileTransfer.upload(localFileAbsPath, remoteFilePath)
-                        } else {
-                            fileTransfer.download(remoteFilePath, localFileAbsPath)
-                        }
+                            if (type === TransferType.UPLOAD) {
+                                fileTransfer.upload(localFileAbsPath, remoteFilePath)
+                            } else {
+                                fileTransfer.download(remoteFilePath, localFileAbsPath)
+                            }
 
-                        transferFileModel.result = TransferResult.SUCCESS
-                        onTransferResult?.accept(transferFileModel)
-                    } catch (e: TransferCancelledException) {
-                        transferFileModel.result = TransferResult.CANCELLED
-                        transferFileModel.exception = e.message ?: "cancelled"
-                        onTransferResult?.accept(transferFileModel)
-                    } catch (e: Exception) {
-                        transferFileModel.result = TransferResult.FAIL
-                        transferFileModel.exception = e.message ?: "failed"
-                        onTransferResult?.accept(transferFileModel)
+                            transferFileModel.result = TransferResult.SUCCESS
+                            onTransferResult?.accept(transferFileModel)
+                        } catch (e: TransferCancelledException) {
+                            transferFileModel.result = TransferResult.CANCELLED
+                            transferFileModel.exception = e.message ?: "cancelled"
+                            onTransferResult?.accept(transferFileModel)
+                        } catch (e: Exception) {
+                            transferFileModel.result = TransferResult.FAIL
+                            transferFileModel.exception = e.message ?: "failed"
+                            onTransferResult?.accept(transferFileModel)
 
-                        AdmWarningNotification(
-                            "Error occurred while transferring ${transferFileModel.source} to ${transferFileModel.target}, ${e.message}",
-                        ).show()
-                        if (e is SocketException) {
-                            mySshService.disconnect()
+                            AdmWarningNotification(
+                                "Error occurred while transferring ${transferFileModel.source} to ${transferFileModel.target}, ${e.message}",
+                            ).show()
+                            if (e is SocketException) {
+                                mySshService.disconnect()
+                            }
                         }
                     }
-                }
 
-                override fun onCancel() {
-                    super.onCancel()
-                    this.cancelText = "Cancelling..."
-                }
-            })
+                    override fun onCancel() {
+                        super.onCancel()
+                        this.cancelText = "Cancelling..."
+                    }
+                })
+            }, ModalityState.any())
         } catch (e: Exception) {
             transferFileModel.result = TransferResult.FAIL
             transferFileModel.exception = e.message ?: "transfer failed"

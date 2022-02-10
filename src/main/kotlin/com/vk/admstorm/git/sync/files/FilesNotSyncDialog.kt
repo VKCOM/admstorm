@@ -39,7 +39,7 @@ class FilesNotSyncDialog(
     private val myFilesTable = JBTable(FilesTableModel())
     private val myUnresolvedFiles = mutableListOf<RemoteFile>()
 
-    private val mySyncHandler = RemoteFileManager(myProject)
+    private val myFileManager = RemoteFileManager(myProject)
 
     init {
         myUnresolvedFiles.addAll(files.sortedBy { it.status() })
@@ -111,11 +111,11 @@ class FilesNotSyncDialog(
         myShowDiffButton.isEnabled = true
 
         val file = myUnresolvedFiles[rowIndex]
-        myUseRemoteVersionButton.isEnabled = !file.isNotFound
 
         myUseRemoteVersionButton.text = when {
             file.isRenamed -> "Rename back on local"
             file.isRemoved -> "Remove on local"
+            file.isNotFound -> "Remove on local"
             file.localFile.isRemoved -> "Get from ${Env.data.serverName}"
             else -> "Use ${Env.data.serverName}"
         }
@@ -138,6 +138,7 @@ class FilesNotSyncDialog(
         val onResolve = {}
 
         when {
+            (remoteFile.isNotFound || remoteFile.isRemoved) && !useLocal -> doRemoveLocalFile(remoteFile, onResolve)
             remoteFile.localFile.isRemoved -> doResolveLocalFileRemoved(useLocal, remoteFile, onResolve)
             remoteFile.isRenamed -> doResolveLocalFileRenamed(useLocal, remoteFile, onResolve)
             else -> doResolveContentMismatch(remoteFile, useLocal, onResolve)
@@ -147,6 +148,7 @@ class FilesNotSyncDialog(
         (myFilesTable.model as FilesTableModel).fireTableDataChanged()
 
         if (myUnresolvedFiles.isNotEmpty()) {
+            myFilesTable.requestFocus()
             myFilesTable.setRowSelectionInterval(0, 0)
         }
 
@@ -155,9 +157,9 @@ class FilesNotSyncDialog(
 
     private fun doResolveLocalFileRenamed(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            mySyncHandler.revertRemoteFileToOriginal(remoteFile, onReady)
+            myFileManager.revertRemoteFileToOriginal(remoteFile, onReady)
         } else {
-            mySyncHandler.renameLocalFile(remoteFile, onReady)
+            myFileManager.renameLocalFile(remoteFile, onReady)
         }
     }
 
@@ -175,18 +177,22 @@ class FilesNotSyncDialog(
         }
 
         if (useLocal) {
-            mySyncHandler.rewriteRemoteFileWithLocalContent(localFile, onReady)
+            myFileManager.rewriteRemoteFileWithLocalContent(localFile, onReady)
         } else {
-            mySyncHandler.rewriteLocalFileWithRemoteContent(localFile, remoteFile.content, onReady)
+            myFileManager.rewriteLocalFileWithRemoteContent(localFile, remoteFile.content, onReady)
         }
     }
 
     private fun doResolveLocalFileRemoved(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            mySyncHandler.removeRemoteFile(remoteFile, onReady)
+            myFileManager.removeRemoteFile(remoteFile, onReady)
         } else {
-            mySyncHandler.createLocalFileFromRemote(remoteFile, onReady)
+            myFileManager.createLocalFileFromRemote(remoteFile, onReady)
         }
+    }
+
+    private fun doRemoveLocalFile(remoteFile: RemoteFile, onReady: Runnable) {
+        myFileManager.removeLocalFile(remoteFile, onReady)
     }
 
     private fun onSelect() {

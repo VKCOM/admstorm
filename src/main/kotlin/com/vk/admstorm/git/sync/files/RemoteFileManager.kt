@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
+import com.intellij.util.IncorrectOperationException
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
@@ -65,14 +66,23 @@ class RemoteFileManager(private val myProject: Project) {
             val relativeFilePath = remoteFile.path
             val localFile = virtualFileByRelativePath(myProject, relativeFilePath)
             if (localFile == null) {
+                LOG.info("Remove file: file '$relativeFilePath' not found")
                 onReady?.run()
                 return@runWriteAction
             }
 
             val psiFile = PsiManager.getInstance(myProject).findFile(localFile)
-            if (psiFile != null) {
+            if (psiFile == null) {
+                LOG.info("Remove file: psi file for '$relativeFilePath' not found")
+                return@runWriteAction
+            }
+
+            try {
                 psiFile.delete()
+                LocalFileSystem.getInstance().refresh(true)
                 onReady?.run()
+            } catch (e: IncorrectOperationException) {
+                LOG.warn("Cannot delete file '$relativeFilePath' via its psi element.", e)
             }
         }
     }
@@ -137,7 +147,7 @@ class RemoteFileManager(private val myProject: Project) {
     }
 
     fun rewriteRemoteFileWithLocalContent(localFile: VirtualFile, onReady: Runnable? = null) {
-        ApplicationManager.getApplication().invokeLater {
+        ApplicationManager.getApplication().executeOnPooledThread {
             val remotePath = MyPathUtils.remotePathByLocalPath(myProject, localFile.path)
             val perm = GitUtils.remoteGetPermission(myProject, remotePath)
             LOG.info("File '$remotePath' permissions is $perm")
