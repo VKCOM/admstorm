@@ -1,101 +1,109 @@
-package com.vk.admstorm.actions.git
+package com.vk.admstorm.git.sync.files
 
 import com.intellij.diff.DiffContentFactory
 import com.intellij.diff.DiffManager
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.diff.util.DiffUserDataKeys
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
-import com.intellij.openapi.fileEditor.impl.LoadTextUtil
-import com.intellij.openapi.fileTypes.ex.FileTypeChooser
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.vcs.FileStatus
 import com.intellij.util.ui.JBUI
-import com.vk.admstorm.env.Env
-import com.vk.admstorm.utils.MyUtils
-import git4idea.index.GitFileStatus
+import com.vk.admstorm.utils.MyPathUtils.foldUserHome
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.border.Border
 
-class GitStatusFileViewer(
+class FilesContentViewer(
     project: Project,
-    file: GitFileStatus,
-    fileContent: String,
+    type: FileType?,
+    firstContent: Content?,
+    secondContent: Content?,
 ) : DialogWrapper(project, true) {
+
     companion object {
-        private val LOG = Logger.getInstance(GitStatusFileViewer::class.java)
+        private val LOG = logger<FilesContentViewer>()
     }
+
+    data class Content(
+        val title: String,
+        val description: String,
+        val path: String,
+        val data: String,
+    )
 
     private var myMainComponent: JComponent
     private var mySingleEditor: EditorEx? = null
 
     init {
-        val isModified = file.getStagedStatus() == FileStatus.MODIFIED ||
-                file.getUnStagedStatus() == FileStatus.MODIFIED
-
-        myMainComponent = if (isModified) {
-            val filepath = file.path.path
-            val localFile = MyUtils.virtualFileByName(filepath)
-            val localFileContent =
-                if (localFile == null) null
-                else LoadTextUtil.loadText(localFile).toString()
-
-            if (localFileContent == null) {
-                createSingleEditorForFile(project, file, fileContent)
-            } else {
-                createDiffForFiles(project, file, fileContent, localFileContent)
-            }
-        } else {
-            createSingleEditorForFile(project, file, fileContent)
+        if (firstContent == null && secondContent == null) {
+            throw IllegalArgumentException("At least one content must be non-null")
         }
 
-        title = "${Env.data.serverName.replaceFirstChar { it.uppercase() }} File Content"
+        val needSingleEditor = firstContent == null || secondContent == null
+        val content = firstContent?.data ?: secondContent!!.data
+
+        myMainComponent = if (needSingleEditor) {
+            createSingleViewer(project, type, content)
+        } else {
+            createDiffViewer(
+                project, type,
+                firstContent!!,
+                secondContent!!,
+            )
+        }
+
+        val path = firstContent?.path ?: secondContent!!.path
+
+        title = if (needSingleEditor) {
+            "${foldUserHome(path)} content from ${firstContent?.title ?: secondContent!!.title}"
+        } else {
+            "${firstContent!!.title} vs ${secondContent!!.title}"
+        }
 
         init()
     }
 
-    private fun createSingleEditorForFile(
+    private fun createSingleViewer(
         project: Project,
-        file: GitFileStatus,
-        fileContent: String
+        type: FileType?,
+        content: String
     ): JComponent {
-        val document = EditorFactory.getInstance().createDocument(fileContent)
+        val document = EditorFactory.getInstance().createDocument(content)
         mySingleEditor = EditorFactory.getInstance().createEditor(document, project) as EditorEx
 
-        val fileType = FileTypeChooser.getKnownFileTypeOrAssociate(file.path.name)
-        if (fileType != null) {
-            val highlighter = EditorHighlighterFactory.getInstance().createEditorHighlighter(project, fileType)
+        if (type != null) {
+            val highlighter = EditorHighlighterFactory.getInstance().createEditorHighlighter(project, type)
             try {
                 mySingleEditor!!.highlighter = highlighter
             } catch (e: Throwable) {
                 LOG.warn("Unexpected exception while createSingleEditorForFile", e)
             }
         }
+
         document.setReadOnly(true)
         return mySingleEditor!!.component
     }
 
-    private fun createDiffForFiles(
+    private fun createDiffViewer(
         project: Project,
-        remoteFile: GitFileStatus,
-        remoteFileContent: String,
-        localFileContent: String
+        type: FileType?,
+        firstContent: Content,
+        secondContent: Content,
     ): JComponent {
-        val type = FileTypeChooser.getKnownFileTypeOrAssociate(remoteFile.path.name)
-        val content1 = DiffContentFactory.getInstance().create(remoteFileContent, type)
-        val content2 = DiffContentFactory.getInstance().create(localFileContent, type)
+        val content1 = DiffContentFactory.getInstance().create(firstContent.data, type)
+        val content2 = DiffContentFactory.getInstance().create(secondContent.data, type)
         content1.putUserData(DiffUserDataKeys.FORCE_READ_ONLY, true)
         content2.putUserData(DiffUserDataKeys.FORCE_READ_ONLY, true)
         val request = SimpleDiffRequest(
-            "${Env.data.serverName} vs Local",
+            "${firstContent.title} vs ${secondContent.title}",
             content1,
             content2,
-            "Current ${Env.data.serverName} version",
-            "Current local version"
+            firstContent.description,
+            secondContent.description
         )
 
         val requestPanel = DiffManager.getInstance().createRequestPanel(project, {}, null)

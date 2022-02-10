@@ -83,5 +83,7 @@ class LocalBranchSwitcher(private val myProject: Project) {
         if (LostConnectionHandler.handle(myProject, output) {
                 switchActionIfBranchNotExist(branchName, indicator, onReady)
             }) return
+
+        LOG.warn("git pull unexpected problem:\n${output.stdout}\n${output.stderr}")
     }
 }
