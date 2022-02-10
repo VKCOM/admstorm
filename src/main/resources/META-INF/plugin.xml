@@ -68,6 +68,11 @@
     <runConfigurationProducer
       implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
 
+    <!-- Builders Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationType"/>
+    <runConfigurationProducer
+      implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationProducer"/>
+
     <postStartupActivity implementation="com.vk.admstorm.AdmStormStartupActivity"/>
 
     <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
