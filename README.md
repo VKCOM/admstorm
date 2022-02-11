@@ -1,5 +1,5 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/18535-admstorm.svg)](https://plugins.jetbrains.com/plugin/18535-admstorm)
-[![Build](https://github.com/i582/admstorm/actions/workflows/build.yml/badge.svg)](https://github.com/i582/admstorm/actions/workflows/build.yml)
+[![Build](https://github.com/vkcom/admstorm/actions/workflows/build.yml/badge.svg)](https://github.com/vkcom/admstorm/actions/workflows/build.yml)
 
 # <img src="src/main/resources/META-INF/pluginIcon.svg"> AdmStorm plugin for PhpStorm
 
