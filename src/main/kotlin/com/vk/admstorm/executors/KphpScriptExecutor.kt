@@ -90,7 +90,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
         handler.addProcessListener(object : OutputListener() {
             override fun processTerminated(event: ProcessEvent) {
                 super.processTerminated(event)
-                myDiffTab.withPhpOutput(output.stdout.ifEmpty { "<no output>" })
+                myDiffTab.viewer.withPhpOutput(output.stdout.ifEmpty { "<no output>" })
 
                 myPhpOutputHandler.accept(output, myPhpOutputTab.console)
 
@@ -112,7 +112,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
         handler.addProcessListener(object : OutputListener() {
             override fun processTerminated(event: ProcessEvent) {
                 super.processTerminated(event)
-                myDiffTab.withKphpOutput(output.stdout.ifEmpty { "<no output>" })
+                myDiffTab.viewer.withKphpOutput(output.stdout.ifEmpty { "<no output>" })
 
                 myKphpOutputHandler.accept(output, myKphpOutputTab.console)
 

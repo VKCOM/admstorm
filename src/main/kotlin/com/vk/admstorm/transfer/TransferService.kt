@@ -55,7 +55,7 @@ class TransferService(private var myProject: Project) {
      *
      * After the file is uploaded to the server, the [onReady] callback function will be called.
      */
-    fun uploadFile(localFile: VirtualFile, onReady: Runnable? = null) {
+    fun uploadFile(localFile: VirtualFile, remotePath: String = localFile.path, onReady: Runnable? = null) {
         val startTime = System.currentTimeMillis()
 
         val sftpChannel = mySshService.sftpChannel()
@@ -64,8 +64,8 @@ class TransferService(private var myProject: Project) {
             return
         }
 
-        val remotePath = MyPathUtils.remotePathByLocalPath(myProject, localFile.path)
-        val remotePathFolder = File(remotePath).parent
+        val remoteAbsPath = MyPathUtils.remotePathByLocalPath(myProject, remotePath)
+        val remotePathFolder = File(remoteAbsPath).parent
 
         // Since the file may be located in a folder that is still not on the server,
         // it is necessary first to create the entire folder hierarchy, otherwise
@@ -82,7 +82,7 @@ class TransferService(private var myProject: Project) {
             return
         }
 
-        val remoteFile = sftpChannel.file(remotePath)
+        val remoteFile = sftpChannel.file(remoteAbsPath)
         val localIOFile = File(localFile.path)
 
         ApplicationManager.getApplication().executeOnPooledThread {

@@ -12,23 +12,25 @@ class KphpScriptRunner(
     private val project: Project,
     private val myRunConfiguration: KphpConfiguration
 ) {
-    private fun buildCommand(scriptPath: String): String {
-        val wwwBasedScriptPath = "${Env.data.phpSourceFolder}/$scriptPath"
-        val absoluteScriptPath = MyPathUtils.absoluteDataBasedRemotePath(project, wwwBasedScriptPath)
-        val remoteRoot = MyPathUtils.resolveRemoteRoot(project)
-        val scriptOutput = MyKphpUtils.scriptBinaryPath(project)
-        val includeDirsFlag = MyKphpUtils.includeDirsAsFlags(project)
+    companion object {
+        fun buildCommand(project: Project, scriptPath: String): String {
+            val wwwBasedScriptPath = "${Env.data.phpSourceFolder}/$scriptPath"
+            val absoluteScriptPath = MyPathUtils.absoluteDataBasedRemotePath(project, wwwBasedScriptPath)
+            val remoteRoot = MyPathUtils.resolveRemoteRoot(project)
+            val scriptOutput = MyKphpUtils.scriptBinaryPath(project)
+            val includeDirsFlag = MyKphpUtils.includeDirsAsFlags(project)
 
-        return Env.data.kphp2cpp +
-                " $includeDirsFlag" +
-                " -o $scriptOutput" +
-                " --composer-root $remoteRoot" +
-                " --mode cli" +
-                " $absoluteScriptPath"
+            return Env.data.kphp2cpp +
+                    " $includeDirsFlag" +
+                    " -o $scriptOutput" +
+                    " --composer-root $remoteRoot" +
+                    " --mode cli" +
+                    " $absoluteScriptPath"
+        }
     }
 
     fun run(): ExecutionResult? {
-        val command = buildCommand(myRunConfiguration.parameters)
+        val command = buildCommand(project, myRunConfiguration.parameters)
         val executor = KphpScriptExecutor(project, command, myRunConfiguration)
 
         executor.withPhpOutputHandler { output, console ->
