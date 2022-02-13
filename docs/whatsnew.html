@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
 
-    <meta property="og:title" content="AdmStorm | Что нового" />
-    <meta property="og:description" content="AdmStorm plugin what's new page." />
-    <meta property="og:image" content="images/preview.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://vkcom.github.io/admstorm/whatsnew.html" />
+    <meta property="og:title" content="AdmStorm | Что нового"/>
+    <meta property="og:description" content="AdmStorm plugin what's new page."/>
+    <meta property="og:image" content="images/preview.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://vkcom.github.io/admstorm/whatsnew.html"/>
 
     <title>AdmStorm | Что нового</title>
 
@@ -44,6 +44,263 @@
 <div class="chapter no-top-padding titled-block-text-layout">
     <div class="chapter_inner">
         <div class="chapter__block">
+            <div class="chapter__version-block">
+                <h2 class="chapter__big-title chapter__big-title--bold">
+                    Версия v1.1.0
+                </h2>
+
+                <time datetime="2022-02-21">21 февраля 2022</time>
+
+                <p class="chapter__text chapter__version-text">
+                    Обновленный KPHP Playground, автоматическая перезагрузка Yubikey при проблемах подключения,
+                    автоматический пуш на <span class="server-name"></span> после создания коммита, генерация билдеров
+                    прямо в IDE, новые возможности синхронизации автосгенерированных файлов и другие небольшие улучшения
+                    и исправления.
+                </p>
+
+                <div class="chapter__version-block-new chapter__version-block-new-features">
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">Обновленный KPHP Playground</h2>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <p class="chapter__text">
+                                Мы прислушались к вашим пожеланиям и сделали Playground независимым от файлов в
+                                репозитории.
+                                <br>
+                                <br>
+                                Больше не нужно создавать файл, запускать его и удалять, когда вы хотите запушить в
+                                Gitlab.
+                                <br>
+                                <br>
+                                Теперь Playground — это отдельное окно внутри IDE в котором расположены все необходимые
+                                элементы для запуска. В нем же отображаются результаты и ошибки компиляции.
+                                <br>
+                                <br>
+                                Вы можете найти его во вкладке <br>
+                                <span class="chapter__action__inline">Tools | KPHP Playground</span>
+                                <br>
+                                <br>
+                                Когда вы впервые откроете Playground, плагин автоматически сформирует нужные require,
+                                чтобы вы могли использовать любой код VKCOM.
+                            </p>
+
+                            <div class="js-security-video" data-src="images/playground-1"></div>
+                        </div>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Запуск выделенного блока через контекстное меню
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Представьте, что вам нужно проверить, как отработает уже написанный блок кода,
+                                    нужно его скопировать, открыть Playground и вставить код.
+                                    <br>
+                                    <br>
+                                    Теперь это можно сделать через действие
+                                    <span class="chapter__action__inline">Execute Selected in Playground</span>
+                                    в контекстном меню.
+                                    <br>
+                                    <br>
+                                    Также вы можете запустить выделенный код внутри
+                                    <code class="chapter__code-block__inline">var_dump</code>, чтобы сразу увидеть
+                                    вывод.
+                                    <br>
+                                    <br>
+                                    Плагин самостоятельно удалит точку с запятой в конце, а также все пустые строчки,
+                                    чтобы код был валидным.
+                                </p>
+                            </div>
+
+                            <div class="js-security-video" data-src="images/playground-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">
+                            Автоматическая перезагрузка Yubikey при проблемах подключения
+                        </h2>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column default-width">
+                            <p class="chapter__text">
+                                Часто ли вы сталкиваетесь с ситуацией, когда выполнение какой-нибудь команды
+                                в плагине заканчивалось тем что плагин показывал уведомление об ошибке подключения и
+                                вам приходилось идти в терминал и самому перезагружать Yubikey?
+                                <br>
+                                <br>
+                                Теперь это больше не понадобится! Во всех уведомлениях о проблемах с подключением
+                                теперь есть действие, которое автоматически перезагрузит Yubikey и переподключится.
+                            </p>
+
+                            <div class="chapter__text-image-block-image">
+                                <img alt="" src="images/auto-reset.png">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">
+                            Пуш в Gitlab и на <span class="server-name"></span>
+                        </h2>
+
+                        <div class="chapter__two-block-row">
+                            <div class="chapter__text-image-block">
+                                <div class="chapter__text-image-block-image">
+                                    <img src="images/push-button.png" alt="">
+                                </div>
+                                <div class="chapter__text-image-block-text">
+                                    <h2 class="chapter__small-title">
+                                        Коммит и пуш в Gitlab в окне создания коммита
+                                    </h2>
+
+                                    <p class="chapter__text">
+                                        Отправляйте новый коммит сразу в Gitlab, плагин создаст коммит и отправит его
+                                        в Gitlab через <span class="server-name"></span>.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="chapter__text-image-block">
+                                <div class="chapter__text-image-block-image">
+                                    <img src="images/auto-push.png" alt="">
+                                </div>
+                                <div class="chapter__text-image-block-text">
+                                    <h2 class="chapter__small-title">
+                                        Автоматический пуш на <span class="server-name"></span> после коммита
+                                    </h2>
+
+                                    <p class="chapter__text">
+                                        Не задумывайтесь о ручной синхронизации, теперь по-умолчанию, когда
+                                        вы создаете новый коммит, плагин автоматически синхронизирует его с
+                                        <span class="server-name"></span>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column-narrow">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Работа с билдерами
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Теперь вы можете легко создать конфигурацию и запускать генерацию билдеров прямо в
+                                    IDE.
+                                    <br>
+                                    <br>
+                                    Плагин знает, что после генерации могут поменяться файлы, поэтому он автоматически
+                                    выкачает измененные автосгенерированные файлы и покажет краткую статистику.
+                                    <br>
+                                    <br>
+                                    Обратите внимание, что если автосгенерированный файл был удален на
+                                    <span class="server-name"></span> в результате генерации, то он также будет удален
+                                    и локально.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img src="images/builders.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Другие улучшения
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Теперь если есть выделение, Hastebin будет создан только из него.
+                                </li>
+                                <li>
+                                    Добавлено новое действие
+                                    <span class="chapter__action__inline">Sync Autogenerated Files</span> в меню
+                                    <span class="chapter__action__inline">
+                                        Tool | <span class="server-name"></span>
+                                    </span>,
+                                    которое позволяет легко синхронизировать автосгенерированные файлы после выполнения
+                                    какой-либо команды на <span class="server-name"></span>. Обратите внимание, если
+                                    файл был удален на
+                                    <span class="server-name"></span>, то он будет удален и локально.
+                                </li>
+                                <li>
+                                    Улучшено диалоговое окно для синхронизации файлов.
+                                    <ul>
+                                        <li>
+                                            Теперь файлы выводятся в отсортированном (по состоянию) виде.
+                                        </li>
+                                        <li>
+                                            Для файлов, которые находятся только в локальном репозитории, добавлена
+                                            возможность удалить их.
+                                        </li>
+                                        <li>
+                                            Теперь полный путь к файлу отображается, начиная с
+                                            <code class="chapter__code-block__inline">~/</code>.
+                                        </li>
+                                        <li>
+                                            Теперь после нажатия кнопки загрузки файла с
+                                            <span class="server-name"></span> она будет начата сразу, а не после
+                                            закрытия диалогового окна.
+                                        </li>
+                                        <li>
+                                            Теперь если файл находиться только локально или только на
+                                            <span class="server-name"></span>
+                                            при просмотре его содержимого оно будет выводиться в простом просмотрщике,
+                                            а не в diff просмотрщике с двумя редакторами.
+                                        </li>
+                                        <li>
+                                            Исправлен баг, когда при удалении файла из списка, фокус не переходил
+                                            на следующий и необходимо было выбирать файл вручную.
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Исправлено
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Исправлено возникновение исключения
+                                    <code class="chapter__code-block__inline">AlreadyDisposedException</code>
+                                    при закрытии проекта и открытии других проектов. Также благодаря этому
+                                    теперь при переключении проектов не ломается проверка синхронизации при
+                                    фокусировании на IDE.
+                                </li>
+                                <li>
+                                    Исправлен баг со слешами во время синхронизации файлов на Windows.
+                                </li>
+                                <li>
+                                    Исправлен баг, когда во время выполнения KPHP закрытие одной вкладки приводило
+                                    к закрытию другой.
+                                </li>
+                                <li>
+                                    Исправлен баг, когда при запуске PHPUnit через иконку около метода или класса,
+                                    создавалась дублирующая конфигурация запуска для уже существующей.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
             <div class="chapter__version-block">
                 <h2 class="chapter__big-title chapter__big-title--bold">
                     Версия v1.0.0
