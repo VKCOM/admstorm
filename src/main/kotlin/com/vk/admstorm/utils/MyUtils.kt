@@ -126,14 +126,25 @@ object MyUtils {
     }
 }
 
-fun String.indexOf(what: List<String>): Int {
-    what.forEach { whatString ->
-        val index = this.indexOf(whatString)
-        if (index != -1) {
-            return index
-        }
+fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let { if (it == -1) length else it }
+
+fun String.fixIndent(): String {
+    val lines = lines()
+
+    val firstLine = lines[0]
+    val firstLineIndent = firstLine.indentWidth()
+
+    val minCommonIndent = lines
+        .slice(1 until lines.size)
+        .filter { it.isNotBlank() }
+        .minOfOrNull { it.indentWidth() } ?: 0
+
+    if (firstLineIndent < minCommonIndent) {
+        val diff = minCommonIndent - firstLineIndent
+        return " ".repeat(diff) + this
     }
-    return -1
+
+    return this
 }
 
 fun Element.writeString(name: String, value: String) {

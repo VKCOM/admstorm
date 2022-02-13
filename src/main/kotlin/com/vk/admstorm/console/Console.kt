@@ -18,7 +18,7 @@ import javax.swing.border.EmptyBorder
  * A console component with the ability to get the displayed text,
  * as well as applying some standard filters for the output.
  */
-class Console(project: Project) {
+class Console(project: Project, withFilters: Boolean = true) {
     private var myConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console
 
     fun component() = myConsoleView.component
@@ -59,8 +59,10 @@ class Console(project: Project) {
     }
 
     init {
-        myConsoleView.addMessageFilter(KphpErrorFileLinkFilter(project))
-        myConsoleView.addMessageFilter(PhpLinterFileLinkFilter(project))
-        myConsoleView.addMessageFilter(PhpLinterCheckerLinkFilter(project, this))
+        if (withFilters) {
+            myConsoleView.addMessageFilter(KphpErrorFileLinkFilter(project))
+            myConsoleView.addMessageFilter(PhpLinterFileLinkFilter(project))
+            myConsoleView.addMessageFilter(PhpLinterCheckerLinkFilter(project, this))
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
+import com.vk.admstorm.playground.KphpPlaygroundWindow
 import com.vk.admstorm.ui.MessageDialog
 
 class CheckGitSyncAction : AdmActionBase() {

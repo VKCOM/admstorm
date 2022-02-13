@@ -122,6 +122,18 @@
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
 
+    <action id="com.vk.admstorm.create.kphp.playground.from.selection"
+            class="com.vk.admstorm.actions.PlaygroundFromSelectionAction"
+            text="Execute Selected in Playground">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.kphp.playground"
+            class="com.vk.admstorm.actions.KphpPlaygroundAction"
+            text="KPHP Playground">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+
     <action id="com.vk.admstorm.adm.toolbar.label" class="com.vk.admstorm.actions.AdmToolbarLabelAction">
       <add-to-group group-id="VcsNavBarToolbarActions" anchor="last"/>
     </action>
