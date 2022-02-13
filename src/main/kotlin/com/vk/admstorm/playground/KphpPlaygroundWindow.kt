@@ -318,5 +318,9 @@ require_once "vendor/autoload.php";
         if (!myEditor.isDisposed) {
             EditorFactory.getInstance().releaseEditor(myEditor)
         }
+
+        if (!myDiffViewer.isDisposed) {
+            myDiffViewer.dispose()
+        }
     }
 }

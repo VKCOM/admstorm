@@ -29,7 +29,7 @@ class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
                             AdmNotification.Action("Connect...") { e, notification ->
                                 notification.expire()
                                 SshConnectionService.getInstance(panel.project).connect {
-                                    AdmStormStartupActivity.afterConnectionTasks(e.project!!)
+                                    AdmStormStartupActivity.getInstance(panel.project).afterConnectionTasks(e.project!!)
                                 }
                             }
                         )

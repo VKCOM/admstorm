@@ -346,7 +346,7 @@ class TransferService(private var myProject: Project) {
                 AdmNotification.Action("Connect...") { e, notification ->
                     notification.expire()
                     SshConnectionService.getInstance(e.project!!).connect {
-                        AdmStormStartupActivity.afterConnectionTasks(e.project!!)
+                        AdmStormStartupActivity.getInstance(e.project!!).afterConnectionTasks(e.project!!)
                     }
                 }
             )

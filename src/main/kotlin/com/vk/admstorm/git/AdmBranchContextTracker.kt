@@ -50,7 +50,7 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
                     notification.expire()
 
                     SshConnectionService.getInstance(myProject).connect {
-                        AdmStormStartupActivity.afterConnectionTasks(myProject) {
+                        AdmStormStartupActivity.getInstance(myProject).afterConnectionTasks(myProject) {
                             RemoteBranchSwitcher(myProject, onGitConflictCanceled)
                                 .switch(branchName, false)
                         }

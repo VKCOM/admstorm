@@ -9,7 +9,7 @@ import com.vk.admstorm.ssh.SshConnectionService
 class ConnectToAdmViaSshAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         SshConnectionService.getInstance(e.project!!).connect {
-            AdmStormStartupActivity.afterConnectionTasks(e.project!!)
+            AdmStormStartupActivity.getInstance(e.project!!).afterConnectionTasks(e.project!!)
         }
     }
 

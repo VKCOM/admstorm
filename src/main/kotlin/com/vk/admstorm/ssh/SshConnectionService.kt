@@ -89,7 +89,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                 AdmNotification.Action("Connect...") { e, notification ->
                     notification.expire()
                     connect {
-                        AdmStormStartupActivity.afterConnectionTasks(e.project!!)
+                        AdmStormStartupActivity.getInstance(myProject).afterConnectionTasks(e.project!!)
                     }
                 }
             )
