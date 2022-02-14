@@ -27,7 +27,7 @@ class AdmStormSettingsState : PersistentStateComponent<AdmStormSettingsState?> {
     var checkSyncOnFocus = true
     var connectWhenProjectStarts = true
     var runPhpLinterAsInTeamcityWhenPushToGitlab = false
-    var autoPushToServerAfterCommit = false
+    var autoPushToServerAfterCommit = true
 
     override fun getState() = this
 
