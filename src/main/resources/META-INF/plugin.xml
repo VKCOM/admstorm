@@ -167,8 +167,9 @@
               icon="AllIcons.Actions.Copy"
               text="Copy Problem Short Description"
               description="Copy problem short description to clipboard"
-              use-shortcut-of="$Copy"
-              class="com.vk.admstorm.configuration.problems.actions.CopyProblemShortDescriptionAction"/>
+              class="com.vk.admstorm.configuration.problems.actions.CopyProblemShortDescriptionAction">
+        <keyboard-shortcut first-keystroke="alt control c" keymap="$default"/>
+      </action>
       <reference ref="EditSource"/>
     </group>
   </actions>
