@@ -10,6 +10,7 @@ import com.intellij.openapi.vcs.changes.CommitSession
 import com.intellij.openapi.vcs.changes.LocalCommitExecutor
 import com.intellij.openapi.vcs.changes.actions.BaseCommitExecutorAction
 import com.intellij.vcs.commit.commitProperty
+import com.vk.admstorm.AdmService
 import com.vk.admstorm.env.Env
 
 private val IS_PUSH_TO_GITLAB_AFTER_COMMIT_KEY = Key.create<Boolean>("Git.Commit.IsPushToGitlabAfterCommit")
@@ -47,6 +48,6 @@ class GitCommitAndPushToAdmExecutorAction : BaseCommitExecutorAction() {
                 templateText.removeSuffix("…") + " → ${Env.data.serverName.ifEmpty { "server" }} → Gitlab…"
         }
 
-        super.update(e)
+        e.presentation.isEnabledAndVisible = e.project != null && AdmService.getInstance(e.project!!).needBeEnabled()
     }
 }
