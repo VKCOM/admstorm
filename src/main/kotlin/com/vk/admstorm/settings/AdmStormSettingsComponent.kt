@@ -22,6 +22,7 @@ class AdmStormSettingsComponent {
     private lateinit var myCheckSyncOnFocusCheckBox: JBCheckBox
     private lateinit var myConnectWhenProjectStartsCheckBox: JBCheckBox
     private lateinit var myAutoPushToServerAfterCommit: JBCheckBox
+    private lateinit var myAskYubikeyPassword: JBCheckBox
 
     private lateinit var myRunPhpLinterAsInTeamcityCheckBox: JBCheckBox
 
@@ -65,6 +66,12 @@ class AdmStormSettingsComponent {
         get() = myAutoPushToServerAfterCommit.isSelected
         set(value) {
             myAutoPushToServerAfterCommit.isSelected = value
+        }
+
+    var askYubikeyPassword: Boolean
+        get() = myAskYubikeyPassword.isSelected
+        set(value) {
+            myAskYubikeyPassword.isSelected = value
         }
 
     var runPhpLinterAsInTeamcity: Boolean
