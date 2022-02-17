@@ -19,7 +19,8 @@ class AdmStormSettingsConfigurable : Configurable {
                 mySettingsComponent.checkSyncOnFocus != settings.checkSyncOnFocus ||
                 mySettingsComponent.connectWhenProjectStarts != settings.connectWhenProjectStarts ||
                 mySettingsComponent.runPhpLinterAsInTeamcity != settings.runPhpLinterAsInTeamcityWhenPushToGitlab ||
-                mySettingsComponent.autoPushToServerAfterCommit != settings.autoPushToServerAfterCommit
+                mySettingsComponent.autoPushToServerAfterCommit != settings.autoPushToServerAfterCommit ||
+                mySettingsComponent.askYubikeyPassword != settings.askYubikeyPassword
     }
 
     override fun apply() {
@@ -30,6 +31,7 @@ class AdmStormSettingsConfigurable : Configurable {
         settings.connectWhenProjectStarts = mySettingsComponent.connectWhenProjectStarts
         settings.runPhpLinterAsInTeamcityWhenPushToGitlab = mySettingsComponent.runPhpLinterAsInTeamcity
         settings.autoPushToServerAfterCommit = mySettingsComponent.autoPushToServerAfterCommit
+        settings.askYubikeyPassword = mySettingsComponent.askYubikeyPassword
     }
 
     override fun reset() {
@@ -40,5 +42,6 @@ class AdmStormSettingsConfigurable : Configurable {
         mySettingsComponent.connectWhenProjectStarts = settings.connectWhenProjectStarts
         mySettingsComponent.runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
         mySettingsComponent.autoPushToServerAfterCommit = settings.autoPushToServerAfterCommit
+        mySettingsComponent.askYubikeyPassword = settings.askYubikeyPassword
     }
 }

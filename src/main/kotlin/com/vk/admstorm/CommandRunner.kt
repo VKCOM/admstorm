@@ -10,6 +10,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.MySshUtils
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -54,6 +55,7 @@ object CommandRunner {
             procBuilder.redirectOutput(redirectToFile)
         } else {
             procBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE)
+            procBuilder.redirectInput(ProcessBuilder.Redirect.PIPE)
         }
 
         val proc = procBuilder.start()
@@ -91,6 +93,29 @@ object CommandRunner {
         LOG.info("Elapsed time for local command: $elapsedTime" + "ms")
 
         return result
+    }
+
+    /**
+     * Note:
+     * The use of this function should be reduced as much as
+     * possible, as it will only work on Unix.
+     */
+    fun runLocallyEval(command: String, timeout: Long = 3_000): Output? {
+        return try {
+            val proc = Runtime.getRuntime().exec("sh -c eval \"$command\"")
+
+            proc.waitFor(timeout, TimeUnit.MILLISECONDS)
+
+            Output(
+                proc.inputStream.bufferedReader().readText(),
+                proc.errorStream.bufferedReader().readText(),
+                proc.exitValue()
+            )
+        } catch (e: SecurityException) {
+            null
+        } catch (e: IOException) {
+            null
+        }
     }
 
     fun runRemotely(

@@ -23,7 +23,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MySshUtils
-import git4idea.util.GitUIUtil
+import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -161,10 +161,24 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             ?: ""
 
                         val message =
-                            "${exceptionMessage}Try restarting ${GitUIUtil.code("ssh-agent")} and try again"
+                            "${exceptionMessage}Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
+                                code("ssh-agent")
+                            }"
 
                         AdmErrorNotification(message, true)
                             .withTitle("Failed to connect to server")
+                            .withActions(AdmNotification.Action("Reset Yubikey and Connect...") { _, notification ->
+                                notification.expire()
+
+                                val success = YubikeyHandler().autoReset(project) {
+                                    connectWithConnector(connector, onSuccessful)
+                                }
+
+                                if (!success) {
+                                    return@Action
+                                }
+                                connectWithConnector(connector, onSuccessful)
+                            })
                             .withActions(AdmNotification.Action("Connect...") { _, notification ->
                                 notification.expire()
                                 connectWithConnector(connector, onSuccessful)

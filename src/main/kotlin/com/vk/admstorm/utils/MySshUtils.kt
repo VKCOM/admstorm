@@ -14,7 +14,9 @@ import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
-import git4idea.util.GitUIUtil
+import com.vk.admstorm.ssh.YubikeyHandler
+import git4idea.util.GitUIUtil.bold
+import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.lang.reflect.Field
 import java.nio.charset.Charset
@@ -93,10 +95,33 @@ object MySshUtils {
     }
 
     private fun handleSshException(project: Project, e: Exception) {
-        val message = (e.message ?: "") + "<br>Try restarting ${GitUIUtil.code("ssh-agent")} and reconnect"
+        val exceptionMessage = e.message
+            ?.removePrefix("java.net.SocketTimeoutException: ")
+            ?.replaceFirstChar { it.uppercaseChar() }
+            ?.plus("<br>")
+            ?: ""
+
+        val message = """
+            ${exceptionMessage}Plugin can try to automatically reset the Yubikey and reconnect or you can do it 
+            yourself with ${code("ssh-agent")} and push ${bold("Reconnect")} button.
+            """.trimIndent()
 
         AdmWarningNotification(message)
             .withTitle("SSH connection lost")
+            .withActions(
+                AdmNotification.Action("Reset Yubikey and Reconnect...") { _, notification ->
+                    notification.expire()
+
+                    val success = YubikeyHandler().autoReset(project) {
+                        SshConnectionService.getInstance(project).connect()
+                    }
+
+                    if (!success) {
+                        return@Action
+                    }
+                    SshConnectionService.getInstance(project).connect()
+                }
+            )
             .withActions(
                 AdmNotification.Action("Reconnect...") { _, notification ->
                     notification.expire()
