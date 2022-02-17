@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageConstants
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.vk.admstorm.env.Env
-import git4idea.util.GitUIUtil.bold
 import git4idea.util.GitUIUtil.code
 
 object LostConnectionHandler {
@@ -26,7 +25,7 @@ object LostConnectionHandler {
                     Oops, it seems impossible to execute the internal command due to SSH connection problems.
 
                     Plugin can try to automatically reset the Yubikey and run command again or you can do it 
-                    yourself with ${code("ssh-agent")} and push ${bold("Try Again")} button.
+                    yourself with ${code("ssh-agent")} and push 'Try Again' button.
                 """.trimIndent()
             )
                 .asWarning()

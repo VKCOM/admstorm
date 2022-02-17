@@ -15,7 +15,6 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.ssh.YubikeyHandler
-import git4idea.util.GitUIUtil.bold
 import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.lang.reflect.Field
@@ -103,7 +102,7 @@ object MySshUtils {
 
         val message = """
             ${exceptionMessage}Plugin can try to automatically reset the Yubikey and reconnect or you can do it 
-            yourself with ${code("ssh-agent")} and push ${bold("Reconnect")} button.
+            yourself with ${code("ssh-agent")} and push 'Reconnect' button.
             """.trimIndent()
 
         AdmWarningNotification(message)
