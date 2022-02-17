@@ -3,7 +3,6 @@ package com.vk.admstorm.playground
 import com.intellij.dvcs.ui.CompareBranchesDialog
 import com.intellij.execution.OutputListener
 import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -17,9 +16,9 @@ import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
-import com.intellij.openapi.project.projectsDataDir
 import com.intellij.openapi.ui.WindowWrapper
 import com.intellij.openapi.ui.WindowWrapperBuilder
+import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
@@ -27,12 +26,8 @@ import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.OnePixelSplitter
-import com.intellij.util.DocumentUtil
-import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.jetbrains.php.lang.PhpFileType
-import com.jetbrains.php.lang.psi.PhpPsiElementFactory
-import com.jgoodies.common.base.Strings.isNotBlank
 import com.vk.admstorm.actions.ActionToolbarFastEnableAction
 import com.vk.admstorm.configuration.kphp.KphpScriptRunner
 import com.vk.admstorm.console.Console
@@ -41,7 +36,6 @@ import com.vk.admstorm.utils.MyKphpUtils.scriptBinaryPath
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.fixIndent
-import org.apache.commons.lang.StringUtils.isNotBlank
 import java.io.File
 import java.io.IOException
 import javax.swing.JLabel
@@ -51,7 +45,7 @@ class KphpPlaygroundWindow(private val myProject: Project) {
     companion object {
         private val LOG = logger<KphpPlaygroundWindow>()
 
-        private const val DEFAULT_TEXT =  """<?php
+        private const val DEFAULT_TEXT = """<?php
 
 #ifndef KPHP
 require_once "www/autoload.php";
@@ -96,15 +90,7 @@ require_once "vendor/autoload.php";
         AllIcons.Actions.Execute,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
-            ApplicationManager.getApplication().invokeLater {
-                myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
-                myPhpConsole.clear()
-                myKphpConsole.clear()
-                myCompilationErrorsConsole.clear()
-                myDiffViewer.clear()
-            }
-
-            compileScriptBinary()
+            runCompilationAction()
         }
     }
 
@@ -184,6 +170,27 @@ require_once "vendor/autoload.php";
         setState(State.End)
     }
 
+    private fun runCompilationAction() {
+        ApplicationManager.getApplication().invokeAndWait {
+            myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
+            myPhpConsole.clear()
+            myKphpConsole.clear()
+            myCompilationErrorsConsole.clear()
+            myDiffViewer.clear()
+        }
+
+        compileScriptBinary()
+    }
+
+    private fun saveFile() {
+        ApplicationManager.getApplication().invokeAndWait {
+            ApplicationManager.getApplication().runWriteAction {
+                val document = FileDocumentManager.getInstance().getDocument(myScriptFile) ?: return@runWriteAction
+                FileDocumentManager.getInstance().saveDocumentAsIs(document)
+            }
+        }
+    }
+
     private fun setState(s: State) {
         myState = s
         when (s) {
@@ -224,13 +231,14 @@ require_once "vendor/autoload.php";
     }
 
     private fun compileScriptBinary() {
+        saveFile()
         setState(State.Uploading)
 
         TransferService.getInstance(myProject).uploadFile(myScriptFile, scriptPath(myProject)) {
             setState(State.Compilation)
 
             val command = KphpScriptRunner.buildCommand(myProject, "../../kphp_script_dummy.php")
-            myProcessHandler = MySshUtils.exec(myProject, command) ?: return@uploadFile
+            myProcessHandler = MySshUtils.exec(myProject, command, workingDir = "~/") ?: return@uploadFile
 
             myCompilationErrorsConsole.clear()
             myCompilationErrorsConsole.view().attachToProcess(myProcessHandler)
@@ -305,13 +313,25 @@ require_once "vendor/autoload.php";
     fun withCode(code: String) {
         val template = DEFAULT_TEXT + code.fixIndent().trimIndent() + "\n\n"
 
-        WriteCommandAction.runWriteCommandAction(myProject) {
-            val document = FileDocumentManager.getInstance().getDocument(myScriptFile)
-            document?.deleteString(0, document.text.length)
-            document?.insertString(0, template)
+        val document = ApplicationManager.getApplication().runReadAction(Computable {
+            FileDocumentManager.getInstance().getDocument(myScriptFile)
+        })
+
+        ApplicationManager.getApplication().invokeAndWait {
+            ApplicationManager.getApplication().runWriteAction {
+                if (document != null) {
+                    document.setText(template)
+                    FileDocumentManager.getInstance().saveDocumentAsIs(document)
+                }
+            }
         }
 
+        myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
         myWrapper.show()
+
+        ApplicationManager.getApplication().invokeLater {
+            runCompilationAction()
+        }
     }
 
     private fun dispose() {

@@ -7,6 +7,7 @@ import com.vk.admstorm.ssh.SshConnectionService
 
 /**
  * Base class for all plugin actions that require SSH connection.
+ *
  * To use, implement the [actionWithConnectionPerformed] method,
  * which has the same signature as the default [actionPerformed] method.
  *
