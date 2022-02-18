@@ -5,10 +5,10 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.LocatableConfigurationBase
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.utils.readBool
-import com.vk.admstorm.utils.readString
-import com.vk.admstorm.utils.writeBool
-import com.vk.admstorm.utils.writeString
+import com.vk.admstorm.utils.extensions.readBool
+import com.vk.admstorm.utils.extensions.readString
+import com.vk.admstorm.utils.extensions.writeBool
+import com.vk.admstorm.utils.extensions.writeString
 import org.jdom.Element
 
 class PhpLinterConfiguration(project: Project, factory: ConfigurationFactory, name: String) :

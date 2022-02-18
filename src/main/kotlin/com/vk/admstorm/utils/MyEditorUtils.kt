@@ -25,7 +25,7 @@ object MyEditorUtils {
      * Splits the window vertically into two and opens the passed file in the right.
      *
      * @param virtualFile file to be opened in the right editor
-     * @return EditorWindow that represents the right editor or null if an error occurs
+     * @return [EditorWindow] that represents the right editor or null if an error occurs
      */
     private fun splitCurrentVertically(project: Project, virtualFile: VirtualFile): EditorWindow? {
         val fileEditorManager = FileEditorManagerEx.getInstanceEx(project)
@@ -38,7 +38,8 @@ object MyEditorUtils {
      * window that is an editor of the specified template type [T].
      *
      * For example:
-     *  [MyEditorUtil.applyEachEditor<PsiAwareTextEditorImpl>(editorWindow) {}]
+     *
+     *    MyEditorUtil.applyEachEditor<PsiAwareTextEditorImpl>(editorWindow) {}
      *
      * Applies a function to each text editor in the passed window.
      */
@@ -57,7 +58,8 @@ object MyEditorUtils {
      * window that is an editor of the specified template type [T].
      *
      * For example:
-     *  [MyEditorUtil.applyLastEditor<PsiAwareTextEditorImpl>(editorWindow) {}]
+     *
+     *    MyEditorUtil.applyLastEditor<PsiAwareTextEditorImpl>(editorWindow) {}
      *
      * Applies a function to last open text editor in the passed window.
      */

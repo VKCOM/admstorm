@@ -1,12 +1,11 @@
 package com.vk.admstorm.utils
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
-import kotlin.streams.toList
 
 object MyKphpUtils {
-    private val LOG = Logger.getInstance(MyKphpUtils::class.java)
+    private val LOG = logger<MyKphpUtils>()
     private var defaultIncludeDirsFlag = ""
 
     fun includeDirsAsFlags(project: Project): String {

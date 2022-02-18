@@ -35,7 +35,7 @@ import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyKphpUtils.scriptBinaryPath
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
-import com.vk.admstorm.utils.fixIndent
+import com.vk.admstorm.utils.extensions.fixIndent
 import java.io.File
 import java.io.IOException
 import javax.swing.JLabel

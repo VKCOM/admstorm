@@ -1,6 +1,7 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -12,7 +13,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
-import org.jdom.Element
+import com.vk.admstorm.utils.extensions.toHex
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
@@ -20,7 +21,7 @@ import java.security.MessageDigest
 import kotlin.system.measureTimeMillis
 
 object MyUtils {
-    val LOG = Logger.getInstance(MyUtils::class.java)
+    val LOG = logger<MyUtils>()
 
     fun copyToClipboard(data: String) {
         Toolkit.getDefaultToolkit().systemClipboard
@@ -45,8 +46,6 @@ object MyUtils {
     fun virtualFileByName(name: String): VirtualFile? {
         return LocalFileSystem.getInstance().findFileByIoFile(File(name))
     }
-
-    private fun ByteArray.toHex() = joinToString(separator = "") { byte -> "%02x".format(byte) }
 
     fun md5file(file: VirtualFile?): String {
         if (file == null) {
@@ -125,43 +124,3 @@ object MyUtils {
         })
     }
 }
-
-fun String.indentWidth(): Int = indexOfFirst { !it.isWhitespace() }.let { if (it == -1) length else it }
-
-fun String.fixIndent(): String {
-    val lines = lines()
-
-    val firstLine = lines[0]
-    val firstLineIndent = firstLine.indentWidth()
-
-    val minCommonIndent = lines
-        .slice(1 until lines.size)
-        .filter { it.isNotBlank() }
-        .minOfOrNull { it.indentWidth() } ?: 0
-
-    if (firstLineIndent < minCommonIndent) {
-        val diff = minCommonIndent - firstLineIndent
-        return " ".repeat(diff) + this
-    }
-
-    return this
-}
-
-fun Element.writeString(name: String, value: String) {
-    val opt = Element("option")
-    opt.setAttribute("name", name)
-    opt.setAttribute("value", value)
-    addContent(opt)
-}
-
-fun Element.readString(name: String): String? =
-    children
-        .find { it.name == "option" && it.getAttributeValue("name") == name }
-        ?.getAttributeValue("value")
-
-fun Element.writeBool(name: String, value: Boolean) {
-    writeString(name, value.toString())
-}
-
-fun Element.readBool(name: String): Boolean? =
-    readString(name)?.toBoolean()

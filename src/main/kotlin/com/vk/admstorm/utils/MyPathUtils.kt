@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.extensions.normalizeSlashes
 import java.io.File
 
 object MyPathUtils {
@@ -12,8 +13,6 @@ object MyPathUtils {
     private fun resolveProjectDir(project: Project): String? {
         return project.guessProjectDir()?.path ?: return null
     }
-
-    fun String.normalizeSlashes() = replace("\\", "/")
 
     fun foldUserHome(path: String): String {
         val userHome = System.getProperty("user.home")

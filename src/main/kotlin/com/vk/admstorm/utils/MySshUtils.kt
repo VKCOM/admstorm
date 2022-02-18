@@ -1,7 +1,7 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.ExecBuilder
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 object MySshUtils {
-    private val LOG = Logger.getInstance(MySshUtils::class.java)
+    private val LOG = logger<MySshUtils>()
 
     /**
      * getSftpClient gets the [SFTPClient] for the passed [sftpChannel] through reflection hack.

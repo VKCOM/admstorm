@@ -17,10 +17,10 @@ import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
-import com.vk.admstorm.utils.MyPathUtils.normalizeSlashes
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.MyUtils.runConditionalModal
 import com.vk.admstorm.utils.MyUtils.virtualFileByRelativePath
+import com.vk.admstorm.utils.extensions.normalizeSlashes
 import git4idea.util.GitUIUtil
 import java.io.File
 import java.nio.charset.Charset

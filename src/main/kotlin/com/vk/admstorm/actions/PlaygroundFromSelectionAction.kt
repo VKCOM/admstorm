@@ -22,8 +22,6 @@ class PlaygroundFromSelectionAction : AdmActionBase() {
 
         fun isSorroundWithVarDump() = mySurroundWithVarDumpCheckBox.isSelected
 
-        override fun getPreferredFocusedComponent() = mySurroundWithVarDumpCheckBox
-
         override fun createCenterPanel(): JComponent {
             return JBUI.Panels.simplePanel(mySurroundWithVarDumpCheckBox).apply {
                 preferredSize = JBDimension(300, 45)
