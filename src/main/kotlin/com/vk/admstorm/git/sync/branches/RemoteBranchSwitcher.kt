@@ -41,12 +41,11 @@ class RemoteBranchSwitcher(
 
     private fun doSwitchTask(branchName: String, force: Boolean, onReady: Runnable? = null) {
         runBackground(myProject, "Checkout to $branchName on ${Env.data.serverName}") {
-            switchAction(branchName, force)
-            onReady?.run()
+            switchAction(branchName, force, onReady)
         }
     }
 
-    private fun switchAction(branch: String, force: Boolean) {
+    private fun switchAction(branch: String, force: Boolean, onReady: Runnable?) {
         val branchName = if (branch == "HEAD") {
             GitBranchUtil.getCurrentRepository(myProject)?.currentBranch?.name ?: return
         } else branch
@@ -56,7 +55,7 @@ class RemoteBranchSwitcher(
 
             // If the branch does not exist, then we must first push
             // the local branch to server, in order to then switch to it.
-            switchActionIfBranchNotExist(branchName)
+            switchActionIfBranchNotExist(branchName, onReady)
             return
         }
 
@@ -64,13 +63,14 @@ class RemoteBranchSwitcher(
 
         if (output.exitCode == 0) {
             showSuccessMessage(branchName)
+            onReady?.run()
             return
         }
 
         val state = GitErrorHandler(myProject).handleCheckout(output, {
-            doStashAndCheckout(branchName)
+            doStashAndCheckout(branchName, onReady)
         }) {
-            doForceCheckout(branchName)
+            doForceCheckout(branchName, onReady)
         }
 
         if (state == GitErrorHandler.State.Canceled) {
@@ -87,7 +87,7 @@ class RemoteBranchSwitcher(
         LOG.info("Successfully switched to a branch '$branchName' on ${Env.data.serverName}")
     }
 
-    private fun switchActionIfBranchNotExist(branchName: String) {
+    private fun switchActionIfBranchNotExist(branchName: String, onReady: Runnable?) {
         val cmd = "git push --set-upstream ${Env.data.serverName} $branchName"
         val output = CommandRunner.runLocally(myProject, cmd)
 
@@ -95,27 +95,27 @@ class RemoteBranchSwitcher(
             LOG.info("Local push '$branchName' with set-upstream to ${Env.data.serverName} completed successfully")
             LOG.info("Started checkout on this branch")
 
-            switch(branchName, false)
+            switch(branchName, false, onReady)
             showSuccessMessage(branchName)
             return
         }
 
         if (LostConnectionHandler.handle(myProject, output) {
-                switchActionIfBranchNotExist(branchName)
+                switchActionIfBranchNotExist(branchName, onReady)
             }) return
 
         GitErrorHandler(myProject).handleCheckout(output, {
-            doStashAndCheckout(branchName)
+            doStashAndCheckout(branchName, onReady)
         }) {
-            doForceCheckout(branchName)
+            doForceCheckout(branchName, onReady)
         }
     }
 
-    private fun doForceCheckout(branchName: String) {
-        switch(branchName, true)
+    private fun doForceCheckout(branchName: String, onReady: Runnable?) {
+        switch(branchName, true, onReady)
     }
 
-    private fun doStashAndCheckout(branchName: String) {
+    private fun doStashAndCheckout(branchName: String, onReady: Runnable?) {
         runBackground(
             myProject,
             "Stash ${Env.data.serverName} changes and checkout to $branchName on ${Env.data.serverName}",
@@ -133,7 +133,7 @@ class RemoteBranchSwitcher(
                 return@runBackground
             }
 
-            switchAction(branchName, false)
+            switchAction(branchName, false, onReady)
         }
     }
 }
