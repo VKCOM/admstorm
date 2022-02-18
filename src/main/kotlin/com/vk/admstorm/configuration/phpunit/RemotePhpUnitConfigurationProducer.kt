@@ -50,10 +50,20 @@ open class RemotePhpUnitConfigurationProducer :
 
             val klass = PhpUnitUtil.findTestClass(el) ?: return false
 
-            val className = klass.name
-            val configName = "Remote $className"
+            return configuration.className == klass.fqn && configuration.filename == el.virtualFile.path
+        }
 
-            return configuration.className == configName && configuration.filename == el.virtualFile.path
+        if (el.parent is MethodImpl) {
+            if (!configuration.isMethodScope) {
+                return false
+            }
+
+            val method = el.parent as MethodImpl
+            val klass = PsiTreeUtil.findFirstParent(method) { parent ->
+                parent is PhpClass
+            } as PhpClass? ?: return false
+
+            return configuration.className == klass.fqn && configuration.method == method.name
         }
 
         if (el.parent !is PhpClass) {
@@ -67,10 +77,7 @@ open class RemotePhpUnitConfigurationProducer :
             return false
         }
 
-        val className = klass.name
-        val configName = "Remote $className"
-
-        return configuration.className == configName && configuration.filename == file.virtualFile.path
+        return configuration.className == klass.fqn && configuration.filename == file.virtualFile.path
     }
 
     override fun setupConfigurationFromContext(
