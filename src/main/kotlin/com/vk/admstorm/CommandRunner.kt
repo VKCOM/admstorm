@@ -112,8 +112,10 @@ object CommandRunner {
                 proc.exitValue()
             )
         } catch (e: SecurityException) {
+            LOG.warn("Unexpected exception while runLocallyEval", e)
             null
         } catch (e: IOException) {
+            LOG.warn("Unexpected exception while runLocallyEval", e)
             null
         }
     }

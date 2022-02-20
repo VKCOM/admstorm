@@ -39,7 +39,7 @@ object MyUtils {
 
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {
         val projectDir = project.guessProjectDir()?.path ?: ""
-        val absolutePath = "${projectDir}/${filepath}"
+        val absolutePath = "$projectDir/$filepath"
         return LocalFileSystem.getInstance().findFileByIoFile(File(absolutePath))
     }
 

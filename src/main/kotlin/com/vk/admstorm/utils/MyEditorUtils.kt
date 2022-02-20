@@ -44,8 +44,8 @@ object MyEditorUtils {
      * Applies a function to each text editor in the passed window.
      */
     private inline fun <reified T> applyEachEditor(editorWindow: EditorWindow, cb: (T) -> Unit) {
-        editorWindow.editors.forEach { editorComposite ->
-            editorComposite.editors.forEach { editor ->
+        editorWindow.allComposites.forEach { editorComposite ->
+            editorComposite.allEditors.forEach { editor ->
                 if (editor is T) {
                     cb(editor)
                 }
@@ -64,10 +64,10 @@ object MyEditorUtils {
      * Applies a function to last open text editor in the passed window.
      */
     inline fun <reified T> applyLastEditor(editorWindow: EditorWindow, cb: (T) -> Unit) {
-        val editors = editorWindow.editors
+        val editors = editorWindow.allComposites
         val lastEditor = if (editors.isNotEmpty()) editors.last() else return
 
-        lastEditor.editors.forEach { editor ->
+        lastEditor.allEditors.forEach { editor ->
             if (editor is T) {
                 cb(editor)
             }

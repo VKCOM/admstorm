@@ -111,7 +111,7 @@ class YubikeyHandler {
 
     private fun createScriptIfNotExists(project: Project): File? {
         val home = System.getProperty("user.home")
-        val resetScript = File("${home}/admstorm-yubikey-reset-script.sh")
+        val resetScript = File("$home/admstorm-yubikey-reset-script.sh")
         if (!resetScript.exists()) {
             LOG.info("Script 'admstorm-yubikey-reset-script.sh' not found, creating a new one")
 

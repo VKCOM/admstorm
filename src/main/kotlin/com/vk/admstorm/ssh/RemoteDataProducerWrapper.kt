@@ -130,8 +130,11 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
             this.openSSHConfigurationsSettings()
         } else {
             connectors.sortWith { c1: RemoteConnector, c2: RemoteConnector ->
-                if (c1.type == RemoteConnectionType.NONE) -1 else if (c2.type == RemoteConnectionType.NONE) 1 else c1.name
-                    .compareTo(c2.name)
+                when {
+                    c1.type == RemoteConnectionType.NONE -> -1
+                    c2.type == RemoteConnectionType.NONE -> 1
+                    else -> c1.name.compareTo(c2.name)
+                }
             }
 
             chooseConnectorWithConnectorConsumer(connectors, consumer)

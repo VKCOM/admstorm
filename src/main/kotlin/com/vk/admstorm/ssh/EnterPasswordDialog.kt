@@ -1,6 +1,5 @@
 package com.vk.admstorm.ssh
 
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBCheckBox
@@ -12,8 +11,6 @@ import javax.swing.JPanel
 
 class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
     companion object {
-        private val LOG = logger<EnterPasswordDialog>()
-
         fun requestPassword(project: Project, ifRemember: () -> Unit = {}): String {
             val dialog = EnterPasswordDialog(project)
             dialog.showAndGet()

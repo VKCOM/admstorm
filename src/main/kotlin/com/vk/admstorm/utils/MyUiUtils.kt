@@ -7,8 +7,8 @@ import com.intellij.ui.ColorUtil
 import com.intellij.ui.LayeredIcon
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.ui.EmptyIcon
+import com.intellij.util.ui.HTMLEditorKitBuilder
 import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
 import java.awt.Insets
 import javax.accessibility.AccessibleContext
 import javax.swing.Icon
@@ -27,7 +27,7 @@ object MyUiUtils {
         component.isFocusable = false
         component.border = null
 
-        val kit = UIUtil.JBWordWrapHtmlEditorKit()
+        val kit = HTMLEditorKitBuilder().withWordWrapViewFactory().build()
         kit.styleSheet.addRule("a {color: " + ColorUtil.toHtmlColor(JBUI.CurrentTheme.Link.Foreground.ENABLED) + "}")
         component.editorKit = kit
         component.addHyperlinkListener(BrowserHyperlinkListener.INSTANCE)

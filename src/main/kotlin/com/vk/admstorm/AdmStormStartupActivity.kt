@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
-import com.intellij.ssh.SshTransportException
+import com.intellij.ssh.SshException
 import com.intellij.util.messages.MessageBusConnection
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
@@ -76,7 +76,6 @@ class AdmStormStartupActivity : StartupActivity {
                         }
                     )
                     .show()
-
             } finally {
                 myCheckSyncRunning.set(false)
             }
@@ -111,7 +110,7 @@ class AdmStormStartupActivity : StartupActivity {
                     }
 
                     onReady?.run()
-                } catch (e: SshTransportException) {
+                } catch (e: SshException) {
                     LOG.warn("Unexpected exception while afterConnectionTasks", e)
                 }
             }

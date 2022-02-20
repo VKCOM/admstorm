@@ -13,7 +13,7 @@ import com.intellij.remote.RemoteConnector
 import com.intellij.remote.RemoteCredentials
 import com.intellij.ssh.ConnectionBuilder
 import com.intellij.ssh.ExecBuilder
-import com.intellij.ssh.SshTransportException
+import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.connectionBuilder
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
@@ -146,7 +146,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         mySftpClient = MySshUtils.getSftpClient(mySftpChannel!!)
 
                         onSuccessful?.run()
-                    } catch (e: SshTransportException) {
+                    } catch (e: SshException) {
                         if (!cancelled) {
                             if (e.message == "Cancelled by user") {
                                 LOG.warn("Cancelled by user", e)
