@@ -3,6 +3,7 @@ package com.vk.admstorm.utils
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
+import java.util.stream.Collectors
 
 object MyKphpUtils {
     private val LOG = logger<MyKphpUtils>()
@@ -25,18 +26,17 @@ object MyKphpUtils {
         return Env.data.kphpRelativeIncludeDirs.stream().map {
             if (it.startsWith('/')) it
             else MyPathUtils.absoluteDataBasedRemotePath(project, it) ?: it
-        }.toList()
+        }.collect(Collectors.toList());
     }
 
     fun scriptBinaryPath(project: Project): String {
         val remoteRoot = MyPathUtils.resolveRemoteRoot(project) ?: ""
-        try {
+        return try {
             val userName = remoteRoot.split("/")[2]
-            return "${Env.data.kphpRelatedPathBegin}/$userName/${Env.data.kphpScriptBinaryPath}"
+            "${Env.data.kphpRelatedPathBegin}/$userName/${Env.data.kphpScriptBinaryPath}"
         } catch (e: Exception) {
             LOG.warn("Unexpected exception while scriptBinaryPath", e)
+            "$remoteRoot/${Env.data.kphpScriptBinaryPath}"
         }
-
-        return "$remoteRoot/${Env.data.kphpScriptBinaryPath}"
     }
 }

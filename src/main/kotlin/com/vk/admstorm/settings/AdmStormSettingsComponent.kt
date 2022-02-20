@@ -10,8 +10,9 @@ import javax.swing.JPanel
 
 class AdmStormSettingsComponent {
     private lateinit var myMainPanel: JPanel
-    private lateinit var myBranchSyncSettingsPanel: JPanel
+    private lateinit var myAutoSyncSettingsPanel: JPanel
     private lateinit var myPushToGitlabPanel: JPanel
+    private lateinit var myAdditionalSettingsPanel: JPanel
 
     private lateinit var mySyncBranchCheckoutCheckBox: JBCheckBox
 
@@ -88,14 +89,15 @@ class AdmStormSettingsComponent {
 
         myConflictAskRadioButton.isSelected = true
 
-        myBranchSyncSettingsPanel.border = IdeBorderFactory.createTitledBorder("Branch synchronization")
         mySyncBranchCheckoutCheckBox.text =
             "Automatically switch branches on ${Env.data.serverName.ifEmpty { "server" }}"
 
         myAutoPushToServerAfterCommit.text =
-            "Automatically push to the ${Env.data.serverName.ifEmpty { "server" }} after a successful commit"
+            "Automatically push new commit to the ${Env.data.serverName.ifEmpty { "server" }} after a successful commit"
 
+        myAutoSyncSettingsPanel.border = IdeBorderFactory.createTitledBorder("Automatic synchronization")
         myPushToGitlabPanel.border = IdeBorderFactory.createTitledBorder("Push to Gitlab")
+        myAdditionalSettingsPanel.border = IdeBorderFactory.createTitledBorder("Additional")
     }
 
     fun mainPanel() = myMainPanel
