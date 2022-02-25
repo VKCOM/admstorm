@@ -30,12 +30,14 @@ object MyKphpUtils {
     }
 
     fun scriptBinaryPath(project: Project): String {
-        val remoteRoot = MyPathUtils.resolveRemoteRoot(project) ?: ""
-        return try {
-            val userName = remoteRoot.split("/")[2]
+        val userName = MyPathUtils.remoteUserName()
+
+        return if (userName != "") {
             "${Env.data.kphpRelatedPathBegin}/$userName/${Env.data.kphpScriptBinaryPath}"
-        } catch (e: Exception) {
-            LOG.warn("Unexpected exception while scriptBinaryPath", e)
+        } else {
+            LOG.warn("User name on server is empty")
+
+            val remoteRoot = MyPathUtils.resolveRemoteRoot(project) ?: ""
             "$remoteRoot/${Env.data.kphpScriptBinaryPath}"
         }
     }

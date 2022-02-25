@@ -22,8 +22,17 @@ object MyPathUtils {
         return path
     }
 
-    fun resolveRemoteRoot(project: Project): String? {
-        if (remoteRoot.isNotEmpty()) {
+    fun remoteUserName(): String {
+        val remoteRoot = resolveRemoteRoot() ?: ""
+        return try {
+            remoteRoot.split("/")[2]
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    fun resolveRemoteRoot(project: Project? = null): String? {
+        if (remoteRoot.isNotEmpty() || project == null) {
             return remoteRoot
         }
 

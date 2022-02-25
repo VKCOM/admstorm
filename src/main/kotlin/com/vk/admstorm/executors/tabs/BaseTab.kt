@@ -12,7 +12,7 @@ abstract class BaseTab(private var myName: String) : Tab {
     private var myContent: Content? = null
 
     override val name = myName
-    override val content = myContent
+    override val content get() = myContent
 
     abstract fun componentWithActions(): ComponentWithActions
     abstract fun componentToFocus(): JComponent
