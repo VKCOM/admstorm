@@ -14,6 +14,7 @@ import com.vk.admstorm.utils.ServerNameProvider
 abstract class WithSshConfigurationRunner(
     private val withDebug: Boolean = false,
 ) : ProgramRunner<RunnerSettings?> {
+
     override fun canRun(s: String, runProfile: RunProfile): Boolean {
         return when {
             runProfile !is WithSshConfiguration -> false

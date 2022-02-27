@@ -77,7 +77,6 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
             return
         }
 
-
         val command = "php ${Env.data.projectRoot}/${Env.data.phpSourceFolder}/${myRunConfiguration.parameters}"
         val handler = MySshUtils.exec(
             project, command,

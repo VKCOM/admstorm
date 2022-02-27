@@ -1,5 +1,6 @@
 package com.vk.admstorm.utils
 
+import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
@@ -9,6 +10,7 @@ import com.intellij.ssh.SshTransportException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.ReflectionUtil
+import com.vk.admstorm.CommandRunner.runLocally
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
@@ -47,6 +49,16 @@ object MySshUtils {
         }
 
         return null
+    }
+
+    fun openTunnel(project: Project, port: Int, processListener: ProcessListener) {
+        val credentials = SshConnectionService.getInstance(project).credentials() ?: return
+
+        val command = "ssh -vCNR $port:localhost:$port -N ${credentials.userName}@${credentials.host}"
+
+        ApplicationManager.getApplication().executeOnPooledThread {
+            runLocally(project, command, true, processListener)
+        }
     }
 
     fun exec(

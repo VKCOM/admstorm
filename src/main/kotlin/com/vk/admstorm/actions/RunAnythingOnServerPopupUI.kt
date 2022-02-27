@@ -2,21 +2,23 @@ package com.vk.admstorm.actions
 
 import com.intellij.execution.RunManager
 import com.intellij.ide.actions.BigPopupUI
-import com.intellij.ide.actions.runAnything.RunAnythingPopupUI
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
 import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.panels.NonOpaquePanel
+import com.intellij.util.BooleanFunction
 import com.intellij.util.ui.StartupUiUtil
 import com.intellij.util.ui.UIUtil
 import com.vk.admstorm.configuration.runanything.RunAnythingConfiguration
@@ -127,11 +129,25 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
     override fun getAccessibleName() = "Run anything on server"
 
     private fun adjustMainListEmptyText(editor: JBTextField) {
-        RunAnythingPopupUI.adjustEmptyText(
+        adjustEmptyText(
             editor,
             { field: JBTextField -> field.text.isEmpty() },
             "Run command on ${ServerNameProvider.name()}",
             ""
         )
+    }
+
+    fun adjustEmptyText(
+        textEditor: JBTextField,
+        function: BooleanFunction<in JBTextField>,
+        leftText: @NlsContexts.StatusText String,
+        rightText: @NlsContexts.StatusText String
+    ) {
+        textEditor.putClientProperty("StatusVisibleFunction", function)
+        val statusText = textEditor.emptyText
+        statusText.isShowAboveCenter = false
+        statusText.setText(leftText, SimpleTextAttributes.GRAY_ATTRIBUTES)
+        statusText.appendText(false, 0, rightText, SimpleTextAttributes.GRAY_ATTRIBUTES, null)
+        statusText.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL))
     }
 }

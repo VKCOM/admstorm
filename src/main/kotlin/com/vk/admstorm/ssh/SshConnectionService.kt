@@ -56,6 +56,8 @@ class SshConnectionService(private var myProject: Project) : Disposable {
      */
     fun sftpClient() = mySftpClient
 
+    fun credentials() = myCredentials
+
     /**
      * Returns the builder for the passed command.
      *
