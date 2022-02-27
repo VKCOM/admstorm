@@ -6,7 +6,6 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.actions.AdmActionBase
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.git.sync.GitErrorHandler
 import com.vk.admstorm.git.sync.SyncChecker
@@ -15,6 +14,7 @@ import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.LostConnectionHandler
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.runBackground
+import com.vk.admstorm.utils.ServerNameProvider
 
 class PullFromGitlabAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
@@ -32,7 +32,7 @@ class PullFromGitlabAction : AdmActionBase() {
     }
 
     private fun onCanceledSync() {
-        AdmWarningNotification("Pull Gitlab → ${Env.data.serverName} → Local was canceled due to unresolved sync issues")
+        AdmWarningNotification("Pull Gitlab → ${ServerNameProvider.name()} → Local was canceled due to unresolved sync issues")
             .withTitle("Pull Canceled")
             .withActions(
                 AdmNotification.Action("Resolve issues...") { e, notification ->
@@ -46,7 +46,7 @@ class PullFromGitlabAction : AdmActionBase() {
 
     companion object {
         private fun doPullFromGitlabTask(project: Project, after: Runnable) {
-            runBackground(project, "Pull from Gitlab to ${Env.data.serverName}") { indicator ->
+            runBackground(project, "Pull from Gitlab to ${ServerNameProvider.name()}") { indicator ->
                 indicator.isIndeterminate = false
                 val ok = doPullFromGitlab(project, indicator)
                 if (ok) {
@@ -56,7 +56,7 @@ class PullFromGitlabAction : AdmActionBase() {
         }
 
         fun doPullToLocalTask(project: Project, after: Runnable? = null) {
-            runBackground(project, "Pull from ${Env.data.serverName} to local") { indicator ->
+            runBackground(project, "Pull from ${ServerNameProvider.name()} to local") { indicator ->
                 indicator.isIndeterminate = false
                 doPullToLocal(project, indicator)
                 after?.run()
@@ -71,7 +71,7 @@ class PullFromGitlabAction : AdmActionBase() {
                 return false
             }
 
-            showNotification(output, "Gitlab", Env.data.serverName)
+            showNotification(output, "Gitlab", ServerNameProvider.name())
             return true
         }
 
@@ -83,11 +83,11 @@ class PullFromGitlabAction : AdmActionBase() {
                         doPullToLocalTask(project)
                     }) return
 
-                MessageDialog.showWarning(output.stderr, "Git Pull to Local from ${Env.data.serverName} Failed")
+                MessageDialog.showWarning(output.stderr, "Git Pull to Local from ${ServerNameProvider.name()} Failed")
                 return
             }
 
-            showNotification(output, Env.data.serverName, "local")
+            showNotification(output, ServerNameProvider.name(), "local")
         }
 
         private fun showNotification(output: Output, from: String, to: String) {
@@ -116,6 +116,6 @@ class PullFromGitlabAction : AdmActionBase() {
             e.presentation.isEnabledAndVisible = false
         }
 
-        e.presentation.text = "Pull Gitlab → ${Env.data.serverName.replaceFirstChar { it.uppercaseChar() }} → Local"
+        e.presentation.text = "Pull Gitlab → ${ServerNameProvider.uppercase()} → Local"
     }
 }

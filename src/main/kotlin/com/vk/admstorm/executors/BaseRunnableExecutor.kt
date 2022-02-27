@@ -29,6 +29,7 @@ import com.vk.admstorm.executors.tabs.Tab
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.Icon
 import javax.swing.JComponent
 
@@ -168,8 +169,10 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     private fun prepareAndShowInterface() {
         myStopAction.setEnabled(true)
 
+        val layoutName = ServerNameProvider.uppercase()
+
         myLayout = RunnerLayoutUi.Factory.getInstance(myProject)
-            .create("Adm", "Adm Tool", myConfig.name, this)
+            .create("Adm", layoutName, myConfig.name, this)
 
         val executor = AdmToolsExecutor.getRunExecutorInstance()
 

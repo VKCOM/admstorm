@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageConstants
 import com.intellij.openapi.ui.MessageDialogBuilder
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.util.GitUIUtil.code
 
 object LostConnectionHandler {
@@ -20,7 +20,7 @@ object LostConnectionHandler {
 
         ApplicationManager.getApplication().invokeAndWait {
             val dialog = MessageDialogBuilder.yesNoCancel(
-                "Not Connected to ${Env.data.serverName}",
+                "Not Connected to ${ServerNameProvider.name()}",
                 """
                     Oops, it seems impossible to execute the internal command due to SSH connection problems.
 

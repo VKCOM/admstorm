@@ -2,9 +2,9 @@ package com.vk.admstorm.git.sync.commits
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.ui.MessageDialog
+import com.vk.admstorm.utils.ServerNameProvider
 
 class GitCommitComparison(
     private var myProject: Project,
@@ -69,7 +69,7 @@ class GitCommitComparison(
     private fun doIfInvalidDistance() {
         MessageDialog.showWarning(
             """
-                Commits on the ${Env.data.serverName} and local are not sequential, most likely there are commits on the ${Env.data.serverName} and on the local created from the same parent.
+                Commits on the ${ServerNameProvider.name()} and local are not sequential, most likely there are commits on the ${ServerNameProvider.name()} and on the local created from the same parent.
                 
                 Plugin cannot automatically resolve this. Before proceeding, you need to resolve this conflict manually.
             """.trimIndent(),

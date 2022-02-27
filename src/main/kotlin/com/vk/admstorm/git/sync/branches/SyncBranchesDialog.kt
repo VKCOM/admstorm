@@ -5,9 +5,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.ActionLink
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.JLabel
 import javax.swing.JPanel
 
@@ -66,14 +66,14 @@ class SyncBranchesDialog(
         mySelectMainBranchCombo.addItem(remoteBranch)
 
         myRemoteBranchLabel.text = "Adm branch:"
-        myHelpLabelForCheckBox.text = "Branch will be changed in ${Env.data.serverName}"
+        myHelpLabelForCheckBox.text = "Branch will be changed in ${ServerNameProvider.name()}"
 
         mySelectMainBranchCombo.addItemListener { e ->
             val selected = e.itemSelectable.selectedObjects[0] as String
             if (selected == remoteBranch) {
                 myHelpLabelForCheckBox.text = "Branch will be changed locally"
             } else {
-                myHelpLabelForCheckBox.text = "Branch will be changed on ${Env.data.serverName}"
+                myHelpLabelForCheckBox.text = "Branch will be changed on ${ServerNameProvider.name()}"
             }
         }
 

@@ -3,7 +3,7 @@ package com.vk.admstorm.settings
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBRadioButton
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.ButtonGroup
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -90,10 +90,10 @@ class AdmStormSettingsComponent {
         myConflictAskRadioButton.isSelected = true
 
         mySyncBranchCheckoutCheckBox.text =
-            "Automatically switch branches on ${Env.data.serverName.ifEmpty { "server" }}"
+            "Automatically switch branches on ${ServerNameProvider.name()}"
 
         myAutoPushToServerAfterCommit.text =
-            "Automatically push new commit to the ${Env.data.serverName.ifEmpty { "server" }} after a successful commit"
+            "Automatically push new commit to the ${ServerNameProvider.name()} after a successful commit"
 
         myAutoSyncSettingsPanel.border = IdeBorderFactory.createTitledBorder("Automatic synchronization")
         myPushToGitlabPanel.border = IdeBorderFactory.createTitledBorder("Push to Gitlab")

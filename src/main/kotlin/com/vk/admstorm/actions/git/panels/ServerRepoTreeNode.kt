@@ -6,7 +6,7 @@ import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 import java.awt.Color
 
 class ServerRepoTreeNode(
@@ -34,7 +34,7 @@ class ServerRepoTreeNode(
 
         val repositoryDetailsTextAttributes =
             PushLogTreeUtil.addTransparencyIfNeeded(renderer, SimpleTextAttributes.REGULAR_ATTRIBUTES, isChecked())
-        renderer.append(Env.data.serverName, SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
+        renderer.append(ServerNameProvider.name(), SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
         renderer.append(SEPARATOR, repositoryDetailsTextAttributes)
         renderer.append(myCurrentBranch)
         renderer.append(" " + UIUtil.rightArrow() + " ", repositoryDetailsTextAttributes)

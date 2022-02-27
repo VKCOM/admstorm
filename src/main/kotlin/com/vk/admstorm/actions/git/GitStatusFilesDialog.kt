@@ -10,10 +10,10 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.JBUI
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.files.GitStatus.isDeleted
 import com.vk.admstorm.utils.MyPathUtils.foldUserHome
 import com.vk.admstorm.utils.MyUiUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.index.GitFileStatus
 import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
@@ -33,10 +33,10 @@ class GitStatusFilesDialog(
     private var myDiscardChangesSelected = false
 
     init {
-        title = "Git Status Files on ${Env.data.serverName}"
+        title = "Git Status Files on ${ServerNameProvider.name()}"
 
         myTextLabel.text =
-            "The following files on ${Env.data.serverName} are preventing the push from ${Env.data.serverName} to Gitlab:"
+            "The following files on ${ServerNameProvider.name()} are preventing the push from ${ServerNameProvider.name()} to Gitlab:"
 
         myFilesTable.selectionModel = DefaultListSelectionModel()
         myFilesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)

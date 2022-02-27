@@ -5,12 +5,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.BranchChangeListener
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.AdmStormStartupActivity
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.branches.RemoteBranchSwitcher
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.branch.GitBrancher
 import git4idea.repo.GitRepositoryManager
 import git4idea.util.GitUIUtil
@@ -43,12 +43,12 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
         if (!SshConnectionService.getInstance(myProject).isConnected()) {
             AdmWarningNotification(
                 """
-                    There was no connection during the switch, so the branch on ${Env.data.serverName} was not changed
+                    There was no connection during the switch, so the branch on ${ServerNameProvider.name()} was not changed
                     <br>
                     Try restarting ${GitUIUtil.code("ssh-agent")} and reconnect
                 """.trimIndent()
             )
-                .withTitle("Branch is not switched on ${Env.data.serverName.ifEmpty { "dev-server" }}")
+                .withTitle("Branch is not switched on ${ServerNameProvider.name().ifEmpty { "dev-server" }}")
                 .withActions(AdmNotification.Action("Reconnect and switch...") { _, notification ->
                     notification.expire()
 

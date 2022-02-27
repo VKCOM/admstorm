@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.actions.git.listeners.GitPullProgressListener
 import com.vk.admstorm.actions.git.listeners.GitPushProgressListener
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.commits.Commit
+import com.vk.admstorm.utils.ServerNameProvider
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,7 +36,7 @@ object GitUtils {
         indicator: ProgressIndicator
     ): Output {
         var command = pushToServerCommand
-            .withParam(Env.data.serverName)
+            .withParam(ServerNameProvider.name())
             .withParam(branchName)
         if (force) {
             command = command.withParam("--force")
@@ -60,7 +60,7 @@ object GitUtils {
         return CommandRunner.runLocally(
             project,
             pullFromRemoteCommand
-                .withParam(Env.data.serverName)
+                .withParam(ServerNameProvider.name())
                 .withParam(branchName),
             false,
             GitPullProgressListener(indicator)
@@ -256,7 +256,7 @@ object GitUtils {
         return CommandRunner.runLocally(
             project,
             countNewCommitsCommand
-                .withParam("${Env.data.serverName}/$branchName..")
+                .withParam("${ServerNameProvider.name()}/$branchName..")
         ).stdout.trim().toIntOrNull() ?: -1
     }
 

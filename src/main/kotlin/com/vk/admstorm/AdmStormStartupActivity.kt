@@ -26,6 +26,7 @@ import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.MyUtils.runBackground
+import com.vk.admstorm.utils.ServerNameProvider
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
@@ -44,7 +45,7 @@ class AdmStormStartupActivity : StartupActivity {
     private fun checkSyncSilently(project: Project) {
         myCheckSyncRunning.set(true)
 
-        runBackground(project, "AdmStorm: Check sync with ${Env.data.serverName}") {
+        runBackground(project, "AdmStorm: Check sync with ${ServerNameProvider.name()}") {
             try {
                 val state = SyncChecker.getInstance(project).currentState()
                 if (state == SyncChecker.State.Unknown) {
@@ -64,13 +65,13 @@ class AdmStormStartupActivity : StartupActivity {
                 }
 
                 AdmWarningNotification("", true)
-                    .withTitle("Local $subject not sync with ${Env.data.serverName}")
+                    .withTitle("Local $subject not sync with ${ServerNameProvider.name()}")
                     .withActions(
                         AdmNotification.Action("Show details") { _, notification ->
                             notification.expire()
                             SyncChecker.getInstance(project).doCheckSyncSilentlyTask(null) {
                                 AdmNotification()
-                                    .withTitle("Local and ${Env.data.serverName} have been synced successfully")
+                                    .withTitle("Local and ${ServerNameProvider.name()} have been synced successfully")
                                     .show()
                             }
                         }

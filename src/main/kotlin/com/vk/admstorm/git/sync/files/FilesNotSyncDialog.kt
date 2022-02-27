@@ -12,12 +12,12 @@ import com.intellij.ui.table.JBTable
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyPathUtils.foldUserHome
 import com.vk.admstorm.utils.MyUiUtils
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.util.GitUIUtil.code
 import java.awt.event.MouseEvent
 import java.io.File
@@ -46,14 +46,14 @@ class FilesNotSyncDialog(
 
         title = "Files not Synchronized"
 
-        myFilesDifferLabel.text = "The following files differ on ${Env.data.serverName} and locally:"
+        myFilesDifferLabel.text = "The following files differ on ${ServerNameProvider.name()} and locally:"
 
         myUseLocalVersionButton.text = "Use local"
         myUseLocalVersionButton.addActionListener {
             onResolve(true)
         }
 
-        myUseRemoteVersionButton.text = "Use ${Env.data.serverName}"
+        myUseRemoteVersionButton.text = "Use ${ServerNameProvider.name()}"
         myUseRemoteVersionButton.addActionListener {
             onResolve(false)
         }
@@ -116,15 +116,15 @@ class FilesNotSyncDialog(
             file.isRenamed -> "Rename back on local"
             file.isRemoved -> "Remove on local"
             file.isNotFound -> "Remove on local"
-            file.localFile.isRemoved -> "Get from ${Env.data.serverName}"
-            else -> "Use ${Env.data.serverName}"
+            file.localFile.isRemoved -> "Get from ${ServerNameProvider.name()}"
+            else -> "Use ${ServerNameProvider.name()}"
         }
 
         myUseLocalVersionButton.text = when {
-            file.isRenamed -> "Rename on ${Env.data.serverName}"
-            file.isNotFound -> "Send to ${Env.data.serverName}"
-            file.isRemoved -> "Send to ${Env.data.serverName}"
-            file.localFile.isRemoved -> "Remove on ${Env.data.serverName}"
+            file.isRenamed -> "Rename on ${ServerNameProvider.name()}"
+            file.isNotFound -> "Send to ${ServerNameProvider.name()}"
+            file.isRemoved -> "Send to ${ServerNameProvider.name()}"
+            file.localFile.isRemoved -> "Remove on ${ServerNameProvider.name()}"
             else -> "Use local"
         }
     }

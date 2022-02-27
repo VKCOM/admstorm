@@ -14,8 +14,8 @@ import com.vk.admstorm.actions.git.PushToGitlabAction
 import com.vk.admstorm.actions.git.panels.CommitWithCommentTreeNode
 import com.vk.admstorm.actions.git.panels.LocalRepoTreeNode
 import com.vk.admstorm.actions.git.panels.PushCommitsPanel
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.MyUiUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.DialogManager
 import git4idea.branch.GitBranchUtil
 import java.awt.Insets
@@ -96,12 +96,12 @@ class NotSyncCommitsDialog(
         val messageText = if (myNeedPushToServer)
             """<html>
             There are <b>${myBetweenCommits.size} commits</b> in <b>local</b> branch 
-            that were not pushed to <b>${Env.data.serverName}</b> branch
+            that were not pushed to <b>${ServerNameProvider.name()}</b> branch
             </html>
             """.trimIndent()
         else
             """<html>
-            There are <b>${myBetweenCommits.size} commits</b> in <b>${Env.data.serverName}</b> branch 
+            There are <b>${myBetweenCommits.size} commits</b> in <b>${ServerNameProvider.name()}</b> branch 
             that were not fetched to <b>local</b> branch
             </html>
             """.trimIndent()
@@ -112,12 +112,12 @@ class NotSyncCommitsDialog(
     private fun createInfoMessageTextPane(): JTextPane {
         val messageText = if (myNeedPushToServer)
             """<html>
-            Synchronization will push <b>local commits</b> to the <b>${Env.data.serverName}</b> branch
+            Synchronization will push <b>local commits</b> to the <b>${ServerNameProvider.name()}</b> branch
             </html>
             """.trimIndent()
         else
             """<html>
-            Synchronization will fetch <b>${Env.data.serverName} commits</b> to the <b>local</b> branch
+            Synchronization will fetch <b>${ServerNameProvider.name()} commits</b> to the <b>local</b> branch
             </html>
             """.trimIndent()
 

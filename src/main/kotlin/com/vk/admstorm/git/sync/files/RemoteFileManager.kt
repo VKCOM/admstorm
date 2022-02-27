@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.IncorrectOperationException
 import com.vk.admstorm.CommandRunner
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.transfer.TransferService
@@ -20,6 +19,7 @@ import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.MyUtils.runConditionalModal
 import com.vk.admstorm.utils.MyUtils.virtualFileByRelativePath
+import com.vk.admstorm.utils.ServerNameProvider
 import com.vk.admstorm.utils.extensions.normalizeSlashes
 import git4idea.util.GitUIUtil
 import java.io.File
@@ -43,7 +43,7 @@ class RemoteFileManager(private val myProject: Project) {
     }
 
     fun removeRemoteFile(remoteFile: RemoteFile, onReady: Runnable? = null) {
-        runBackground(myProject, "Remove ${remoteFile.path} on ${Env.data.serverName}") {
+        runBackground(myProject, "Remove ${remoteFile.path} on ${ServerNameProvider.name()}") {
             val output = removeRemoteFile(myProject, remoteFile.path)
             if (output.exitCode != 0) {
                 MessageDialog.showWarning(
@@ -52,7 +52,7 @@ class RemoteFileManager(private val myProject: Project) {
                         
                         ${output.stderr}
                         """.trimIndent(),
-                    "Problem with removing file on ${Env.data.serverName}"
+                    "Problem with removing file on ${ServerNameProvider.name()}"
                 )
                 return@runBackground
             }
@@ -90,7 +90,7 @@ class RemoteFileManager(private val myProject: Project) {
     fun createLocalFileFromRemote(remoteFile: RemoteFile, onReady: Runnable? = null) {
         runBackground(
             myProject,
-            "Create new local file ${remoteFile.path} from ${Env.data.serverName} content"
+            "Create new local file ${remoteFile.path} from ${ServerNameProvider.name()} content"
         ) {
             val filepath = MyPathUtils.absoluteLocalPath(myProject, remoteFile.path)
 
@@ -106,7 +106,7 @@ class RemoteFileManager(private val myProject: Project) {
                         
                         ${e.message}
                     """.trimIndent(),
-                    "Problem with creating new file on ${Env.data.serverName}"
+                    "Problem with creating new file on ${ServerNameProvider.name()}"
                 )
                 return@runBackground
             }
@@ -126,7 +126,7 @@ class RemoteFileManager(private val myProject: Project) {
                         
                         ${output.stderr}
                     """.trimIndent(),
-                    "Problem with adding new file on ${Env.data.serverName}"
+                    "Problem with adding new file on ${ServerNameProvider.name()}"
                 )
                 return@runBackground
             }
@@ -158,7 +158,7 @@ class RemoteFileManager(private val myProject: Project) {
                 if (output.exitCode != 0) {
                     MessageDialog.showWarning(
                         """
-                        Can't add file ${GitUIUtil.code(remotePath)} to git on ${Env.data.serverName}:
+                        Can't add file ${GitUIUtil.code(remotePath)} to git on ${ServerNameProvider.name()}:
                         
                         ${output.stderr}
                         """.trimIndent(),
@@ -199,7 +199,7 @@ class RemoteFileManager(private val myProject: Project) {
         if (remoteFile.origPath == null) return
 
         runConditionalModal(
-            myProject, "Rename ${remoteFile.path} to ${remoteFile.origPath} on ${Env.data.serverName}",
+            myProject, "Rename ${remoteFile.path} to ${remoteFile.origPath} on ${ServerNameProvider.name()}",
         ) {
             val renameOutput = renameRemoteFileWithGit(myProject, remoteFile.origPath, remoteFile.path)
             if (renameOutput.exitCode != 0) {

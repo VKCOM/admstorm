@@ -11,7 +11,7 @@ import com.intellij.openapi.vcs.changes.LocalCommitExecutor
 import com.intellij.openapi.vcs.changes.actions.BaseCommitExecutorAction
 import com.intellij.vcs.commit.commitProperty
 import com.vk.admstorm.AdmService
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 
 private val IS_PUSH_TO_GITLAB_AFTER_COMMIT_KEY = Key.create<Boolean>("Git.Commit.IsPushToGitlabAfterCommit")
 internal var CommitContext.isPushToGitlabAfterCommit: Boolean by commitProperty(IS_PUSH_TO_GITLAB_AFTER_COMMIT_KEY)
@@ -24,7 +24,7 @@ class GitCommitAndPushToGitlabExecutor : LocalCommitExecutor() {
     override fun getId(): String = ID
 
     override fun getActionText(): @NlsActions.ActionText String =
-        "Commit and Push → ${Env.data.serverName.ifEmpty { "server" }} → Gitlab…"
+        "Commit and Push → ${ServerNameProvider.name()} → Gitlab…"
 
     override fun useDefaultAction(): Boolean = false
 
@@ -45,7 +45,7 @@ class GitCommitAndPushToAdmExecutorAction : BaseCommitExecutorAction() {
             val templateText = workflowHandler.getCommitAndPushActionName()
 
             e.presentation.text =
-                templateText.removeSuffix("…") + " → ${Env.data.serverName.ifEmpty { "server" }} → Gitlab…"
+                templateText.removeSuffix("…") + " → ${ServerNameProvider.name()} → Gitlab…"
         }
 
         e.presentation.isEnabledAndVisible = e.project != null && AdmService.getInstance(e.project!!).needBeEnabled()

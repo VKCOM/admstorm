@@ -2,7 +2,7 @@ package com.vk.admstorm.git.sync.files
 
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 
 class NotSyncFilesViewerFactory(
     project: Project,
@@ -21,8 +21,8 @@ class NotSyncFilesViewerFactory(
                 null
             else
                 FilesContentViewer.Content(
-                    Env.data.serverName,
-                    "${Env.data.serverName} content",
+                    ServerNameProvider.name(),
+                    "${ServerNameProvider.name()} content",
                     remoteFile.path,
                     remoteContent,
                 )
