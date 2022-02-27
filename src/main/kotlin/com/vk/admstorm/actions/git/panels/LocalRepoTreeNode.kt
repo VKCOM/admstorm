@@ -4,7 +4,7 @@ import com.intellij.dvcs.push.ui.PushLogTreeUtil
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.ui.UIUtil
-import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.ServerNameProvider
 
 class LocalRepoTreeNode(private val myCurrentBranch: String) : TreeBaseNode() {
     companion object {
@@ -18,7 +18,7 @@ class LocalRepoTreeNode(private val myCurrentBranch: String) : TreeBaseNode() {
             PushLogTreeUtil.addTransparencyIfNeeded(renderer, SimpleTextAttributes.REGULAR_ATTRIBUTES, isChecked())
         renderer.append(myCurrentBranch)
         renderer.append(" " + UIUtil.rightArrow() + " ", repositoryDetailsTextAttributes)
-        renderer.append(Env.data.serverName, SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
+        renderer.append(ServerNameProvider.name(), SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
         renderer.append(SEPARATOR, repositoryDetailsTextAttributes)
         renderer.append(myCurrentBranch)
     }

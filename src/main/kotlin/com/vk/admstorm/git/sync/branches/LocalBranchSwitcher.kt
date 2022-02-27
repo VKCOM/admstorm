@@ -6,9 +6,9 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.ssh.LostConnectionHandler
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.branch.GitBrancher
 import git4idea.repo.GitRepositoryManager
 
@@ -69,8 +69,8 @@ class LocalBranchSwitcher(private val myProject: Project) {
         indicator: ProgressIndicator,
         onReady: Runnable? = null
     ) {
-        indicator.text2 = "Fetch $branchName from ${Env.data.serverName}"
-        val cmd = "git pull ${Env.data.serverName} $branchName"
+        indicator.text2 = "Fetch $branchName from ${ServerNameProvider.name()}"
+        val cmd = "git pull ${ServerNameProvider.name()} $branchName"
         val output = CommandRunner.runLocally(myProject, cmd)
 
         indicator.fraction = 0.5

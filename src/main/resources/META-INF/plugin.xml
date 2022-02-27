@@ -48,10 +48,14 @@
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
     <projectService serviceImplementation="com.vk.admstorm.AdmStormStartupActivity"/>
 
+    <!-- Run Anything Configuration -->
+    <configurationType implementation="com.vk.admstorm.configuration.runanything.RunAnythingConfigurationType"/>
+    <programRunner implementation="com.vk.admstorm.configuration.runanything.RunAnythingConfigurationRunner"/>
+
     <!-- KPHP Benchmarks Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationType"/>
     <runConfigurationProducer
-      implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationProducer"/>
+            implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationProducer"/>
     <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
                               implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
 
@@ -133,6 +137,13 @@
             class="com.vk.admstorm.actions.KphpPlaygroundAction"
             text="KPHP Playground">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.run.anything.on.server"
+            class="com.vk.admstorm.actions.RunAnythingOnServerAction"
+            text="Run Anything on Server">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <keyboard-shortcut first-keystroke="shift control S" keymap="$default"/>
     </action>
 
     <action id="com.vk.admstorm.adm.toolbar.label" class="com.vk.admstorm.actions.AdmToolbarLabelAction">

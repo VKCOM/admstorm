@@ -1,5 +1,6 @@
 package com.vk.admstorm.utils
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.PerformInBackgroundOption
@@ -122,5 +123,15 @@ object MyUtils {
                 LOG.info("End ConditionalModal task ('$title')")
             }
         })
+    }
+
+    fun <T> invokeAndWaitResult(block: () -> T): T {
+        var result: T? = null
+
+        ApplicationManager.getApplication().invokeAndWait {
+            result = block()
+        }
+
+        return result!!
     }
 }

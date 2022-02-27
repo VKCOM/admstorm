@@ -26,6 +26,7 @@ import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils.measureTimeValue
 import com.vk.admstorm.utils.MyUtils.runBackground
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.DialogManager
 import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.code
@@ -66,7 +67,7 @@ class PushToGitlabAction : AdmActionBase() {
 
             ApplicationManager.getApplication().invokeLater {
                 val dialog =
-                    PushOptionsDialog(project, "Push Commits to Gitlab from ${Env.data.serverName}", commits)
+                    PushOptionsDialog(project, "Push Commits to Gitlab from ${ServerNameProvider.name()}", commits)
                 DialogManager.show(dialog)
                 val choice = PushOptionsDialog.Choice.fromDialogExitCode(dialog.exitCode)
 
@@ -86,7 +87,7 @@ class PushToGitlabAction : AdmActionBase() {
         private val LOG = Logger.getInstance(PushToGitlabAction::class.java)
 
         private fun doPushToGitlabTask(project: Project, options: PushOptions) {
-            runBackground(project, "Push from ${Env.data.serverName} to Gitlab") {
+            runBackground(project, "Push from ${ServerNameProvider.name()} to Gitlab") {
                 doPushToGitlab(project, options)
             }
         }
@@ -142,7 +143,7 @@ class PushToGitlabAction : AdmActionBase() {
         private fun doDiscardChangesTask(project: Project): Boolean {
             return ProgressManager.getInstance().run(object : Task.WithResult<Boolean, Exception>(
                 project,
-                "Discard ${Env.data.serverName} changes",
+                "Discard ${ServerNameProvider.name()} changes",
                 true
             ) {
                 override fun compute(indicator: ProgressIndicator): Boolean {
@@ -154,7 +155,7 @@ class PushToGitlabAction : AdmActionBase() {
                                 
                                 ${output.stderr}
                             """.trimIndent(),
-                            "Discard ${Env.data.serverName} Changes Failed"
+                            "Discard ${ServerNameProvider.name()} Changes Failed"
                         )
                         return false
                     }
@@ -167,7 +168,7 @@ class PushToGitlabAction : AdmActionBase() {
         private fun doStashTask(project: Project): Boolean {
             return ProgressManager.getInstance().run(object : Task.WithResult<Boolean, Exception>(
                 project,
-                "Stash ${Env.data.serverName} changes",
+                "Stash ${ServerNameProvider.name()} changes",
                 true
             ) {
                 override fun compute(indicator: ProgressIndicator): Boolean {
@@ -179,7 +180,7 @@ class PushToGitlabAction : AdmActionBase() {
                                 
                                 ${output.stderr}
                             """.trimIndent(),
-                            "Stash ${Env.data.serverName} Failed"
+                            "Stash ${ServerNameProvider.name()} Failed"
                         )
                         return false
                     }
@@ -298,10 +299,10 @@ class PushToGitlabAction : AdmActionBase() {
         }
 
         private fun doPushToServerTask(project: Project, after: Runnable? = null) {
-            runBackground(project, "Push to ${Env.data.serverName}") { indicator ->
+            runBackground(project, "Push to ${ServerNameProvider.name()}") { indicator ->
                 indicator.text2 = "Waiting SSH connection"
 
-                val ok = measureTimeValue(LOG, "push to ${Env.data.serverName}") {
+                val ok = measureTimeValue(LOG, "push to ${ServerNameProvider.name()}") {
                     doPushToServer(project, force = false, null, indicator)
                 }
 
@@ -312,10 +313,10 @@ class PushToGitlabAction : AdmActionBase() {
         }
 
         private fun doForcePushToServerTask(project: Project, after: Runnable? = null) {
-            runBackground(project, "Force push to ${Env.data.serverName}") { indicator ->
+            runBackground(project, "Force push to ${ServerNameProvider.name()}") { indicator ->
                 indicator.text2 = "Waiting SSH connection"
 
-                val ok = measureTimeValue(LOG, "force push to ${Env.data.serverName}") {
+                val ok = measureTimeValue(LOG, "force push to ${ServerNameProvider.name()}") {
                     doPushToServer(project, force = true, after, indicator)
                 }
 
@@ -332,15 +333,15 @@ class PushToGitlabAction : AdmActionBase() {
             indicator: ProgressIndicator
         ): Boolean {
             val currentBranch = GitBranchUtil.getCurrentRepository(project)!!.currentBranch!!.name
-            LOG.info("Run push to ${Env.data.serverName} (current branch: '$currentBranch')")
+            LOG.info("Run push to ${ServerNameProvider.name()} (current branch: '$currentBranch')")
 
             val countNewCommits = GitUtils.countNewLocalCommits(project, currentBranch)
             LOG.info("Count new commits: $countNewCommits")
 
             val title = when (countNewCommits) {
                 -1, 0 -> "Everything up-to-date"
-                1 -> "Pushed 1 commit to<br>${Env.data.serverName}/$currentBranch"
-                else -> "Pushed $countNewCommits commits to<br>${Env.data.serverName}/$currentBranch"
+                1 -> "Pushed 1 commit to<br>${ServerNameProvider.name()}/$currentBranch"
+                else -> "Pushed $countNewCommits commits to<br>${ServerNameProvider.name()}/$currentBranch"
             }
 
             val output = GitUtils.pushToServer(project, currentBranch, force, indicator)
@@ -351,14 +352,14 @@ class PushToGitlabAction : AdmActionBase() {
 
                 MessageDialog.showWarning(
                     """
-                        It looks like git is having trouble pushing the current state to ${Env.data.serverName}. 
+                        It looks like git is having trouble pushing the current state to ${ServerNameProvider.name()}. 
                         
                         Try using ${code("Force Push")}.
                     """.trimIndent(),
-                    "Problem with Push to ${Env.data.serverName}"
+                    "Problem with Push to ${ServerNameProvider.name()}"
                 )
 
-                LOG.warn("Git Push to ${Env.data.serverName} Failed\n" + output.stderr)
+                LOG.warn("Git Push to ${ServerNameProvider.name()} Failed\n" + output.stderr)
                 return false
             }
 
@@ -380,14 +381,14 @@ class PushToGitlabAction : AdmActionBase() {
                 .withTitle(title)
                 .show()
 
-            LOG.info("Push to ${Env.data.serverName} done")
+            LOG.info("Push to ${ServerNameProvider.name()} done")
             return true
         }
     }
 
     private fun onCanceledSync() {
         AdmWarningNotification(
-            "Push Local → ${Env.data.serverName} → Gitlab was canceled due to unresolved sync issues"
+            "Push Local → ${ServerNameProvider.name()} → Gitlab was canceled due to unresolved sync issues"
         )
             .withTitle("Push canceled")
             .withActions(
@@ -407,6 +408,6 @@ class PushToGitlabAction : AdmActionBase() {
             e.presentation.isEnabledAndVisible = false
         }
 
-        e.presentation.text = "Push Local → ${Env.data.serverName.replaceFirstChar { it.uppercaseChar() }} → Gitlab"
+        e.presentation.text = "Push Local → ${ServerNameProvider.uppercase()} → Gitlab"
     }
 }

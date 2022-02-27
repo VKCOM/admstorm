@@ -4,9 +4,9 @@ import com.intellij.openapi.fileEditor.impl.LoadTextUtil
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FileStatus
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.files.FilesContentViewer
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.index.GitFileStatus
 
 class GitStatusFilesViewerFactory(
@@ -40,8 +40,8 @@ class GitStatusFilesViewerFactory(
                 null
             else
                 FilesContentViewer.Content(
-                    Env.data.serverName,
-                    "${Env.data.serverName} content",
+                    ServerNameProvider.name(),
+                    "${ServerNameProvider.name()} content",
                     remoteFilePath,
                     remoteFileContent,
                 )

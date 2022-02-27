@@ -6,15 +6,18 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.console.Console
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.KphpErrorsParser
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
+import com.vk.admstorm.utils.ServerNameProvider
 import java.util.function.BiConsumer
 import javax.swing.Icon
 
 class PushToRemoteExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "Push from ${Env.data.serverName} to Gitlab", command = command), project) {
+    BaseRunnableExecutor(
+        Config(name = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
+        project
+    ) {
 
     private var myOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
 

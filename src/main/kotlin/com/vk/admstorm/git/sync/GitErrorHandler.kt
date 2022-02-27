@@ -4,11 +4,11 @@ import com.intellij.execution.Output
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.settings.GitConflictResolutionStrategy
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.util.GitUIUtil.bold
 
 class GitErrorHandler(private val myProject: Project) {
@@ -104,6 +104,6 @@ class GitErrorHandler(private val myProject: Project) {
 
     private fun showGenericWarningDialog(output: Output) {
         LOG.warn("showGenericWarningDialog method has been called")
-        MessageDialog.showWarning(output.stderr, "${Env.data.serverName} Git Warning")
+        MessageDialog.showWarning(output.stderr, "${ServerNameProvider.name()} Git Warning")
     }
 }

@@ -14,12 +14,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ssh.RemoteFileObject
 import com.vk.admstorm.AdmStormStartupActivity
 import com.vk.admstorm.CommandRunner
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import net.schmizz.sshj.common.StreamCopier
 import net.schmizz.sshj.sftp.SFTPFileTransfer
 import net.schmizz.sshj.xfer.TransferListener
@@ -121,7 +121,7 @@ class TransferService(private var myProject: Project) {
                 }
 
                 val elapsed = System.currentTimeMillis() - startTime
-                LOG.info("Elapsed time to upload file ${localFile.path} to ${Env.data.serverName}: ${elapsed}ms")
+                LOG.info("Elapsed time to upload file ${localFile.path} to ${ServerNameProvider.name()}: ${elapsed}ms")
             }
         }
     }

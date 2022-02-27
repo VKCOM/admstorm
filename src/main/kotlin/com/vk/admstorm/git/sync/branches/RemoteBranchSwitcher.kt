@@ -10,6 +10,7 @@ import com.vk.admstorm.git.sync.GitErrorHandler
 import com.vk.admstorm.ssh.LostConnectionHandler
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.runBackground
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.GitNotificationIdsHolder
 import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.bold
@@ -35,12 +36,12 @@ class RemoteBranchSwitcher(
             return
         }
 
-        LOG.info("Start switch action to '$branchName' (force: $force) on ${Env.data.serverName}")
+        LOG.info("Start switch action to '$branchName' (force: $force) on ${ServerNameProvider.name()}")
         doSwitchTask(branchName, force, onReady)
     }
 
     private fun doSwitchTask(branchName: String, force: Boolean, onReady: Runnable? = null) {
-        runBackground(myProject, "Checkout to $branchName on ${Env.data.serverName}") {
+        runBackground(myProject, "Checkout to $branchName on ${ServerNameProvider.name()}") {
             switchAction(branchName, force, onReady)
         }
     }
@@ -51,7 +52,7 @@ class RemoteBranchSwitcher(
         } else branch
 
         if (!GitUtils.remoteBranchExist(myProject, branchName)) {
-            LOG.info("Branch '$branchName' doesn't exist on ${Env.data.serverName}")
+            LOG.info("Branch '$branchName' doesn't exist on ${ServerNameProvider.name()}")
 
             // If the branch does not exist, then we must first push
             // the local branch to server, in order to then switch to it.
@@ -80,19 +81,19 @@ class RemoteBranchSwitcher(
 
     private fun showSuccessMessage(branchName: String) {
         VcsNotifier.getInstance(myProject).notifySuccess(
-            GitNotificationIdsHolder.CHECKOUT_SUCCESS + ".${Env.data.serverName}", "",
-            "Checked out ${bold(code(branchName))} on ${Env.data.serverName}",
+            GitNotificationIdsHolder.CHECKOUT_SUCCESS + ".${ServerNameProvider.name()}", "",
+            "Checked out ${bold(code(branchName))} on ${ServerNameProvider.name()}",
             null
         )
-        LOG.info("Successfully switched to a branch '$branchName' on ${Env.data.serverName}")
+        LOG.info("Successfully switched to a branch '$branchName' on ${ServerNameProvider.name()}")
     }
 
     private fun switchActionIfBranchNotExist(branchName: String, onReady: Runnable?) {
-        val cmd = "git push --set-upstream ${Env.data.serverName} $branchName"
+        val cmd = "git push --set-upstream ${ServerNameProvider.name()} $branchName"
         val output = CommandRunner.runLocally(myProject, cmd)
 
         if (output.exitCode == 0) {
-            LOG.info("Local push '$branchName' with set-upstream to ${Env.data.serverName} completed successfully")
+            LOG.info("Local push '$branchName' with set-upstream to ${ServerNameProvider.name()} completed successfully")
             LOG.info("Started checkout on this branch")
 
             switch(branchName, false, onReady)
@@ -118,7 +119,7 @@ class RemoteBranchSwitcher(
     private fun doStashAndCheckout(branchName: String, onReady: Runnable?) {
         runBackground(
             myProject,
-            "Stash ${Env.data.serverName} changes and checkout to $branchName on ${Env.data.serverName}",
+            "Stash ${ServerNameProvider.name()} changes and checkout to $branchName on ${ServerNameProvider.name()}",
         ) {
             val output = GitUtils.remoteStash(myProject)
             if (output.exitCode != 0) {
@@ -128,7 +129,7 @@ class RemoteBranchSwitcher(
                         
                         ${output.stderr}
                     """.trimIndent(),
-                    "Problem with Stash on ${Env.data.serverName}"
+                    "Problem with Stash on ${ServerNameProvider.name()}"
                 )
                 return@runBackground
             }

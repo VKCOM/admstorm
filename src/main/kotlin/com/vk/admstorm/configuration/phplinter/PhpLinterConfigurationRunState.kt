@@ -12,6 +12,7 @@ import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.ServerNameProvider
 
 class PhpLinterConfigurationRunState(
     private val myEnv: ExecutionEnvironment,
@@ -51,7 +52,7 @@ class PhpLinterConfigurationRunState(
     }
 
     private fun onCanceledSync() {
-        AdmWarningNotification("Launch was canceled due to out of sync with the ${Env.data.serverName}")
+        AdmWarningNotification("Launch was canceled due to out of sync with the ${ServerNameProvider.name()}")
             .withTitle("PHP Linter run canceled")
             .withActions(
                 AdmNotification.Action("Synchronize...") { _, notification ->

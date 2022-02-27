@@ -14,6 +14,7 @@ import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.ServerNameProvider
 
 class KphpConfigurationRunState(
     private val myEnv: ExecutionEnvironment,
@@ -81,7 +82,7 @@ class KphpConfigurationRunState(
     }
 
     private fun onCanceledSync() {
-        AdmWarningNotification("Launch was canceled due to out of sync with the ${Env.data.serverName}")
+        AdmWarningNotification("Launch was canceled due to out of sync with the ${ServerNameProvider.name()}")
             .withTitle("KPHP run canceled")
             .withActions(
                 AdmNotification.Action("Synchronize...") { _, notification ->

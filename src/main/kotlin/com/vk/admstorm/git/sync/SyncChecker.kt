@@ -18,6 +18,7 @@ import com.vk.admstorm.git.sync.files.RemoteFile
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.MyUtils.measureTimeValue
 import com.vk.admstorm.utils.MyUtils.runBackground
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.branch.GitBranchUtil
 import java.util.function.Consumer
 
@@ -236,7 +237,7 @@ class SyncChecker(private var myProject: Project) {
     }
 
     fun doCheckSyncSilentlyTask(onCancelSync: Runnable?, onSync: Runnable) {
-        runBackground(myProject, "AdmStorm: Check sync with ${Env.data.serverName}") {
+        runBackground(myProject, "AdmStorm: Check sync with ${ServerNameProvider.name()}") {
             val state = measureTimeValue(LOG, "get current sync state") {
                 currentState()
             }

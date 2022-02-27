@@ -4,8 +4,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.util.ui.JBUI
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.MyUiUtils
+import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.DialogManager
 import git4idea.util.GitSimplePathsBrowser
 import java.awt.event.ActionEvent
@@ -45,7 +45,7 @@ class CheckoutConflictDialog(
     }
 
     init {
-        title = "Git Checkout Problem on ${Env.data.serverName}"
+        title = "Git Checkout Problem on ${ServerNameProvider.name()}"
 
         setOKButtonText("Stash and Checkout")
         setCancelButtonText("Don't Checkout")
