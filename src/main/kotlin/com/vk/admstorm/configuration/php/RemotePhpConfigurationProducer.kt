@@ -6,6 +6,9 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.PhpFileImpl
+import com.jetbrains.php.lang.psi.elements.PhpClass
+import com.jetbrains.php.lang.psi.elements.impl.FunctionImpl
+import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.utils.MyPathUtils
 
@@ -21,6 +24,14 @@ open class RemotePhpConfigurationProducer : LazyRunConfigurationProducer<RemoteP
         if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
 
         val el = context.location?.psiElement ?: return false
+
+        // if element for phpunit run icon
+        val parent = el.parent
+        if (el is PhpClass || parent is PhpClass ||
+            parent is MethodImpl || parent is FunctionImpl
+        ) {
+            return false
+        }
 
         val containingFile = el.containingFile
 
@@ -51,6 +62,15 @@ open class RemotePhpConfigurationProducer : LazyRunConfigurationProducer<RemoteP
         if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
 
         val el = sourceElement.get()
+
+        // if element for phpunit run icon
+        val parent = el.parent
+        if (el is PhpClass || parent is PhpClass ||
+            parent is MethodImpl || parent is FunctionImpl
+        ) {
+            return false
+        }
+
         val containingFile = el.containingFile
 
         if (el is PhpFileImpl || containingFile is PhpFileImpl) {
