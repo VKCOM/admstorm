@@ -35,7 +35,7 @@ data class LocalFile(
 
             val encoding = EncodingRegistry.getInstance().getEncoding(virtualFile, true)
 
-            val content = if (virtualFile != null)
+            val content = if (virtualFile != null && !virtualFile.fileType.isBinary)
                 ApplicationManager.getApplication().runReadAction(Computable {
                     LoadTextUtil.loadText(virtualFile).toString()
                 })
