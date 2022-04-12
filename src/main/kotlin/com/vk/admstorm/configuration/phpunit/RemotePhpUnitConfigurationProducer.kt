@@ -23,8 +23,13 @@ open class RemotePhpUnitConfigurationProducer :
         ConfigurationTypeUtil.findConfigurationType(RemotePhpUnitConfigurationType::class.java).configurationFactories[0]
 
     private fun isApiTest(element: PsiElement): Boolean {
-        val file = element.containingFile?.virtualFile ?: return false
-        return file.path.normalizeSlashes().contains("tests/api/")
+        val file = if (element is PsiDirectory)
+            element.virtualFile
+        else
+            element.containingFile?.virtualFile
+
+        if (file == null) return false
+        return file.path.normalizeSlashes().contains("tests/api")
     }
 
     override fun isConfigurationFromContext(
@@ -114,7 +119,7 @@ open class RemotePhpUnitConfigurationProducer :
             }
 
             val lastDir = File(filepath).name
-            val configName = "Remote $lastDir$suffixName"
+            val configName = "Remote '$lastDir'$suffixName"
 
             configuration.name = configName
             configuration.isDirectoryScope = true
