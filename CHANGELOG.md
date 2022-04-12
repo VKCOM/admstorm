@@ -8,6 +8,7 @@
 - Support for debug PHPUnit tests
 - Support for new API tests
 - New "Run Anything on Server" action
+- Auto import classes for KPHP Playground
 
 ### Fixed
 
