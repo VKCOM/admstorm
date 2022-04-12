@@ -10,7 +10,7 @@ import java.io.File
 object MyPathUtils {
     private var remoteRoot = ""
 
-    private fun resolveProjectDir(project: Project): String? {
+    fun resolveProjectDir(project: Project): String? {
         return project.guessProjectDir()?.path ?: return null
     }
 

@@ -54,6 +54,8 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
     private var myFileTextCombo: ComboBox<String>? = null
 
     private var myUseParatestCheckBox: JBCheckBox? = null
+    private var myConfigurationFileTextField: TextFieldWithBrowseButton? = null
+    private var myWorkingDirectoryTextField: JTextField? = null
     private var myAdditionalParameters: JTextField? = null
 
     override fun resetEditorFrom(demoRunConfiguration: RemotePhpUnitConfiguration) {
@@ -67,6 +69,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
         myFileTextCombo!!.addItem(demoRunConfiguration.filename)
 
         myUseParatestCheckBox!!.isSelected = demoRunConfiguration.useParatest
+        myConfigurationFileTextField!!.text = demoRunConfiguration.configPath
         myAdditionalParameters!!.text = demoRunConfiguration.additionalParameters
     }
 
@@ -81,6 +84,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
         demoRunConfiguration.filename = myFileTextCombo!!.selectedItem as String
 
         demoRunConfiguration.useParatest = myUseParatestCheckBox!!.isSelected
+        demoRunConfiguration.configPath = myConfigurationFileTextField!!.text
         demoRunConfiguration.additionalParameters = myAdditionalParameters!!.text
     }
 
@@ -157,6 +161,11 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
         myAdditionalPanel?.border = IdeBorderFactory.createTitledBorder("Other", false)
 
         myUseParatestCheckBox?.isVisible = false
+
+        myConfigurationFileTextField?.addBrowseFolderListener(
+            "Select PHPUnit Configuration", "Select PHPUnit Configuration to run", null,
+            FileChooserDescriptorFactory.createSingleFileDescriptor("xml")
+        )
 
         setVisibleComponents(directory = true, file = false, clazz = false, method = false)
     }

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Support for new API tests
+
 ## 1.1.0 — 21.02.2022
 
 New KPHP Playground, automatic reset of Yubikey in case of connection problems, automatic push to the server after a

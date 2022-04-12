@@ -13,7 +13,10 @@ class RemotePhpUnitConfigurationOptions : LocatableRunConfigurationOptions() {
     private val myFile = string("").provideDelegate(this, "phpUnitFile")
 
     private val myUseParatest = property(false).provideDelegate(this, "phpUnitUseParatest")
+    private val myConfigPath = string("").provideDelegate(this, "phpUnitConfigPath")
+    private val myWorkingDir = string("").provideDelegate(this, "phpUnitWorkingDir")
     private val myAdditionalParameters = string("").provideDelegate(this, "phpUnitAdditionalParameters")
+    private val myIsApiTest = property(false).provideDelegate(this, "phpUnitIsApiTest")
 
     var isDirectoryScope: Boolean
         get() = myIsDirectoryScope.getValue(this)
@@ -67,5 +70,23 @@ class RemotePhpUnitConfigurationOptions : LocatableRunConfigurationOptions() {
         get() = myAdditionalParameters.getValue(this) ?: ""
         set(value) {
             myAdditionalParameters.setValue(this, value)
+        }
+
+    var configPath: String
+        get() = myConfigPath.getValue(this) ?: ""
+        set(value) {
+            myConfigPath.setValue(this, value)
+        }
+
+    var workingDir: String
+        get() = myWorkingDir.getValue(this) ?: ""
+        set(value) {
+            myWorkingDir.setValue(this, value)
+        }
+
+    var isApiTest: Boolean
+        get() = myIsApiTest.getValue(this)
+        set(value) {
+            myIsApiTest.setValue(this, value)
         }
 }

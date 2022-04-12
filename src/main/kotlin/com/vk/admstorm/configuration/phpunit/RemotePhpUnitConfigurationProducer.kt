@@ -12,6 +12,8 @@ import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.jetbrains.php.phpunit.PhpUnitUtil
 import com.vk.admstorm.AdmService
+import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.extensions.normalizeSlashes
 import java.io.File
 
 open class RemotePhpUnitConfigurationProducer :
@@ -19,6 +21,16 @@ open class RemotePhpUnitConfigurationProducer :
 
     override fun getConfigurationFactory() =
         ConfigurationTypeUtil.findConfigurationType(RemotePhpUnitConfigurationType::class.java).configurationFactories[0]
+
+    private fun isApiTest(element: PsiElement): Boolean {
+        val file = if (element is PsiDirectory)
+            element.virtualFile
+        else
+            element.containingFile?.virtualFile
+
+        if (file == null) return false
+        return file.path.normalizeSlashes().contains("tests/api")
+    }
 
     override fun isConfigurationFromContext(
         configuration: RemotePhpUnitConfiguration,
@@ -88,16 +100,26 @@ open class RemotePhpUnitConfigurationProducer :
         if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
 
         val filepath = context.location?.virtualFile?.path ?: return false
+        val element = sourceElement.get()
 
-        val el = sourceElement.get()
+        val isApi = isApiTest(element)
+        val suffixName = if (isApi) " API Test" else ""
+        configuration.isApiTest = isApi
 
-        if (el is PsiDirectory) {
-            if (!el.virtualFile.path.contains("tests")) {
+        val configPath = MyPathUtils.resolveProjectDir(configuration.project) + if (isApi)
+            "/tests/api/phpunit.xml"
+        else
+            "/phpunit.xml"
+
+        configuration.configPath = configPath
+
+        if (element is PsiDirectory) {
+            if (!element.virtualFile.path.contains("tests")) {
                 return false
             }
 
             val lastDir = File(filepath).name
-            val configName = "Remote $lastDir"
+            val configName = "Remote '$lastDir'$suffixName"
 
             configuration.name = configName
             configuration.isDirectoryScope = true
@@ -106,15 +128,15 @@ open class RemotePhpUnitConfigurationProducer :
             return true
         }
 
-        if (el is PhpFile) {
-            if (!PhpUnitUtil.isPhpUnitTestFile(el)) {
+        if (element is PhpFile) {
+            if (!PhpUnitUtil.isPhpUnitTestFile(element)) {
                 return false
             }
 
-            val klass = PhpUnitUtil.findTestClass(el) ?: return false
+            val klass = PhpUnitUtil.findTestClass(element) ?: return false
 
             val className = klass.name
-            val configName = "Remote $className"
+            val configName = "Remote $className$suffixName"
 
             configuration.name = configName
             configuration.className = klass.fqn
@@ -125,15 +147,15 @@ open class RemotePhpUnitConfigurationProducer :
             return true
         }
 
-        if (el.parent is PhpClass) {
-            val klass = el.parent as PhpClass
+        if (element.parent is PhpClass) {
+            val klass = element.parent as PhpClass
 
             if (!PhpUnitUtil.isTestClass(klass)) {
                 return false
             }
 
             val className = klass.name
-            val configName = "Remote $className"
+            val configName = "Remote $className$suffixName"
 
             configuration.name = configName
             configuration.className = klass.fqn
@@ -143,14 +165,14 @@ open class RemotePhpUnitConfigurationProducer :
             return true
         }
 
-        if (el.parent is MethodImpl) {
-            val method = el.parent as MethodImpl
+        if (element.parent is MethodImpl) {
+            val method = element.parent as MethodImpl
             val klass = PsiTreeUtil.findFirstParent(method) { parent ->
                 parent is PhpClass
             } as PhpClass? ?: return false
 
             val className = klass.name
-            val configName = "Remote $className::${method.name}"
+            val configName = "Remote $className::${method.name}$suffixName"
 
             configuration.name = configName
             configuration.className = klass.fqn
