@@ -4,8 +4,15 @@
 
 ### Added
 
-- Support for new API tests
+- Support for debug PHP scripts
 - Support for debug PHPUnit tests
+- Support for new API tests
+- New "Run Anything on Server" action
+
+### Fixed
+
+- Several bugs with tests run configuration
+- Exception about impossibility to get text from binary file
 
 ## 1.1.0 — 21.02.2022
 
