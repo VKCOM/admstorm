@@ -29,11 +29,15 @@ class RemotePhpUnitConfigurationRunState(
             exec: Executor,
             command: String,
             env: ExecutionEnvironment,
-            runConfig: RemotePhpUnitConfiguration
+            runConfig: RemotePhpUnitConfiguration,
         ): DefaultExecutionResult? {
             if (!SshConnectionService.getInstance(env.project).isConnectedOrWarning()) {
                 return null
             }
+
+            val workingDir =
+                if (!runConfig.isApiTest) null
+                else "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
 
             val consoleProperties = RemotePhpUnitConsoleProperties(runConfig, exec)
             val console = SMTestRunnerConnectionUtil
@@ -42,7 +46,8 @@ class RemotePhpUnitConfigurationRunState(
                     consoleProperties
                 ) as SMTRunnerConsoleView
 
-            val handler = MySshUtils.exec(env.project, command) ?: return null
+            val fullCommand = if (workingDir != null) "cd $workingDir && $command" else command
+            val handler = MySshUtils.exec(env.project, fullCommand) ?: return null
 
             console.attachToProcess(handler)
 
@@ -86,12 +91,16 @@ class RemotePhpUnitConfigurationRunState(
     }
 
     private fun buildCommand(): String {
-        val phpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
+        val defaultPhpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
+        val phpUnitXml =
+            if (myRunConfiguration.configPath.isEmpty()) defaultPhpUnitXml
+            else MyPathUtils.remotePathByLocalPath(myEnv.project, myRunConfiguration.configPath)
+
         val phpunit =
             if (myRunConfiguration.useParatest)
                 Env.data.phpunitCommand.replace("phpunit", "paratest")
             else
-                Env.data.phpunitCommand
+                "${Env.data.projectRoot}/vendor/bin/phpunit"
         val additional = myRunConfiguration.additionalParameters
         val base = "$phpunit --teamcity --configuration $phpUnitXml $additional"
 

@@ -71,6 +71,24 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
             options.additionalParameters = value
         }
 
+    var configPath: String
+        get() = options.configPath
+        set(value) {
+            options.configPath = value
+        }
+
+    var workingDir: String
+        get() = options.workingDir
+        set(value) {
+            options.workingDir = value
+        }
+
+    var isApiTest: Boolean
+        get() = options.isApiTest
+        set(value) {
+            options.isApiTest = value
+        }
+
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         element.writeBool("isDirectoryScope", isDirectoryScope)
@@ -81,7 +99,10 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
         element.writeString("method", method)
         element.writeString("filename", filename)
         element.writeBool("useParatest", useParatest)
+        element.writeString("configPath", configPath)
+        element.writeString("workingDir", workingDir)
         element.writeString("additionalParameters", additionalParameters)
+        element.writeBool("isApiTest", isApiTest)
     }
 
     override fun readExternal(element: Element) {
@@ -94,7 +115,10 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
         element.readString("method")?.let { method = it }
         element.readString("filename")?.let { filename = it }
         element.readBool("useParatest")?.let { useParatest = it }
+        element.readString("configPath")?.let { configPath = it }
+        element.readString("workingDir")?.let { workingDir = it }
         element.readString("additionalParameters")?.let { additionalParameters = it }
+        element.readBool("isApiTest")?.let { isApiTest = it }
     }
 
     override fun getConfigurationEditor() = RemotePhpUnitConfigurationEditor(project)
