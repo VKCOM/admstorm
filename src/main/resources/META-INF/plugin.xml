@@ -78,6 +78,7 @@
     <configurationType implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationType"/>
     <runConfigurationProducer
       implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
+    <programRunner implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationRunner"/>
 
     <!-- Builders Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationType"/>
