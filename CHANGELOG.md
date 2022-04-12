@@ -5,6 +5,7 @@
 ### Added
 
 - Support for new API tests
+- Support for debug PHPUnit tests
 
 ## 1.1.0 — 21.02.2022
 
