@@ -4,19 +4,17 @@ import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.runner.SMTestProxy
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
-import com.intellij.openapi.application.ApplicationManager
 import com.vk.admstorm.env.Env
-import com.vk.admstorm.git.sync.SyncChecker
-import com.vk.admstorm.notifications.AdmNotification
-import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MySshUtils
+import com.vk.admstorm.utils.PhpDebugUtils
 import java.io.File
 
 class RemotePhpUnitConfigurationRunState(
@@ -26,12 +24,16 @@ class RemotePhpUnitConfigurationRunState(
 
     companion object {
         fun executeRemotePhpUnitCommand(
-            exec: Executor,
+            exec: Executor?,
             command: String,
             env: ExecutionEnvironment,
             runConfig: RemotePhpUnitConfiguration,
         ): DefaultExecutionResult? {
             if (!SshConnectionService.getInstance(env.project).isConnectedOrWarning()) {
+                return null
+            }
+
+            if (exec == null) {
                 return null
             }
 
@@ -62,24 +64,6 @@ class RemotePhpUnitConfigurationRunState(
 
             return result
         }
-    }
-
-    private fun doCheckSync() {
-        SyncChecker.getInstance(myEnv.project).doCheckSyncSilentlyTask({
-            onCanceledSync()
-        }) {}
-    }
-
-    private fun onCanceledSync() {
-        AdmWarningNotification("Current launch may not be correct due to out of sync")
-            .withTitle("Launch on out of sync")
-            .withActions(
-                AdmNotification.Action("Synchronize...") { _, notification ->
-                    notification.expire()
-                    SyncChecker.getInstance(myEnv.project).doCheckSyncSilentlyTask({}, {})
-                }
-            )
-            .show()
     }
 
     private fun getClassNameFromFQN(name: String): String {
@@ -125,12 +109,31 @@ class RemotePhpUnitConfigurationRunState(
         return base
     }
 
-    override fun execute(exec: Executor, runner: ProgramRunner<*>): ExecutionResult? {
-        ApplicationManager.getApplication().invokeAndWait {
-            doCheckSync()
+    override fun execute(exec: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+        if (exec is DefaultDebugExecutor) {
+            return runPhpUnitDebug(exec)
         }
 
-        val command = buildCommand()
-        return executeRemotePhpUnitCommand(exec, command, myEnv, myRunConfiguration)
+        return runPhpUnit(exec)
+    }
+
+    private fun runPhpUnitDebug(exec: Executor?): ExecutionResult? {
+        val project = myEnv.project
+        PhpDebugUtils.enablePhpDebug(project)
+        val ok = PhpDebugUtils.checkSshTunnel(project) { runPhpUnitDebug(exec) }
+        if (!ok) {
+            return null
+        }
+
+        PhpDebugUtils.showNotificationAboutDelay(project)
+        val command = buildCommand().removePrefix("vk ")
+        val commandWithoutPhpUnit = command.substring(command.indexOf(' ') + 1)
+        val fullCommand = "source ~/.php_debug && php_debug_test $commandWithoutPhpUnit"
+
+        return executeRemotePhpUnitCommand(exec, fullCommand, myEnv, myRunConfiguration)
+    }
+
+    private fun runPhpUnit(exec: Executor?): ExecutionResult? {
+        return executeRemotePhpUnitCommand(exec, buildCommand(), myEnv, myRunConfiguration)
     }
 }

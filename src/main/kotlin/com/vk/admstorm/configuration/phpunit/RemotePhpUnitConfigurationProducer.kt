@@ -89,7 +89,9 @@ open class RemotePhpUnitConfigurationProducer :
             return false
         }
 
-        return configuration.className == klass.fqn && configuration.filename == file.virtualFile.path
+        return configuration.className == klass.fqn &&
+                configuration.filename == file.virtualFile.path &&
+                configuration.isClassScope
     }
 
     override fun setupConfigurationFromContext(

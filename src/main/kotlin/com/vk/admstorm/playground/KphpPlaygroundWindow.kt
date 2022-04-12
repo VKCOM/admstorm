@@ -114,7 +114,12 @@ require_once "vendor/autoload.php";
             LOG.warn("Unexpected exception while create temp file '${tempFile.path}'", e)
         }
 
-        val tmpVirtualFile = LocalFileSystem.getInstance().findFileByIoFile(tempFile)!!
+        val tmpVirtualFile = LocalFileSystem.getInstance().findFileByIoFile(tempFile)
+        if (tmpVirtualFile == null) {
+            LOG.info("kphp_script_dummy.php not found")
+            throw IllegalStateException("kphp_script_dummy.php not found")
+        }
+
         val document = FileDocumentManager.getInstance().getDocument(tmpVirtualFile)!!
 
         myScriptFile = tmpVirtualFile

@@ -10,14 +10,17 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.ServerNameProvider
+import kotlin.reflect.KClass
 
 abstract class WithSshConfigurationRunner(
     private val withDebug: Boolean = false,
+    private val inEDT: Boolean = false,
+    private val configurationClass: KClass<*>,
 ) : ProgramRunner<RunnerSettings?> {
 
     override fun canRun(s: String, runProfile: RunProfile): Boolean {
         return when {
-            runProfile !is WithSshConfiguration -> false
+            !runProfile.javaClass.isAssignableFrom(configurationClass.java) -> false
             s == "Run" -> true
             withDebug && s == "Debug" -> true
             else -> false
@@ -33,17 +36,21 @@ abstract class WithSshConfigurationRunner(
     }
 
     private fun runWithSyncCheck(environment: ExecutionEnvironment) {
-        SyncChecker.getInstance(environment.project).doCheckSyncSilentlyTask({
-            onCanceledSync(environment)
-        }) {
-            ApplicationManager.getApplication().invokeAndWait {
-                val state = environment.state
-
+        SyncChecker.getInstance(environment.project).doCheckSyncSilentlyTask({ onCanceledSync(environment) }) {
+            if (inEDT) {
+                ApplicationManager.getApplication().invokeLater {
+                    run(environment)
+                }
+            } else {
                 ApplicationManager.getApplication().executeOnPooledThread {
-                    state?.execute(environment.executor, this)
+                    run(environment)
                 }
             }
         }
+    }
+
+    protected open fun run(environment: ExecutionEnvironment) {
+        environment.state?.execute(environment.executor, this)
     }
 
     private fun onCanceledSync(environment: ExecutionEnvironment) {
