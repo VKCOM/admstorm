@@ -13,24 +13,30 @@ import javax.swing.JComponent
 
 class PlaygroundFromSelectionAction : AdmActionBase() {
     class OptionsDialog(project: Project) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
+        private val myImportClassesCheckBox = JBCheckBox("Auto import classes", true)
         private val mySurroundWithVarDumpCheckBox = JBCheckBox("Surround with var_dump() call")
 
         init {
-            title = "Options"
+            title = "KPHP Playground Options"
             init()
         }
 
         fun isSorroundWithVarDump() = mySurroundWithVarDumpCheckBox.isSelected
+        fun isImportClasses() = myImportClassesCheckBox.isSelected
 
         override fun createCenterPanel(): JComponent {
-            return JBUI.Panels.simplePanel(mySurroundWithVarDumpCheckBox).apply {
-                preferredSize = JBDimension(300, 45)
-            }
+            return JBUI.Panels.simplePanel()
+                .addToTop(myImportClassesCheckBox)
+                .addToBottom(mySurroundWithVarDumpCheckBox)
+                .apply {
+                    preferredSize = JBDimension(300, 47)
+                }
         }
     }
 
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
         val editor = e.getRequiredData(CommonDataKeys.EDITOR)
+        val file = e.getRequiredData(CommonDataKeys.PSI_FILE)
         val primaryCaret = editor.caretModel.primaryCaret
 
         val dialog = OptionsDialog(e.project!!)
@@ -44,7 +50,7 @@ class PlaygroundFromSelectionAction : AdmActionBase() {
             primaryCaret.selectedText!!
         }
 
-        KphpPlaygroundWindow(e.project!!).withCode(code)
+        KphpPlaygroundWindow(e.project!!).withCode(file, dialog.isImportClasses(), code)
     }
 
     override fun beforeUpdate(e: AnActionEvent) {

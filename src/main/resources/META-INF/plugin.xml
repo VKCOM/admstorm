@@ -137,7 +137,7 @@
     <action id="com.vk.admstorm.create.kphp.playground.from.selection"
             class="com.vk.admstorm.actions.PlaygroundFromSelectionAction"
             text="Execute Selected in Playground">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
     </action>
 
     <action id="com.vk.admstorm.kphp.playground"

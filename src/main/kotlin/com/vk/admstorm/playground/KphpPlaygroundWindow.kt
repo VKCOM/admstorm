@@ -22,15 +22,21 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.util.ui.JBUI
 import com.jetbrains.php.lang.PhpFileType
+import com.jetbrains.php.lang.psi.PhpPsiElementFactory
+import com.jetbrains.php.lang.psi.elements.ClassReference
+import com.jetbrains.php.lang.psi.elements.PhpUse
 import com.vk.admstorm.actions.ActionToolbarFastEnableAction
 import com.vk.admstorm.configuration.kphp.KphpScriptRunner
 import com.vk.admstorm.console.Console
+import com.vk.admstorm.psi.PhpRecursiveElementVisitor
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyKphpUtils.scriptBinaryPath
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
@@ -45,7 +51,7 @@ class KphpPlaygroundWindow(private val myProject: Project) {
     companion object {
         private val LOG = logger<KphpPlaygroundWindow>()
 
-        private const val DEFAULT_TEXT = """<?php
+        private const val GENERATED_FILE_HEADER = """<?php
 
 #ifndef KPHP
 require_once "www/autoload.php";
@@ -129,10 +135,8 @@ require_once "vendor/autoload.php";
         val documentIsEmpty = document.textLength == 0
         if (documentIsEmpty) {
             WriteCommandAction.runWriteCommandAction(myProject) {
-                document.setText(DEFAULT_TEXT)
-
+                document.setText(GENERATED_FILE_HEADER)
                 myEditor.caretModel.moveToOffset(100)
-
                 PsiDocumentManager.getInstance(myProject).doPostponedOperationsAndUnblockDocument(document)
             }
         }
@@ -315,8 +319,8 @@ require_once "vendor/autoload.php";
         myWrapper.show()
     }
 
-    fun withCode(code: String) {
-        val template = DEFAULT_TEXT + code.fixIndent().trimIndent() + "\n\n"
+    fun withCode(file: PsiFile, importClasses: Boolean, code: String) {
+        val template = GENERATED_FILE_HEADER + processCode(file, importClasses, code) + "\n\n"
 
         val document = ApplicationManager.getApplication().runReadAction(Computable {
             FileDocumentManager.getInstance().getDocument(myScriptFile)
@@ -337,6 +341,35 @@ require_once "vendor/autoload.php";
         ApplicationManager.getApplication().invokeLater {
             runCompilationAction()
         }
+    }
+
+    private fun processCode(originalFile: PsiFile, importClasses: Boolean, code: String): String {
+        val useStatements = if (importClasses) generateUseStatements(originalFile, code) else ""
+        return useStatements + code.fixIndent().trimIndent()
+    }
+
+    private fun generateUseStatements(originalFile: PsiFile, code: String): String {
+        val file = PhpPsiElementFactory.createPsiFileFromText(myProject, code)
+
+        val uses = PsiTreeUtil.findChildrenOfType(originalFile, PhpUse::class.java)
+        val neededUses = mutableListOf<PhpUse>()
+
+        file.accept(object : PhpRecursiveElementVisitor() {
+            override fun visitPhpClassReference(classReference: ClassReference?) {
+                val use = uses.find { it.targetReference?.name == classReference?.name } ?: return
+
+                val alreadyAdded = neededUses.find { it.parent.text == use.parent.text } != null
+                if (!alreadyAdded) {
+                    neededUses.add(use)
+                }
+            }
+        })
+
+        if (neededUses.isNotEmpty()) {
+            return neededUses.joinToString("\n") { it.parent.text } + "\n\n"
+        }
+
+        return ""
     }
 
     private fun dispose() {
