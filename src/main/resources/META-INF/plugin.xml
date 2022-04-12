@@ -150,7 +150,7 @@
             class="com.vk.admstorm.actions.RunAnythingOnServerAction"
             text="Run Anything on Server">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
-      <keyboard-shortcut first-keystroke="shift control S" keymap="$default"/>
+      <keyboard-shortcut first-keystroke="shift control W" keymap="$default"/>
     </action>
 
     <action id="com.vk.admstorm.adm.toolbar.label" class="com.vk.admstorm.actions.AdmToolbarLabelAction">
