@@ -356,7 +356,9 @@ require_once "vendor/autoload.php";
 
         file.accept(object : PhpRecursiveElementVisitor() {
             override fun visitPhpClassReference(classReference: ClassReference?) {
-                val use = uses.find { it.targetReference?.name == classReference?.name } ?: return
+                val use = uses.find {
+                    it.targetReference?.name == classReference?.name || it.aliasName == classReference?.name
+                } ?: return
 
                 val alreadyAdded = neededUses.find { it.parent.text == use.parent.text } != null
                 if (!alreadyAdded) {
