@@ -363,19 +363,7 @@ class PushToGitlabAction : AdmActionBase() {
                 return false
             }
 
-            LOG.info("Run 'git reset --hard'")
-            val hardResetOutput = GitUtils.remoteHardReset(project)
-            if (hardResetOutput.exitCode != 0) {
-                MessageDialog.showWarning(
-                    """
-                        Unable to execute ${code("git reset --hard")}
-                        
-                        ${hardResetOutput.stderr}
-                    """.trimIndent(),
-                    "Hard Reset Failed"
-                )
-                LOG.warn("Unable to execute 'git reset --hard': ${hardResetOutput.stderr}")
-            }
+            GitUtils.remoteDropFiles(project)
 
             AdmNotification()
                 .withTitle(title)

@@ -10,6 +10,10 @@
 - New "Run Anything on Server" action
 - Auto import classes for KPHP Playground
 
+### Other improvements
+
+- Better handling of git pull problems
+
 ### Fixed
 
 - Several bugs with tests run configuration

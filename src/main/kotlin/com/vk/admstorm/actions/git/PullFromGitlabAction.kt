@@ -7,12 +7,11 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.actions.AdmActionBase
 import com.vk.admstorm.git.GitUtils
-import com.vk.admstorm.git.sync.GitErrorHandler
 import com.vk.admstorm.git.sync.SyncChecker
+import com.vk.admstorm.git.sync.conflicts.GitPullProblemsHandler
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.LostConnectionHandler
-import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
 
@@ -45,49 +44,86 @@ class PullFromGitlabAction : AdmActionBase() {
     }
 
     companion object {
-        private fun doPullFromGitlabTask(project: Project, after: Runnable) {
+        /**
+         * Starts task for pulling from Gitlab to remote.
+         */
+        private fun doPullFromGitlabTask(project: Project, onReady: Runnable) {
             runBackground(project, "Pull from Gitlab to ${ServerNameProvider.name()}") { indicator ->
                 indicator.isIndeterminate = false
-                val ok = doPullFromGitlab(project, indicator)
-                if (ok) {
-                    after.run()
-                }
+                doPullFromGitlab(project, indicator, onReady)
             }
         }
 
-        fun doPullToLocalTask(project: Project, after: Runnable? = null) {
-            runBackground(project, "Pull from ${ServerNameProvider.name()} to local") { indicator ->
-                indicator.isIndeterminate = false
-                doPullToLocal(project, indicator)
-                after?.run()
-            }
-        }
-
-        private fun doPullFromGitlab(project: Project, indicator: ProgressIndicator): Boolean {
+        private fun doPullFromGitlab(project: Project, indicator: ProgressIndicator, onReady: Runnable?) {
             val currentBranch = GitUtils.remoteCurrentBranch(project)
             val output = GitUtils.remotePullFromGitlab(project, currentBranch, indicator)
             if (output.exitCode != 0) {
-                GitErrorHandler(project).handlePull(output, currentBranch)
-                return false
+                if (LostConnectionHandler.handle(project, output) {
+                        doPullFromGitlab(project, indicator, onReady)
+                    }) return
+
+                GitPullProblemsHandler(project).handle(output, currentBranch, {
+                    doRemoteStashAndPull(project, indicator, onReady)
+                }, {
+                    doRemoteForcePull(project, indicator, onReady)
+                })
+                return
             }
 
             showNotification(output, "Gitlab", ServerNameProvider.name())
-            return true
+            onReady?.run()
         }
 
-        private fun doPullToLocal(project: Project, indicator: ProgressIndicator) {
-            val currentBranch = GitUtils.remoteCurrentBranch(project)
-            val output = GitUtils.pullFromServer(project, currentBranch, indicator)
+        private fun doRemoteForcePull(project: Project, indicator: ProgressIndicator, onReady: Runnable?) {
+            GitUtils.remoteDropFiles(project)
+            doPullFromGitlab(project, indicator, onReady)
+        }
+
+        private fun doRemoteStashAndPull(project: Project, indicator: ProgressIndicator, onReady: Runnable?) {
+            GitUtils.remoteStashAndAction(project) {
+                doPullFromGitlab(project, indicator, onReady)
+            }
+        }
+
+        /**
+         * Starts task for pulling from remote to local.
+         */
+        fun doPullToLocalTask(project: Project, onReady: Runnable? = null) {
+            runBackground(project, "Pull from ${ServerNameProvider.name()} to local") { indicator ->
+                indicator.isIndeterminate = false
+                doPullToLocal(project, indicator, onReady)
+            }
+        }
+
+        private fun doPullToLocal(project: Project, indicator: ProgressIndicator, onReady: Runnable? = null) {
+            val currentRemoteBranch = GitUtils.remoteCurrentBranch(project)
+            val output = GitUtils.pullFromServer(project, currentRemoteBranch, indicator)
             if (output.exitCode != 0) {
                 if (LostConnectionHandler.handle(project, output) {
                         doPullToLocalTask(project)
                     }) return
 
-                MessageDialog.showWarning(output.stderr, "Git Pull to Local from ${ServerNameProvider.name()} Failed")
+                GitPullProblemsHandler(project).handle(output, currentRemoteBranch, {
+                    doLocalStashAndPull(project, indicator, onReady)
+                }, {
+                    doLocalForcePull(project, indicator, onReady)
+                })
                 return
             }
 
             showNotification(output, ServerNameProvider.name(), "local")
+            onReady?.run()
+        }
+
+        private fun doLocalForcePull(project: Project, indicator: ProgressIndicator, onReady: Runnable?) {
+            GitUtils.localDropFiles(project)
+            doPullToLocal(project, indicator, onReady)
+        }
+
+        private fun doLocalStashAndPull(project: Project, indicator: ProgressIndicator, onReady: Runnable?) {
+            GitUtils.localStashAndAction(project) {
+                doPullToLocal(project, indicator, onReady)
+            }
         }
 
         private fun showNotification(output: Output, from: String, to: String) {
@@ -114,6 +150,7 @@ class PullFromGitlabAction : AdmActionBase() {
     override fun update(e: AnActionEvent) {
         if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
             e.presentation.isEnabledAndVisible = false
+            return
         }
 
         e.presentation.text = "Pull Gitlab → ${ServerNameProvider.uppercase()} → Local"
