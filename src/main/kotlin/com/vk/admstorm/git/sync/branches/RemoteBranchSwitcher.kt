@@ -6,9 +6,10 @@ import com.intellij.openapi.vcs.VcsNotifier
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.GitUtils
-import com.vk.admstorm.git.sync.GitErrorHandler
+import com.vk.admstorm.git.GitUtils.remoteStashAndAction
+import com.vk.admstorm.git.sync.conflicts.GitCheckoutProblemsHandler
+import com.vk.admstorm.git.sync.conflicts.GitProblemsHandlerBase
 import com.vk.admstorm.ssh.LostConnectionHandler
-import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.GitNotificationIdsHolder
@@ -16,10 +17,7 @@ import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.bold
 import git4idea.util.GitUIUtil.code
 
-class RemoteBranchSwitcher(
-    private val myProject: Project,
-    private val myOnGitConflictCanceled: Runnable? = null
-) {
+class RemoteBranchSwitcher(private val myProject: Project, private val myOnGitConflictCanceled: Runnable? = null) {
     companion object {
         private val LOG = Logger.getInstance(RemoteBranchSwitcher::class.java)
     }
@@ -68,13 +66,13 @@ class RemoteBranchSwitcher(
             return
         }
 
-        val state = GitErrorHandler(myProject).handleCheckout(output, {
+        val state = GitCheckoutProblemsHandler(myProject).handle(output, {
             doStashAndCheckout(branchName, onReady)
         }) {
             doForceCheckout(branchName, onReady)
         }
 
-        if (state == GitErrorHandler.State.Canceled) {
+        if (state == GitProblemsHandlerBase.State.Canceled) {
             myOnGitConflictCanceled?.run()
         }
     }
@@ -105,7 +103,7 @@ class RemoteBranchSwitcher(
                 switchActionIfBranchNotExist(branchName, onReady)
             }) return
 
-        GitErrorHandler(myProject).handleCheckout(output, {
+        GitCheckoutProblemsHandler(myProject).handle(output, {
             doStashAndCheckout(branchName, onReady)
         }) {
             doForceCheckout(branchName, onReady)
@@ -117,23 +115,7 @@ class RemoteBranchSwitcher(
     }
 
     private fun doStashAndCheckout(branchName: String, onReady: Runnable?) {
-        runBackground(
-            myProject,
-            "Stash ${ServerNameProvider.name()} changes and checkout to $branchName on ${ServerNameProvider.name()}",
-        ) {
-            val output = GitUtils.remoteStash(myProject)
-            if (output.exitCode != 0) {
-                MessageDialog.showError(
-                    """
-                        Unable to execute ${code("git stash")}
-                        
-                        ${output.stderr}
-                    """.trimIndent(),
-                    "Problem with Stash on ${ServerNameProvider.name()}"
-                )
-                return@runBackground
-            }
-
+        remoteStashAndAction(myProject) {
             switchAction(branchName, false, onReady)
         }
     }

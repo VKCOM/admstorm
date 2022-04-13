@@ -1,13 +1,17 @@
 package com.vk.admstorm.git
 
 import com.intellij.execution.Output
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.actions.git.listeners.GitPullProgressListener
 import com.vk.admstorm.actions.git.listeners.GitPushProgressListener
 import com.vk.admstorm.git.sync.commits.Commit
+import com.vk.admstorm.ui.MessageDialog
+import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
+import git4idea.util.GitUIUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -16,6 +20,8 @@ import java.util.*
  * both in the local repository and on the development server.
  */
 object GitUtils {
+    private val LOG = logger<GitUtils>()
+
     /**
      * Base command for [pushToServer]
      */
@@ -211,10 +217,22 @@ object GitUtils {
      *   `AdmStorm automatic synchronization (dd.M.yyyy hh:mm:ss)`
      */
     fun remoteStash(project: Project): Output {
+        return CommandRunner.runRemotely(project, stashCommand.withParam(stashMessage()))
+    }
+
+    /**
+     * Creates a new `git stash` on the local with the following name:
+     *
+     *   `AdmStorm generated stash (dd.M.yyyy hh:mm:ss)`
+     */
+    fun localStash(project: Project): Output {
+        return CommandRunner.runLocally(project, stashCommand.withParam(stashMessage()))
+    }
+
+    private fun stashMessage(): String {
         val sdf = SimpleDateFormat("dd.M.yyyy hh:mm:ss")
         val currentDate = sdf.format(Date())
-        val message = "\"AdmStorm automatic synchronization ($currentDate)\""
-        return CommandRunner.runRemotely(project, stashCommand.withParam(message))
+        return "\"AdmStorm generated stash ($currentDate)\""
     }
 
     /**
@@ -305,10 +323,14 @@ object GitUtils {
      * Launches hard reset on the development server.
      */
     fun remoteHardReset(project: Project): Output {
-        return CommandRunner.runRemotely(
-            project,
-            hardResetCommand
-        )
+        return CommandRunner.runRemotely(project, hardResetCommand)
+    }
+
+    /**
+     * Launches hard reset on the local.
+     */
+    fun localHardReset(project: Project): Output {
+        return CommandRunner.runLocally(project, hardResetCommand)
     }
 
     /**
@@ -438,6 +460,76 @@ object GitUtils {
                 .withParam(permissions)
                 .withParam(filename)
         )
+    }
+
+    fun remoteStashAndAction(project: Project, onReady: Runnable) {
+        runBackground(project, "Stash ${ServerNameProvider.name()} changes") {
+            val output = remoteStash(project)
+            if (output.exitCode != 0) {
+                MessageDialog.showError(
+                    """
+                        Unable to execute ${GitUIUtil.code("git stash")}
+                        
+                        ${output.stderr}
+                    """.trimIndent(),
+                    "Problem with Stash on ${ServerNameProvider.name()}"
+                )
+                return@runBackground
+            }
+
+            onReady.run()
+        }
+    }
+
+    fun localStashAndAction(project: Project, onReady: Runnable) {
+        runBackground(project, "Stash local changes") {
+            val output = localStash(project)
+            if (output.exitCode != 0) {
+                MessageDialog.showError(
+                    """
+                        Unable to execute ${GitUIUtil.code("git stash")}
+                        
+                        ${output.stderr}
+                    """.trimIndent(),
+                    "Problem with Stash on local"
+                )
+                return@runBackground
+            }
+
+            onReady.run()
+        }
+    }
+
+    fun remoteDropFiles(project: Project) {
+        LOG.info("Run 'git reset --hard' on ${ServerNameProvider.name()}")
+        val output = remoteHardReset(project)
+        if (output.exitCode != 0) {
+            MessageDialog.showWarning(
+                """
+                    Unable to execute ${GitUIUtil.code("git reset --hard")}
+                    
+                    ${output.stderr}
+                """.trimIndent(),
+                "Problem with hard reset on ${ServerNameProvider.name()}"
+            )
+            LOG.warn("Unable to execute 'git reset --hard' on ${ServerNameProvider.name()}: ${output.stderr}")
+        }
+    }
+
+    fun localDropFiles(project: Project) {
+        LOG.info("Run 'git reset --hard' on local")
+        val output = localHardReset(project)
+        if (output.exitCode != 0) {
+            MessageDialog.showWarning(
+                """
+                    Unable to execute ${GitUIUtil.code("git reset --hard")}
+                    
+                    ${output.stderr}
+                """.trimIndent(),
+                "Problem with hard reset on local"
+            )
+            LOG.warn("Unable to execute 'git reset --hard' on local: ${output.stderr}")
+        }
     }
 
     /**
