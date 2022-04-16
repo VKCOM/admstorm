@@ -45,6 +45,8 @@ data class EnvConfig(
     var kphpInspectorCommand: String = "",
     var phpunitCommand: String = "",
     var pasteBinCommand: String = "",
+    var debugLogUrl: String = "",
+    var debugLogFqns: List<String> = listOf(),
     var syncScriptCommand: String = "",
     var kphpCommands: List<KphpCommand> = listOf()
 )
@@ -108,6 +110,10 @@ object Env {
         }
 
         try {
+            data.kphpCommands.forEach {
+                setKphpRunType(it)
+            }
+
             checkPropertyNotEmpty("serverName", data.serverName)
             checkPropertyNotEmpty("projectRoot", data.projectRoot)
             checkPropertyNotEmpty("phpSourceFolder", data.phpSourceFolder)
@@ -121,11 +127,9 @@ object Env {
             checkPropertyNotEmpty("kphpInspectorCommand", data.kphpInspectorCommand)
             checkPropertyNotEmpty("phpunitCommand", data.phpunitCommand)
             checkPropertyNotEmpty("pasteBinCommand", data.pasteBinCommand)
+            checkPropertyNotEmpty("debugLogUrl", data.debugLogUrl)
+            checkPropertyNotEmpty("debugLogFqns", data.debugLogFqns)
             checkPropertyNotEmpty("syncScriptCommand", data.syncScriptCommand)
-
-            data.kphpCommands.forEach {
-                setKphpRunType(it)
-            }
         } catch (e: IllegalArgumentException) {
             LOG.warn("Lost ${e.message} argument, further work of the plugin maybe incomplete")
         }
