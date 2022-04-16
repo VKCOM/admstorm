@@ -90,8 +90,9 @@ object Env {
             return
         }
 
+        val format = Json { ignoreUnknownKeys = true }
         data = try {
-            Json.decodeFromString(output.stdout)
+            format.decodeFromString(output.stdout)
         } catch (e: Exception) {
             MessageDialog.showError(
                 """
@@ -126,10 +127,7 @@ object Env {
                 setKphpRunType(it)
             }
         } catch (e: IllegalArgumentException) {
-            MessageDialog.showError(
-                "Lost ${code(e.message)} argument, further work of the plugin maybe incomplete",
-                "Problem with AdmStorm env data"
-            )
+            LOG.warn("Lost ${e.message} argument, further work of the plugin maybe incomplete")
         }
 
         measureTime(LOG, "check remote server exist") {
