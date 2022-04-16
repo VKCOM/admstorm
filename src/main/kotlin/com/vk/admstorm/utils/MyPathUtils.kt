@@ -31,6 +31,10 @@ object MyPathUtils {
         }
     }
 
+    fun remoteFileExists(project: Project, path: String): Boolean {
+        return CommandRunner.runRemotely(project, "ls $path").exitCode == 0
+    }
+
     fun resolveRemoteRoot(project: Project? = null): String? {
         if (remoteRoot.isNotEmpty() || project == null) {
             return remoteRoot

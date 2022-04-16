@@ -31,11 +31,19 @@ class KBenchConfigurationRunState(
             if (myRunConfiguration.benchType.command == "bench-php") ""
             else "--include-dirs='${MyKphpUtils.includeDirsAsList(myEnv.project).joinToString(",")}'"
 
-        return "${Env.data.ktestCommand} ${myRunConfiguration.benchType.command}" +
+        val ktestCustomBinaryPath = "~/ktest/ktest"
+        val ktestBin = if (MyPathUtils.remoteFileExists(myEnv.project, ktestCustomBinaryPath)) {
+            ktestCustomBinaryPath
+        } else {
+            Env.data.ktestCommand
+        }
+
+        return "$ktestBin ${myRunConfiguration.benchType.command}" +
                 " --count ${myRunConfiguration.countRuns}" +
                 " $includeDirsFlag" +
                 " --teamcity" +
                 " --disable-kphp-autoload" +
+                " --kphp2cpp-binary ${Env.data.kphp2cpp}" +
                 " $scriptPath"
     }
 
