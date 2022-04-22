@@ -101,7 +101,7 @@ class PushCommitsPanel(
                 val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return ""
                 if (node is TooltipNode) {
                     val select = DvcsBundle.message("push.select.all.commit.details")
-                    return (node as TooltipNode).tooltip + "<p style='font-style:italic;color:gray;'>" + select + "</p>" //NON-NLS
+                    return (node as TooltipNode).tooltip + "<p style='font-style:italic;color:gray;'>" + select + "</p>"
                 }
                 return ""
             }
