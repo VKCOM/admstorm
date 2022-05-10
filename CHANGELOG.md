@@ -19,6 +19,10 @@
 - Several bugs with tests run configuration
 - Exception about impossibility to get text from binary file
 
+## 1.1.1 — 11.05.2022
+
+Adapt code for PhpStorm 2022.1
+
 ## 1.1.0 — 21.02.2022
 
 New KPHP Playground, automatic reset of Yubikey in case of connection problems, automatic push to the server after a
