@@ -49,7 +49,7 @@
                     Версия v1.2.0
                 </h2>
 
-                <time datetime="2022-02-21">Уже скоро</time>
+                <time datetime="2022-05-11">11 мая 2022</time>
 
                 <p class="chapter__text chapter__version-text">
                     Отладка для PHP скриптов и PHPUnit тестов прямо в IDE, новое действие "Run Anything on Server",
@@ -87,8 +87,9 @@
                                 одно действие в нем запустить туннель.
                             </p>
 
-                            <div class="js-security-video"
-                                 data-src="https://kphp.me/admstorm/images/playground-1"></div>
+                            <div class="chapter__text-image-block-image">
+                                <img src="./images/debug-php.png" alt="">
+                            </div>
                         </div>
 
                         <div class="chapter__version-block-new-feature__inner
@@ -119,8 +120,9 @@
                                 </p>
                             </div>
 
-                            <div class="js-security-video"
-                                 data-src="https://kphp.me/admstorm/images/playground-2"></div>
+                            <div class="chapter__text-image-block-image">
+                                <img class="js-security-image" src="./images/run-anything.png" alt="">
+                            </div>
                         </div>
                     </div>
 
@@ -143,7 +145,27 @@
                             </div>
 
                             <div class="chapter__text-image-block-image">
-                                <img src="https://kphp.me/admstorm/images/builders.png" alt="">
+                                <img src="./images/auto-import-kphp-playground.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column-narrow">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Переход к логам у вызова функции
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Теперь у некоторых функций для дебажных логов появилась иконка в местах их вызовов.
+                                    Через нее можно быстро перейти к просмотру логов на сайте.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img class="js-security-image" src="./images/debug-log.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -158,10 +180,6 @@
                                 <li>
                                     Исправлен баг, когда при первом запуске теста для класса через иконку рядом с
                                     классом, запускался тест для метода, для которого уже была конфигурация запуска.
-                                </li>
-                                <li>
-                                    Исправлен баг, когда создавались дублирующиеся конфигурации запуска при запуске
-                                    тестов через иконку.
                                 </li>
                             </ul>
                         </div>
