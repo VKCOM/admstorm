@@ -1,6 +1,6 @@
 # AdmStorm Changelog
 
-## [Unreleased]
+## 1.2.0 — 11.05.2022
 
 Debugging for PHP scripts and PHPUnit tests right in the IDE, new action "Run Anything on Server", support for new API
 tests, automatic import of classes when creating KPHP Playground from code and bug fixes.
