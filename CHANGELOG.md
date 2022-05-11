@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+Debugging for PHP scripts and PHPUnit tests right in the IDE, new action "Run Anything on Server", support for new API
+tests, automatic import of classes when creating KPHP Playground from code and bug fixes.
+
 ### Added
 
 - Support for debug PHP scripts
@@ -9,6 +12,7 @@
 - Support for new API tests
 - New "Run Anything on Server" action
 - Auto import classes for KPHP Playground
+- Gutter icons for debug log calls
 
 ### Other improvements
 
