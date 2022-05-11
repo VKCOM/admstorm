@@ -46,6 +46,154 @@
         <div class="chapter__block">
             <div class="chapter__version-block">
                 <h2 class="chapter__big-title chapter__big-title--bold">
+                    Версия v1.2.0
+                </h2>
+
+                <time datetime="2022-05-11">11 мая 2022</time>
+
+                <p class="chapter__text chapter__version-text">
+                    Отладка для PHP скриптов и PHPUnit тестов прямо в IDE, новое действие "Run Anything on Server",
+                    поддержка новых API тестов, автоматический импорт классов при создании KPHP Playground из кода
+                    и исправления ошибок.
+                    <br>
+                    <br>
+                    <i>Требует PhpStorm версии 2022.1 или выше.</i>
+                </p>
+
+                <div class="chapter__version-block-new chapter__version-block-new-features">
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">Отладка PHP скриптов и тестов</h2>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <p class="chapter__text">
+                                Одна из главных возможностей IDE — удобно отлаживать код. До текущего
+                                момента запускать отладку PHP скриптов приходилось через консоль.
+                                <br>
+                                <br>
+                                Однако теперь отладка доступна прямо в IDE через ее встроенные возможности!
+                                <br>
+                                <br>
+                                Для того, чтобы все точно заработало, обратитесь к документации по настройке дебаггера
+                                в PHPStorm в нашем Confluence.
+                                <br>
+                                <br>
+                                Обратите внимание на необходимость файла
+                                <code>~/.php_debug</code> и поднятого SSH туннеля.
+                                <br>
+                                <br>
+                                Если вы вдруг забудете открыть туннель, то плагин покажет уведомление где вы сможете в
+                                одно действие в нем запустить туннель.
+                            </p>
+
+                            <div class="chapter__text-image-block-image">
+                                <img src="https://kphp.me/admstorm/images/debug-php.png" alt="">
+                            </div>
+                        </div>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Действие Run Anything on Server
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Представьте, что вам нужно запустить какую-то команду на сервере и посмотреть
+                                    результат ее выполнения. Нужно переключаться на терминал и набирать там команду.
+                                    Это не удобно, поэтому мы добавили новое действие, которое позволяет быстро
+                                    выполнить любую команду, не выходя из IDE.
+                                    <br>
+                                    <br>
+                                    Для её запуска нажмите <span
+                                        class="chapter__action__inline">⇧⌘W (Shift+Cmd+W)</span>,
+                                    в IDE появится всплывающее окно в котором можно написать команду.
+                                    <br>
+                                    <br>
+                                    Более того, из этой команды вы можете быстро создать конфигурацию запуска, если
+                                    она вам часто нужно.
+                                    <br>
+                                    <br>
+                                    Вы также можете найти это действие во вкладке
+                                    <span class="chapter__action__inline">Tool | Run Anything on Server</span>.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img class="js-security-image" src="https://kphp.me/admstorm/images/run-anything.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column-narrow">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Автоимпорт классов при создании KPHP Playground из выделенного кода
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Обычно, когда вы хотите посмотреть на результаты работы кода в KPHP, вы хотите
+                                    исполнить кусок кода в котором могут использоваться классы или статические методы.
+                                    <br>
+                                    <br>
+                                    Раньше приходилось импортировать классы вручную, однако теперь это будет происходить
+                                    автоматически.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img src="https://kphp.me/admstorm/images/auto-import-kphp-playground.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column-narrow">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Переход к логам у вызова функции
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Теперь у некоторых функций для дебажных логов появилась иконка в местах их вызовов.
+                                    Через нее можно быстро перейти к просмотру логов на сайте.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img class="js-security-image" src="https://kphp.me/admstorm/images/debug-log.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Исправлено
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Исправлены случаи, когда неправильно обрабатывались ошибки при git pull.
+                                </li>
+                                <li>
+                                    Исправлен баг, когда при первом запуске теста для класса через иконку рядом с
+                                    классом, запускался тест для метода, для которого уже была конфигурация запуска.
+                                </li>
+                                <li>
+                                    Исправлено исключение, когда PhpStorm не может получить текст из бинарного файла.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chapter__version-block">
+                <h2 class="chapter__big-title chapter__big-title--bold">
                     Версия v1.1.0
                 </h2>
 
@@ -86,7 +234,8 @@
                                 чтобы вы могли использовать любой код VKCOM.
                             </p>
 
-                            <div class="js-security-video" data-src="https://kphp.me/admstorm/images/playground-1"></div>
+                            <div class="js-security-video"
+                                 data-src="https://kphp.me/admstorm/images/playground-1"></div>
                         </div>
 
                         <div class="chapter__version-block-new-feature__inner
@@ -116,7 +265,8 @@
                                 </p>
                             </div>
 
-                            <div class="js-security-video" data-src="https://kphp.me/admstorm/images/playground-2"></div>
+                            <div class="js-security-video"
+                                 data-src="https://kphp.me/admstorm/images/playground-2"></div>
                         </div>
                     </div>
 
