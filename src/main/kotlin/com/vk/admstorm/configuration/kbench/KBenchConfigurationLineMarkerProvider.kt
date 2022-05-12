@@ -4,26 +4,46 @@ import com.intellij.execution.lineMarker.ExecutorAction
 import com.intellij.execution.lineMarker.RunLineMarkerContributor
 import com.intellij.icons.AllIcons
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.elementType
+import com.jetbrains.php.lang.lexer.PhpTokenTypes
+import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.impl.PhpClassImpl
+import com.vk.admstorm.utils.KBenchUtils
+import javax.swing.Icon
 
 class KBenchConfigurationLineMarkerProvider : RunLineMarkerContributor() {
     private val allActions =
         ExecutorAction.getActions(0).filter { it.toString().startsWith("Run context configuration") }.toTypedArray()
 
     override fun getInfo(e: PsiElement): Info? {
-        if (e !is PhpClassImpl) {
-            return null
-        }
-        if (!e.fqn.contains("Benchmark")) {
+        if (e.elementType != PhpTokenTypes.IDENTIFIER) {
             return null
         }
 
+        return when (val parent = e.parent) {
+            is PhpClassImpl -> {
+                if (!KBenchUtils.isBenchmarkClass(parent)) {
+                    return null
+                }
+
+                createInfo(AllIcons.RunConfigurations.TestState.Run_run)
+            }
+            is Method -> {
+                if (!KBenchUtils.isBenchmarkMethod(parent)) {
+                    return null
+                }
+
+                createInfo(AllIcons.RunConfigurations.TestState.Run)
+            }
+            else -> return null
+        }
+    }
+
+    private fun createInfo(icon: Icon): Info {
         val actions = allActions
         return object : Info(
-            AllIcons.RunConfigurations.TestState.Run_run, { element1 ->
-                actions.mapNotNull { action ->
-                    getText(action, element1)
-                }.joinToString("\n")
+            icon, { el ->
+                actions.mapNotNull { getText(it, el) }.joinToString("\n")
             },
             *actions
         ) {

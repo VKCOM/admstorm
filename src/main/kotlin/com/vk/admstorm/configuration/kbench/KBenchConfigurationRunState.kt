@@ -31,6 +31,15 @@ class KBenchConfigurationRunState(
             if (myRunConfiguration.benchType.command == "bench-php") ""
             else "--include-dirs='${MyKphpUtils.includeDirsAsList(myEnv.project).joinToString(",")}'"
 
+        val kphpBinary =
+            if (myRunConfiguration.benchType.command == "bench-php") ""
+            else "--kphp2cpp-binary ${Env.data.kphp2cpp}"
+
+        val benchmem =
+            if (myRunConfiguration.benchType.command == "bench-php") ""
+            else if (myRunConfiguration.benchmem) "--benchmem"
+            else ""
+
         val ktestCustomBinaryPath = "~/ktest/ktest"
         val ktestBin = if (MyPathUtils.remoteFileExists(myEnv.project, ktestCustomBinaryPath)) {
             ktestCustomBinaryPath
@@ -38,12 +47,21 @@ class KBenchConfigurationRunState(
             Env.data.ktestCommand
         }
 
+        val methodFilter = if (myRunConfiguration.isMethodScope) {
+            val className = myRunConfiguration.className.split('\\').lastOrNull() ?: ""
+            "--run '${className}::${myRunConfiguration.method}'"
+        } else {
+            "--run '.*'"
+        }
+
         return "$ktestBin ${myRunConfiguration.benchType.command}" +
                 " --count ${myRunConfiguration.countRuns}" +
                 " $includeDirsFlag" +
                 " --teamcity" +
                 " --disable-kphp-autoload" +
-                " --kphp2cpp-binary ${Env.data.kphp2cpp}" +
+                " $kphpBinary" +
+                " $methodFilter" +
+                " $benchmem" +
                 " $scriptPath"
     }
 
@@ -67,7 +85,7 @@ class KBenchConfigurationRunState(
                 consoleProperties
             ) as SMTRunnerConsoleView
 
-        val command = buildCommand(myRunConfiguration.scriptName)
+        val command = buildCommand(myRunConfiguration.filename)
         val handler = MySshUtils.exec(myEnv.project, command) ?: return null
 
         console.attachToProcess(handler)
