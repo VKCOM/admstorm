@@ -14,7 +14,6 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.LanguageTextField
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBRadioButton
-import com.intellij.util.ObjectUtils
 import com.intellij.util.TextFieldCompletionProvider
 import com.intellij.util.indexing.DumbModeAccessType
 import com.intellij.util.textCompletion.TextFieldWithCompletion
@@ -37,6 +36,7 @@ import javax.swing.JTextField
 
 open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
     SettingsEditor<RemotePhpUnitConfiguration>() {
+
     private var myPanel: JPanel? = null
     private var myDirectoryPanel: JPanel? = null
     private var myClassPanel: JPanel? = null
@@ -104,7 +104,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
     private fun fillFileFieldVariants(project: Project, fqn: String) {
         val oldText = getSelectedFilePath()
         val pathsWithClassByFqn: Set<String> =
-            DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<Set<String>, java.lang.RuntimeException> {
+            DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<Set<String>, RuntimeException> {
                 PhpIndex.getInstance(project).getClassesByFQN(fqn).stream()
                     .filter { phpClass: PhpClass? ->
                         PhpUnitUtil.isTestClass(phpClass!!)
@@ -205,35 +205,29 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
     private class MyTextFieldCompletionProvider(
         private val myParent: RemotePhpUnitConfigurationEditor,
         private val myProject: Project
-    ) :
-        TextFieldCompletionProvider(), DumbAware {
+    ) : TextFieldCompletionProvider(), DumbAware {
 
         override fun addCompletionVariants(text: String, offset: Int, prefix: String, result: CompletionResultSet) {
-            val selectedFile = ObjectUtils.tryCast(
-                PhpRunUtil.findPsiFile(myProject, myParent.getSelectedFilePath(), true),
-                PhpFile::class.java
-            )
+            val selectedFile =
+                PhpRunUtil.findPsiFile(myProject, myParent.getSelectedFilePath(), true) as? PhpFile ?: return
+
             val selectedClass =
-                if (selectedFile == null)
-                    null
-                else DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<PhpClass?, RuntimeException> {
+                DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<PhpClass?, RuntimeException> {
                     PhpUnitUtil.findClassByFQNInFile(myParent.myClassTextField!!.text, selectedFile, myProject)
                 } as PhpClass
 
-            if (selectedClass != null) {
-                PhpClassHierarchyUtils.processMethods(
-                    selectedClass,
-                    selectedClass,
-                    { method: Method?, _: PhpClass?, _: PhpClass? ->
-                        if (PhpUnitUtil.isTestMethod(selectedClass, method!!)) {
-                            result.addElement(LookupElementBuilder.create(method).withIcon(PhpIcons.PHP_TEST_METHOD))
-                        }
-                        true
-                    },
-                    false,
-                    false
-                )
-            }
+            PhpClassHierarchyUtils.processMethods(
+                selectedClass,
+                selectedClass,
+                { method: Method, _: PhpClass, _: PhpClass ->
+                    if (PhpUnitUtil.isTestMethod(selectedClass, method)) {
+                        result.addElement(LookupElementBuilder.create(method).withIcon(PhpIcons.PHP_TEST_METHOD))
+                    }
+                    true
+                },
+                false,
+                false
+            )
         }
     }
 }
