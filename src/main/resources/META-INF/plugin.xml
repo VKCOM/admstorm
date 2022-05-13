@@ -58,13 +58,17 @@
     <!-- Remote PHP Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationType"/>
     <runConfigurationProducer
-      implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationProducer"/>
+            implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationProducer"/>
     <programRunner implementation="com.vk.admstorm.configuration.php.RemotePhpRunner"/>
 
     <!-- KPHP Benchmarks Configuration -->
-    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationType"/>
+    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchKphpConfigurationType"/>
+    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchPhpConfigurationType"/>
+    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationType"/>
+    <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchKphpConfigurationProducer"/>
+    <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchPhpConfigurationProducer"/>
     <runConfigurationProducer
-      implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationProducer"/>
+            implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationProducer"/>
     <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
                               implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
 
