@@ -12,6 +12,7 @@ import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
@@ -201,5 +202,10 @@ class AdmStormStartupActivity : StartupActivity {
                 afterConnectionTasks(project)
             }
         }
+
+        // Это необходимо чтобы для бенчмарков показывались все пункты в списке
+        // который открывается при клике на иконку рядом с классом или методом.
+        val key = Registry.get("suggest.all.run.configurations.from.context")
+        key.setValue(true)
     }
 }

@@ -75,6 +75,10 @@ open class RemotePhpUnitConfigurationProducer :
                 parent is PhpClass
             } as PhpClass? ?: return false
 
+            if (!PhpUnitUtil.isTestClass(klass)) {
+                return false
+            }
+
             return configuration.className == klass.fqn && configuration.method == method.name
         }
 
@@ -172,6 +176,10 @@ open class RemotePhpUnitConfigurationProducer :
             val klass = PsiTreeUtil.findFirstParent(method) { parent ->
                 parent is PhpClass
             } as PhpClass? ?: return false
+
+            if (!PhpUnitUtil.isTestClass(klass)) {
+                return false
+            }
 
             val className = klass.name
             val configName = "Remote $className::${method.name}$suffixName"
