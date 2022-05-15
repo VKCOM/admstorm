@@ -1,157 +1,172 @@
 package com.vk.admstorm.configuration.kbench
 
-import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.editor.event.DocumentEvent
-import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.ui.IdeBorderFactory
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.LanguageTextField
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBRadioButton
-import com.intellij.util.TextFieldCompletionProvider
-import com.intellij.util.textCompletion.TextFieldWithCompletion
-import com.jetbrains.php.PhpClassHierarchyUtils
-import com.jetbrains.php.PhpIcons
-import com.jetbrains.php.PhpIndex
+import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.layout.ComboBoxPredicate
+import com.intellij.ui.layout.ComponentPredicate
+import com.intellij.ui.layout.and
 import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLanguage
-import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.vk.admstorm.utils.KBenchUtils
-import java.awt.event.ActionListener
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JRadioButton
+import kotlin.reflect.KMutableProperty0
 
 open class KBenchConfigurationEditor(private val myProject: Project) : SettingsEditor<KBenchConfiguration>() {
-    private var myPanel: JPanel? = null
-    private var myBenchType: ComboBox<String>? = null
-    private var myCountRuns: JTextField? = null
+    data class Model(
+        var scope: KBenchScope = KBenchScope.Class,
+        var benchType: KBenchType? = KBenchType.Bench,
 
-    private var myClassPanel: JPanel? = null
-    private var myMethodPanel: JPanel? = null
-    private var myBenchmemPanel: JPanel? = null
+        var className: String = "",
+        var methodName: String = "",
 
-    private var myClassRadioButton: JBRadioButton? = null
-    private var myMethodRadioButton: JBRadioButton? = null
+        var compareMethodName: String = "",
+        var compareClassName: String = "",
 
-    private var myClassTextField: LanguageTextField? = null
-    private var myMethodTextField: TextFieldWithCompletion? = null
-    private var myBenchmemCheckBox: JBCheckBox? = null
+        var benchmarkMemory: Boolean = false,
+        var countIteration: Int = 5,
+    )
+
+    private lateinit var mainPanel: DialogPanel
+    private val model = Model()
 
     override fun resetEditorFrom(demoRunConfiguration: KBenchConfiguration) {
-        myClassRadioButton!!.isSelected = !demoRunConfiguration.isMethodScope
-        myMethodRadioButton!!.isSelected = demoRunConfiguration.isMethodScope
+        model.scope = demoRunConfiguration.scope
+        model.benchType = demoRunConfiguration.benchType
+        model.className = demoRunConfiguration.className
+        model.methodName = demoRunConfiguration.methodName
+        model.compareClassName = demoRunConfiguration.compareClassName
+        model.compareMethodName = demoRunConfiguration.compareMethodName
+        model.benchmarkMemory = demoRunConfiguration.benchmarkMemory
+        model.countIteration = demoRunConfiguration.countIteration
 
-        myClassTextField!!.text = demoRunConfiguration.className
-        myMethodTextField!!.text = demoRunConfiguration.method
-
-        myBenchType!!.selectedItem = demoRunConfiguration.benchType.command
-        myBenchmemCheckBox!!.isSelected = demoRunConfiguration.benchmem
-
-        myCountRuns!!.text = demoRunConfiguration.countRuns
+        mainPanel.reset()
     }
 
     override fun applyEditorTo(demoRunConfiguration: KBenchConfiguration) {
-        demoRunConfiguration.isMethodScope = myMethodRadioButton!!.isSelected
+        mainPanel.apply()
 
-        demoRunConfiguration.className = myClassTextField!!.text
-        demoRunConfiguration.method = myMethodTextField!!.text
-
-        demoRunConfiguration.benchType = KBenchType.from(myBenchType!!.selectedItem as String)
-        demoRunConfiguration.benchmem = myBenchmemCheckBox!!.isSelected
-
-        demoRunConfiguration.countRuns = myCountRuns!!.text
+        demoRunConfiguration.scope = model.scope
+        demoRunConfiguration.benchType = model.benchType!!
+        demoRunConfiguration.className = model.className
+        demoRunConfiguration.methodName = model.methodName
+        demoRunConfiguration.compareClassName = model.compareClassName
+        demoRunConfiguration.compareMethodName = model.compareMethodName
+        demoRunConfiguration.benchmarkMemory = model.benchmarkMemory
+        demoRunConfiguration.countIteration = model.countIteration
     }
 
-    override fun createEditor(): JComponent = myPanel!!
+    override fun createEditor(): JComponent = component()
 
-    fun createUIComponents() {
-        myMethodTextField = TextFieldWithCompletion(
-            myProject,
-            createMethodCompletionProvider(myProject), "", true, true, true
-        )
 
-        myClassTextField = LanguageTextField(PhpLanguage.INSTANCE, myProject, "")
+    private fun <T> ComboBox<T>.selectedValueMatches(predicate: (T?) -> Boolean): ComponentPredicate {
+        return ComboBoxPredicate(this, predicate)
+    }
 
-        PhpCompletionUtil.installClassCompletion(myClassTextField!!, null, {}, { phpClass: PhpClass ->
-            KBenchUtils.isBenchmarkClass(phpClass)
+    private fun <T> Cell<ComboBox<T>>.selectedValueMatches(predicate: (T?) -> Boolean): ComponentPredicate {
+        return component.selectedValueMatches(predicate)
+    }
+
+    private fun <T : LanguageTextField> Cell<T>.bindText(prop: KMutableProperty0<String>): Cell<T> {
+        return bindText(prop.toMutableProperty())
+    }
+
+    private fun <T : LanguageTextField> Cell<T>.bindText(prop: MutableProperty<String>): Cell<T> {
+        return bind(LanguageTextField::getText, LanguageTextField::setText, prop)
+    }
+
+    fun component(): JPanel {
+        lateinit var classRadioButton: Cell<JRadioButton>
+        lateinit var methodRadioButton: Cell<JRadioButton>
+        lateinit var typeComboBox: Cell<ComboBox<KBenchType>>
+
+        val classTextField = LanguageTextField(PhpLanguage.INSTANCE, myProject, "")
+        PhpCompletionUtil.installClassCompletion(classTextField, null, {}, { klass: PhpClass ->
+            KBenchUtils.isBenchmarkClass(klass) && klass.fqn.trim('\\') != model.compareClassName
         })
-    }
 
-    private fun createMethodCompletionProvider(project: Project) =
-        MyTextFieldCompletionProvider(this, project)
+        val compareClassTextField = LanguageTextField(PhpLanguage.INSTANCE, myProject, "")
+        PhpCompletionUtil.installClassCompletion(compareClassTextField, null, {}, { klass: PhpClass ->
+            KBenchUtils.isBenchmarkClass(klass) && klass.fqn.trim('\\') != model.className
+        })
 
-    private class MyTextFieldCompletionProvider(
-        private val myParent: KBenchConfigurationEditor,
-        private val myProject: Project
-    ) : TextFieldCompletionProvider(), DumbAware {
+        val methodTextField = KBenchUtils.createMethodCompletionTextField(myProject, { model.className }) {
+            it.name != model.compareMethodName
+        }
+        val compareMethodTextField = KBenchUtils.createMethodCompletionTextField(myProject, { model.className }) {
+            it.name != model.methodName
+        }
 
-        override fun addCompletionVariants(text: String, offset: Int, prefix: String, result: CompletionResultSet) {
-            val className = myParent.myClassTextField!!.text
-            val selectedClass = PhpIndex.getInstance(myProject).getAnyByFQN(className).firstOrNull()
-
-            if (selectedClass != null) {
-                PhpClassHierarchyUtils.processMethods(
-                    selectedClass,
-                    selectedClass,
-                    { method: Method, _: PhpClass, _: PhpClass ->
-                        if (KBenchUtils.isBenchmarkMethod(method)) {
-                            result.addElement(LookupElementBuilder.create(method).withIcon(PhpIcons.PHP_TEST_METHOD))
+        mainPanel = panel {
+            buttonsGroup {
+                row("Scope:") {
+                    classRadioButton = radioButton("Class", KBenchScope.Class)
+                        .horizontalAlign(HorizontalAlign.LEFT)
+                        .apply {
+                            component.isSelected = true
                         }
-                        true
-                    },
-                    false,
-                    false
+                    methodRadioButton = radioButton("Method", KBenchScope.Method)
+                        .horizontalAlign(HorizontalAlign.LEFT)
+                }.bottomGap(BottomGap.SMALL)
+            }.bind(model::scope)
+
+            row("Type:") {
+                typeComboBox = comboBox(
+                    KBenchType.values().toList(),
+                    SimpleListCellRenderer.create(KBenchType.Bench.presentation) { it.presentation }
                 )
-            }
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindItemNullable(model::benchType)
+            }.bottomGap(BottomGap.SMALL)
+
+            row("Class:") {
+                cell(classTextField)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindText(model::className)
+            }.bottomGap(BottomGap.SMALL)
+
+            row("Method:") {
+                cell(methodTextField)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindText(model::methodName)
+            }.visibleIf(methodRadioButton.selected)
+                .bottomGap(BottomGap.SMALL)
+
+            row("Compare class:") {
+                cell(compareClassTextField)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindText(model::compareClassName)
+            }.visibleIf(typeComboBox.selectedValueMatches { it == KBenchType.BenchAb }.and(classRadioButton.selected))
+                .bottomGap(BottomGap.SMALL)
+
+            row("Compare method:") {
+                cell(compareMethodTextField)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindText(model::compareMethodName)
+            }.visibleIf(methodRadioButton.selected.and(typeComboBox.selectedValueMatches { it == KBenchType.BenchAb }))
+                .bottomGap(BottomGap.SMALL)
+
+            row {
+                checkBox("Benchmark memory allocations")
+                    .bindSelected(model::benchmarkMemory)
+            }.visibleIf(typeComboBox.selectedValueMatches { it == KBenchType.Bench })
+                .bottomGap(BottomGap.SMALL)
+
+            row("Count:") {
+                intTextField(0..1000, 1)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .bindIntText(model::countIteration)
+            }.rowComment("Number of iterations, larger number slows down the process but increases the accuracy", 90)
         }
-    }
 
-    private fun updatePanelsVisibility() {
-        if (myClassRadioButton!!.isSelected) {
-            setVisibleComponents(method = false)
-        } else if (myMethodRadioButton!!.isSelected) {
-            setVisibleComponents(method = true)
-        }
-
-        val isKphpBench = myBenchType?.selectedItem == KBenchType.Bench.command
-        myBenchmemPanel?.isVisible = isKphpBench
-    }
-
-    private fun setVisibleComponents(method: Boolean) {
-        myMethodPanel?.isVisible = method
-    }
-
-    init {
-        val group = ButtonGroup()
-        group.add(myClassRadioButton)
-        group.add(myMethodRadioButton)
-
-        val updateStateActionListener = ActionListener { updatePanelsVisibility() }
-
-        myClassRadioButton?.addActionListener(updateStateActionListener)
-        myMethodRadioButton?.addActionListener(updateStateActionListener)
-
-        myClassTextField?.addDocumentListener(object : DocumentListener {
-            override fun documentChanged(event: DocumentEvent) {
-                updatePanelsVisibility()
-            }
-        })
-
-        val boxModel = DefaultComboBoxModel<String>()
-        listOf("bench", "bench-php", "bench-vs-php").forEach {
-            boxModel.addElement(it)
-        }
-
-        myBenchType?.model = boxModel
-        myBenchType?.selectedItem = "bench"
-        myBenchType?.addActionListener(updateStateActionListener)
-
-        myPanel?.border = IdeBorderFactory.createTitledBorder("Configuration")
-
-        setVisibleComponents(method = false)
+        return mainPanel
     }
 }

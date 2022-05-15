@@ -1,24 +1,25 @@
 package com.vk.admstorm.configuration.kbench
 
 import com.intellij.execution.configurations.RunConfigurationOptions
-import com.intellij.openapi.components.StoredProperty
 
 class KBenchConfigurationOptions : RunConfigurationOptions() {
-    private val myFilename: StoredProperty<String?> = string("").provideDelegate(this, "kbenchFilename")
-    private val myBenchType: StoredProperty<String?> = string("bench").provideDelegate(this, "kbenchBenchName")
-    private val myCountRuns: StoredProperty<String?> = string("5").provideDelegate(this, "kbenchCountRuns")
+    private val myScope = string("").provideDelegate(this, "kbenchScope")
+    private val myBenchType = string("bench").provideDelegate(this, "kbenchBenchType")
 
-    private val myIsMethodScope = property(false).provideDelegate(this, "kbenchIsMethodScope")
+    private val myCountIteration = property(5).provideDelegate(this, "kbenchCountIterations")
 
     private val myClass = string("").provideDelegate(this, "kbenchClass")
     private val myMethod = string("").provideDelegate(this, "kbenchMethod")
+    private val myFilename = string("").provideDelegate(this, "kbenchFilename")
+    private val myCompareClass = string("").provideDelegate(this, "kbenchCompareClass")
+    private val myCompareMethod = string("").provideDelegate(this, "kbenchCompareMethod")
 
-    private val myBenchmem = property(false).provideDelegate(this, "kbenchBenchmem")
+    private val myBenchmarkMemory = property(false).provideDelegate(this, "kbenchBenchmarkMemory")
 
-    var isMethodScope: Boolean
-        get() = myIsMethodScope.getValue(this)
+    var scope: KBenchScope
+        get() = KBenchScope.from(myScope.getValue(this) ?: "")
         set(value) {
-            myIsMethodScope.setValue(this, value)
+            myScope.setValue(this, value.name)
         }
 
     var className: String
@@ -27,7 +28,7 @@ class KBenchConfigurationOptions : RunConfigurationOptions() {
             myClass.setValue(this, value)
         }
 
-    var method: String
+    var methodName: String
         get() = myMethod.getValue(this) ?: ""
         set(value) {
             myMethod.setValue(this, value)
@@ -45,15 +46,27 @@ class KBenchConfigurationOptions : RunConfigurationOptions() {
             myBenchType.setValue(this, benchType.command)
         }
 
-    var countRuns: String
-        get() = myCountRuns.getValue(this) ?: "5"
+    var countIteration: Int
+        get() = myCountIteration.getValue(this) ?: 5
         set(value) {
-            myCountRuns.setValue(this, value)
+            myCountIteration.setValue(this, value)
         }
 
-    var benchmem: Boolean
-        get() = myBenchmem.getValue(this)
+    var benchmarkMemory: Boolean
+        get() = myBenchmarkMemory.getValue(this)
         set(value) {
-            myBenchmem.setValue(this, value)
+            myBenchmarkMemory.setValue(this, value)
+        }
+
+    var compareClassName: String
+        get() = myCompareClass.getValue(this) ?: ""
+        set(value) {
+            myCompareClass.setValue(this, value)
+        }
+
+    var compareMethodName: String
+        get() = myCompareMethod.getValue(this) ?: ""
+        set(value) {
+            myCompareMethod.setValue(this, value)
         }
 }

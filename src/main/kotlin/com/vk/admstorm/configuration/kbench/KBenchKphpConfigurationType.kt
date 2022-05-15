@@ -67,3 +67,24 @@ class KBenchKphpVsPhpConfigurationType : ConfigurationTypeBase(
         })
     }
 }
+
+class KBenchKphpAbConfigurationType : ConfigurationTypeBase(
+    ID, "Compare with other",
+    "KPHP AB Benchmark configuration type",
+    MyIcons.kphpBench
+) {
+    companion object {
+        const val ID = "KBenchKphpAbConfiguration"
+    }
+
+    init {
+        addFactory(object : ConfigurationFactory(this) {
+            override fun getId() = ID
+
+            override fun createTemplateConfiguration(project: Project) =
+                KBenchConfiguration(project, this, "Run KPHP AB Benchmark")
+
+            override fun getOptionsClass() = KBenchConfigurationOptions::class.java
+        })
+    }
+}

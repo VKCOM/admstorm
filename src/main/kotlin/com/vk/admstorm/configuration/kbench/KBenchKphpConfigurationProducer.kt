@@ -7,11 +7,17 @@ class KBenchKphpConfigurationProducer : KBenchBaseConfigurationProducer() {
 class KBenchPhpConfigurationProducer : KBenchBaseConfigurationProducer() {
     override fun configurationId() = KBenchPhpConfigurationType.ID
     override fun benchType() = KBenchType.BenchPhp
-    override fun namePrefix() = "PHP Bench"
+    override fun namePrefix() = "PHP"
 }
 
 class KBenchKphpVsPhpConfigurationProducer : KBenchBaseConfigurationProducer() {
     override fun configurationId() = KBenchKphpVsPhpConfigurationType.ID
     override fun benchType() = KBenchType.BenchVsPhp
-    override fun namePrefix() = "PHP vs KPHP Bench"
+    override fun namePrefix() = "PHP vs KPHP"
+}
+
+class KBenchKphpAbConfigurationProducer : KBenchBaseConfigurationProducer() {
+    override fun configurationId() = KBenchKphpAbConfigurationType.ID
+    override fun benchType() = KBenchType.BenchAb
+    override fun namePrefix() = "VS Other"
 }
