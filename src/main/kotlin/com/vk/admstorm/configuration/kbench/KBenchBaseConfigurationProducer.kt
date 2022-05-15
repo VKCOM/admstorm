@@ -14,7 +14,7 @@ import com.vk.admstorm.utils.KBenchUtils
 abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KBenchConfiguration>() {
     abstract fun configurationId(): String
     open fun benchType(): KBenchType = KBenchType.Bench
-    open fun namePrefix(): String = "KPHP Bench"
+    open fun namePrefix(): String = "KPHP"
 
     override fun getConfigurationFactory(): ConfigurationFactory =
         ConfigurationTypeUtil.findConfigurationType(configurationId())!!
@@ -26,6 +26,17 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
     ): Boolean {
         if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
 
+        // Так как при конфигурации сравнения мы хотим каждый раз, запуская,
+        // через иконку рядом с методом или классом получать окно в котором
+        // выбираем классы и методы, то все уже созданные конфигурации не
+        // должны совпадать с новой.
+        //
+        // Однако запуск через конфигурации запуска все еще будет работать
+        // и использовать уже ранее введенное имя.
+        if (configuration.benchType == KBenchType.BenchAb) {
+            return false
+        }
+
         val source = context.location?.psiElement ?: return false
         val element = source.parent ?: return false
         val filename = context.location?.virtualFile?.path ?: return false
@@ -36,14 +47,14 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
             is PhpClass -> {
                 configuration.filename == filename &&
                         configuration.className == element.name &&
-                        !configuration.isMethodScope
+                        configuration.scope == KBenchScope.Class
             }
             is Method -> {
                 val className = element.containingClass?.fqn ?: return false
                 configuration.filename == filename &&
                         configuration.className == className &&
-                        configuration.method == element.name &&
-                        configuration.isMethodScope
+                        configuration.methodName == element.name &&
+                        configuration.scope == KBenchScope.Method
             }
             else -> false
         }
@@ -69,10 +80,11 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
                     return false
                 }
 
-                val name = element.fqn
+                val fullName = element.fqn
+                val name = KBenchUtils.className(fullName)
 
-                configuration.className = name
-                configuration.name = "${namePrefix()} '${name.trimStart('\\')}'"
+                configuration.className = fullName
+                configuration.name = "${namePrefix()} $name"
             }
             is Method -> {
                 if (!KBenchUtils.isBenchmarkMethod(element)) {
@@ -80,11 +92,13 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
                 }
 
                 val className = element.containingClass?.fqn ?: return false
+                val methodName = element.name
+                val fullName = KBenchUtils.className(className) + "::" + KBenchUtils.benchmarkName(methodName)
 
                 configuration.className = className
-                configuration.method = element.name
-                configuration.name = "${namePrefix()} '${element.fqn.replace(".", "::")}'"
-                configuration.isMethodScope = true
+                configuration.methodName = methodName
+                configuration.name = "${namePrefix()} $fullName"
+                configuration.scope = KBenchScope.Method
             }
             else -> return false
         }

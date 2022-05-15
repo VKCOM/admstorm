@@ -65,10 +65,12 @@
     <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchKphpConfigurationType"/>
     <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchPhpConfigurationType"/>
     <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationType"/>
+    <configurationType implementation="com.vk.admstorm.configuration.kbench.KBenchKphpAbConfigurationType"/>
     <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchKphpConfigurationProducer"/>
     <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchPhpConfigurationProducer"/>
     <runConfigurationProducer
             implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationProducer"/>
+    <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchKphpAbConfigurationProducer"/>
     <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
                               implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
 
