@@ -65,12 +65,14 @@ object MySshUtils {
         project: Project,
         command: String,
         firstLine: String = command,
-        workingDir: String = Env.data.projectRoot
+        workingDir: String? = null
     ): ColoredRemoteProcessHandler<SshExecProcess>? {
         val startTime = System.currentTimeMillis()
-        LOG.info("Start SSH command execution (command: $command, workingDir: $workingDir)")
+        val workingDirectory = workingDir ?: Env.data.projectRoot
 
-        val builder = SshConnectionService.getInstance(project).sshExecBuilder("cd $workingDir && $command")
+        LOG.info("Start SSH command execution (command: $command, workingDir: $workingDirectory)")
+
+        val builder = SshConnectionService.getInstance(project).sshExecBuilder("cd $workingDirectory && $command")
         if (builder == null) {
             LOG.warn(
                 "SshConnectionService.sshExecBuilder() == null, SshConnectionService.isConnected() == ${
