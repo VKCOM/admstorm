@@ -46,7 +46,7 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
         return when (element) {
             is PhpClass -> {
                 configuration.filename == filename &&
-                        configuration.className == element.name &&
+                        configuration.className == element.fqn &&
                         configuration.scope == KBenchScope.Class
             }
             is Method -> {
