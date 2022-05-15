@@ -98,13 +98,23 @@
 
     <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
     <vcs.changes.localCommitExecutor
-      implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
-      id="git.commit.and.push.to.gitlab"/>
+            implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
+            id="git.commit.and.push.to.gitlab"/>
 
     <checkinHandlerFactory implementation="com.vk.admstorm.actions.git.commit.GitCustomPushCheckinHandlerFactory"/>
 
     <notificationGroup id="AdmStorm" displayType="BALLOON"/>
     <notificationGroup id="AdmStorm Important" displayType="STICKY_BALLOON"/>
+
+    <localInspection language="PHP" groupName="AdmStorm" shortName="WrongBenchmarkNameInspection"
+                     displayName="Wrong benchmark name inspection"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="com.vk.admstorm.inspections.WrongBenchmarkNameInspection"/>
+
+    <localInspection language="PHP" groupName="AdmStorm" shortName="WrongFileNameBenchmarkInspection"
+                     displayName="Wrong file name benchmark inspection"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="com.vk.admstorm.inspections.WrongFileNameBenchmarkInspection"/>
   </extensions>
 
   <actions>
