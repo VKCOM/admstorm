@@ -1,5 +1,20 @@
 # AdmStorm Changelog
 
+## [Unreleased]
+
+### Added
+
+- Full support for ktest benchmarks:
+  - Running a benchmark on an entire class or a single method
+  - Launching benchmark for memory allocations
+  - Comparison of two classes and two methods
+  - Checking the name of the benchmark class
+
+### Changed
+
+- Now, when resetting the yubikey, the "Remember" checkbox will be selected by default in the yubikey password reset
+  dialog
+
 ## 1.2.0 — 11.05.2022
 
 Debugging for PHP scripts and PHPUnit tests right in the IDE, new action "Run Anything on Server", support for new API
