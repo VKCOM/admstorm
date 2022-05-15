@@ -1,19 +1,19 @@
 package com.vk.admstorm.ssh
 
-import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
+import com.intellij.ui.dsl.builder.BottomGap
+import com.intellij.ui.dsl.builder.TopGap
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.util.ui.JBDimension
-import com.intellij.util.ui.JBUI
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
     companion object {
-        private val LOG = logger<EnterPasswordDialog>()
-
         fun requestPassword(project: Project, ifRemember: () -> Unit = {}): String {
             val dialog = EnterPasswordDialog(project)
             dialog.showAndGet()
@@ -25,9 +25,11 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         }
     }
 
-    private lateinit var myPanel: JPanel
-    private lateinit var myPasswordInput: JBPasswordField
-    private val myRememberCheckBox = JBCheckBox("Remember")
+    private var myPasswordInput = JBPasswordField()
+    private val myRememberCheckBox = JBCheckBox("Remember", true)
+
+    fun getPassword() = String(myPasswordInput.password)
+    fun isRemember() = myRememberCheckBox.isSelected
 
     init {
         title = "Enter Password"
@@ -35,17 +37,27 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         init()
     }
 
-    fun getPassword() = String(myPasswordInput.password)
-    fun isRemember() = myRememberCheckBox.isSelected
-
     override fun getPreferredFocusedComponent() = myPasswordInput
 
     override fun createSouthAdditionalPanel(): JPanel {
-        return JBUI.Panels.simplePanel(myRememberCheckBox)
+        return panel {
+            row {
+                cell(myRememberCheckBox)
+            }
+        }
     }
 
     override fun createCenterPanel(): JComponent {
-        return myPanel.apply {
+        return panel {
+            row {
+                label("Enter password for Yubikey:")
+            }.topGap(TopGap.NONE)
+
+            row {
+                cell(myPasswordInput)
+                    .horizontalAlign(HorizontalAlign.FILL)
+            }.bottomGap(BottomGap.NONE)
+        }.apply {
             preferredSize = JBDimension(300, -1)
         }
     }
