@@ -4,18 +4,22 @@
   <vendor email="mr.makhneff@gmail.com" url="https://vk.com/petrmakhnev">Petr Makhnev</vendor>
 
   <description><![CDATA[
-<p><b>About</b></p>
 <p>AdmStorm is a PhpStorm plugin that adds VK internal tools directly to the IDE and adds knowledge about the development server.</p>
+<br>
 <p>This plugin is intended only for VK employees.</p>
 <br>
 <p><b>Features</b></p>
 <ul>
   <li>Checking the synchronization of the local repository and the repository on the development server</li>
   <li>Additional actions for push and pull, taking into account hooks on the development server</li>
+  <li>Debugging remote PHP scripts and tests right in the IDE</li>
   <li>Various configurations for launching KPHP</li>
   <li>PHPUnit and PHPLinter run configurations</li>
+  <li>Support for Yarn Watch, Builders, Debug Logs</li>
   <li>Built-in KPHP Playground and Hastebin</li>
   <li>Ability to view the generated C++ code for the entire site</li>
+  <li>Run Anything on Server action</li>
+  <li>And more...</li>
 </ul>
 <br>
 <p><b>Homepage</b></p>
