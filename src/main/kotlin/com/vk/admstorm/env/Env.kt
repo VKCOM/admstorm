@@ -50,6 +50,8 @@ data class EnvConfig(
     var syncScriptCommand: String = "",
     var deployTestDomainCommand: String = "",
     var clearTestDomainCommand: String = "",
+    var deployPublicTestDomainCommand: String = "",
+    var clearPublicTestDomainCommand: String = "",
     var kphpCommands: List<KphpCommand> = listOf(),
 )
 

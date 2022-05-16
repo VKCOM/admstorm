@@ -43,6 +43,7 @@ class DeployTestDomainAction : AdmActionBase() {
         private lateinit var centralPanel: DialogPanel
         val model = DeployTestDomainService.Options(
             useCustomDomain = false,
+            isPublicDomain = false,
             domain = "",
             branch = "",
         )
@@ -61,8 +62,12 @@ class DeployTestDomainAction : AdmActionBase() {
             model.branch = currentBranch
             val branchTextField = createBranchCompletionTextField(project)
             val domainTextField = LanguageTextField(PhpLanguage.INSTANCE, project, "", true)
-
             centralPanel = panel {
+                row {
+                    checkBox("Public domain")
+                        .bindSelected(model::isPublicDomain)
+                }
+
                 row {
                     useCustomDomainCheckBox = checkBox("Use custom domain")
                         .bindSelected(model::useCustomDomain)
@@ -75,7 +80,7 @@ class DeployTestDomainAction : AdmActionBase() {
                         .comment("<a href='release'>Release</a> current domain?", 100) {
                             centralPanel.apply()
                             runBackground(project, "Release ${model.domain} domain") {
-                                if (DeployTestDomainService.getInstance(project).releaseDomain(model.domain)) {
+                                if (DeployTestDomainService.getInstance(project).releaseDomain(model)) {
                                     MessageDialog.showSuccess(
                                         "Domain ${model.domain} successfully released",
                                         "Domain released"

@@ -15,6 +15,7 @@ class DeployTestDomainService(private val project: Project) {
 
     data class Options(
         var useCustomDomain: Boolean,
+        var isPublicDomain: Boolean,
         var domain: String,
         var branch: String,
     )
@@ -26,12 +27,22 @@ class DeployTestDomainService(private val project: Project) {
             "auto"
         }
 
-        val command = "${Env.data.deployTestDomainCommand} $domain ${options.branch}"
+        val deployCommand = if (options.isPublicDomain) {
+            Env.data.deployPublicTestDomainCommand
+        } else {
+            Env.data.deployTestDomainCommand
+        }
+        val command = "$deployCommand $domain ${options.branch}"
         DeployTestDomainExecutor(project, command).run()
     }
 
-    fun releaseDomain(name: String): Boolean {
-        val command = "${Env.data.clearTestDomainCommand}} $name"
+    fun releaseDomain(options: Options): Boolean {
+        val releaseCommand = if (options.isPublicDomain) {
+            Env.data.clearPublicTestDomainCommand
+        } else {
+            Env.data.clearTestDomainCommand
+        }
+        val command = "$releaseCommand ${options.domain}"
         return CommandRunner.runRemotely(project, command).exitCode == 0
     }
 }
