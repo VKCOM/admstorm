@@ -4,7 +4,7 @@ import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.OutputListener
 import com.intellij.execution.configurations.RunProfile
-import com.intellij.execution.configurations.RunProfileState
+import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.ui.*
@@ -15,14 +15,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.ui.JBUI
 import com.vk.admstorm.actions.ActionToolbarFastEnableAction
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.tabs.ConsoleTab
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.executors.tabs.Tab
@@ -33,13 +35,21 @@ import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.Icon
 import javax.swing.JComponent
 
-abstract class BaseRunnableExecutor(protected var myConfig: Config, protected var myProject: Project) :
-    ActionToolbarPanel(myProject, myConfig.name) {
+abstract class BaseRunnableExecutor(
+    protected var myConfig: Config,
+    protected var myProject: Project,
+    private val needActivateToolWindow: Boolean = true,
+) : ActionToolbarPanel(myProject, myConfig.name) {
+
+    companion object {
+        private val LOG = logger<BaseRunnableExecutor>();
+    }
 
     data class Config(
         var name: String = "Tool Tab",
+        var layoutName: String = name,
         var command: String = "",
-        var workingDir: String = Env.data.projectRoot
+        var workingDir: String? = null
     )
 
     protected lateinit var myLayout: RunnerLayoutUi
@@ -49,16 +59,20 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     private val myTabs = mutableListOf<Tab>()
 
     private val myRestartAction = object : ActionToolbarFastEnableAction(
-        myConfig.name + " Start", "",
+        "Rerun " + myConfig.name, "",
         AllIcons.Actions.Restart,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             if (!myProcessHandler.isProcessTerminated) {
-                myProcessHandler.destroyProcess()
+                onStopBeforeRerun()
+                stop()
                 Thread.sleep(1_000)
             }
 
             run()
+            onRerun()
+
+            myStopAction.setEnabled(true)
         }
 
         init {
@@ -67,12 +81,12 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     }
 
     private val myStopAction = object : ActionToolbarFastEnableAction(
-        myConfig.name + " Stop", "",
+        "Stop " + myConfig.name, "",
         AllIcons.Actions.Suspend
     ) {
         override fun actionPerformed(e: AnActionEvent) {
-            myProcessHandler.destroyProcess()
-            setEnabled(false)
+            stop()
+            onStop()
         }
     }
 
@@ -113,13 +127,27 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     }
 
     init {
-        myStopAction.setEnabled(false)
         myActionGroup.addAll(actions())
+
+        project.messageBus.connect().subscribe(
+            ToolWindowManagerListener.TOPIC,
+            ToolWindowListener()
+        )
     }
 
     fun withTab(tab: Tab): BaseRunnableExecutor {
         myTabs.add(tab)
         return this
+    }
+
+    fun stop() {
+        myStopAction.setEnabled(false)
+
+        try {
+            myProcessHandler.destroyProcess()
+        } catch (e: Exception) {
+            LOG.warn("Failed to stop process", e)
+        }
     }
 
     /**
@@ -151,13 +179,18 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
                 onReady()
 
                 ApplicationManager.getApplication().invokeLater {
-                    activateToolWindow()
-                    myStopAction.setEnabled(false)
+                    showToolWindow()
+                    if (event.exitCode != 1) {
+                        myStopAction.setEnabled(false)
+                    }
                 }
             }
         }
 
         myProcessHandler.addProcessListener(myOutputListener)
+        listeners().forEach {
+            myProcessHandler.addProcessListener(it)
+        }
 
         ApplicationManager.getApplication().invokeAndWait {
             prepareAndShowInterface()
@@ -169,17 +202,13 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
     private fun prepareAndShowInterface() {
         myStopAction.setEnabled(true)
 
-        val layoutName = ServerNameProvider.uppercase()
-
         myLayout = RunnerLayoutUi.Factory.getInstance(myProject)
-            .create("Adm", layoutName, myConfig.name, this)
+            .create(runnerId(), runnerTitle(), myConfig.layoutName, this)
 
-        val executor = AdmToolsExecutor.getRunExecutorInstance()
+        val executor = executorInstance()
 
         val runProfile = object : RunProfile {
-            override fun getState(executor: Executor, executionEnvironment: ExecutionEnvironment):
-                    RunProfileState? = null
-
+            override fun getState(e: Executor, ee: ExecutionEnvironment) = null
             override fun getName(): String = myConfig.name
             override fun getIcon(): Icon = icon()
         }
@@ -192,7 +221,7 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
         descriptor.executionId = System.nanoTime()
         descriptor.setFocusComputable { myConsole.view().preferredFocusableComponent }
         descriptor.isAutoFocusContent = true
-        descriptor.contentToolWindowId = AdmToolsExecutor.TOOL_WINDOW_ID
+        descriptor.contentToolWindowId = executorToolWindowId()
 
         val rawOutputComponentWithActions =
             SimpleComponentWithActions(myConsole.view() as JComponent?, consoleComponent)
@@ -220,7 +249,9 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
 
         RunContentManager.getInstance(myProject).showRunContent(executor!!, descriptor)
 
-        activateToolWindow()
+        if (needActivateToolWindow) {
+            showToolWindow()
+        }
     }
 
     private fun clearTabs() {
@@ -232,15 +263,35 @@ abstract class BaseRunnableExecutor(protected var myConfig: Config, protected va
         }
     }
 
-    private fun activateToolWindow() {
+    fun showToolWindow() {
         ApplicationManager.getApplication().invokeLater {
-            ToolWindowManager.getInstance(myProject).getToolWindow(AdmToolsExecutor.TOOL_WINDOW_ID)!!
+            ToolWindowManager.getInstance(myProject).getToolWindow(executorToolWindowId())!!
                 .activate(null, true, true)
         }
     }
 
-    abstract fun onReady()
+    inner class ToolWindowListener : ToolWindowManagerListener {
+        override fun toolWindowShown(toolWindow: ToolWindow) {
+            if (toolWindow.id == executorToolWindowId()) {
+                onToolWindowShow()
+            }
+        }
+    }
+
+    open fun executorInstance() = AdmToolsExecutor.getRunExecutorInstance()
+    open fun executorToolWindowId() = AdmToolsExecutor.TOOL_WINDOW_ID
+    open fun runnerTitle() = ServerNameProvider.uppercase()
+    open fun runnerId() = "Adm"
+
+    open fun onStop() {}
+    open fun onStopBeforeRerun() {}
+    open fun onRerun() {}
+    open fun onReady() {}
+    open fun onToolWindowShow() {}
+
     abstract fun icon(): Icon
+
+    open fun listeners() = emptyList<ProcessAdapter>()
 
     fun actions(): Collection<AnAction> = listOf(
         myRestartAction,

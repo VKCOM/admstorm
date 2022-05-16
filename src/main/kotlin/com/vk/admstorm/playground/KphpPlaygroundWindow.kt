@@ -36,6 +36,7 @@ import com.jetbrains.php.lang.psi.elements.PhpUse
 import com.vk.admstorm.actions.ActionToolbarFastEnableAction
 import com.vk.admstorm.configuration.kphp.KphpScriptRunner
 import com.vk.admstorm.console.Console
+import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.psi.PhpRecursiveElementVisitor
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyKphpUtils.scriptBinaryPath
@@ -120,9 +121,13 @@ require_once "vendor/autoload.php";
             LOG.warn("Unexpected exception while create temp file '${tempFile.path}'", e)
         }
 
-        val tmpVirtualFile = LocalFileSystem.getInstance().findFileByIoFile(tempFile)
+        val tmpVirtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(tempFile.absolutePath)
         if (tmpVirtualFile == null) {
             LOG.info("kphp_script_dummy.php not found")
+            AdmErrorNotification("Try restarting PHPStorm and try again")
+                .withTitle("Problem with temp file for KPHP Playground")
+                .show()
+
             throw IllegalStateException("kphp_script_dummy.php not found")
         }
 

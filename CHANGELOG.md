@@ -9,6 +9,7 @@
   - Launching benchmark for memory allocations
   - Comparison of two classes and two methods
   - Checking the name of the benchmark class
+- Yarn Watch support
 
 ### Changed
 

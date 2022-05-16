@@ -38,6 +38,8 @@
   <projectListeners>
     <listener class="com.vk.admstorm.git.AdmBranchContextTracker"
               topic="com.intellij.openapi.vcs.BranchChangeListener"/>
+    <listener class="com.vk.admstorm.YarnWatchGitBranchContextTracker"
+              topic="com.intellij.openapi.vcs.BranchChangeListener"/>
   </projectListeners>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -49,11 +51,16 @@
     <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.DebugLogLineMarkerProvider" language="PHP"
                                     implementationClass="com.vk.admstorm.highlight.DebugLogLineMarkerProvider"/>
 
+    <statusBarWidgetFactory id="com.vk.admstorm.ui.status.bar.yarn.watch"
+                            implementation="com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory"
+                            order="before gitWidget"/>
+
     <projectService serviceImplementation="com.vk.admstorm.AdmService"/>
     <projectService serviceImplementation="com.vk.admstorm.ssh.SshConnectionService"/>
     <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
     <projectService serviceImplementation="com.vk.admstorm.AdmStormStartupActivity"/>
+    <projectService serviceImplementation="com.vk.admstorm.YarnWatchService"/>
 
     <!-- Run Anything Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.runanything.RunAnythingConfigurationType"/>
@@ -90,17 +97,22 @@
     <!-- Remote PHPUnit Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationType"/>
     <runConfigurationProducer
-      implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
+            implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
     <programRunner implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationRunner"/>
 
     <!-- Builders Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationType"/>
     <runConfigurationProducer
-      implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationProducer"/>
+            implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationProducer"/>
+
+    <!-- Yarn Watch -->
+    <configurationType implementation="com.vk.admstorm.configuration.yarnwatch.YarnWatchConfigurationType"/>
 
     <postStartupActivity implementation="com.vk.admstorm.AdmStormStartupActivity"/>
 
     <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
+    <executor implementation="com.vk.admstorm.executors.YarnWatchExecutor" id="YarnWatch"/>
+
     <vcs.changes.localCommitExecutor
             implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
             id="git.commit.and.push.to.gitlab"/>
@@ -174,6 +186,12 @@
             text="Run Anything on Server">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
       <keyboard-shortcut first-keystroke="shift control W" keymap="$default"/>
+    </action>
+
+    <action id="com.vk.admstorm.yarn.watch"
+            class="com.vk.admstorm.actions.YarnWatchAction"
+            text="Yarn Watch">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
     </action>
 
     <action id="com.vk.admstorm.adm.toolbar.label" class="com.vk.admstorm.actions.AdmToolbarLabelAction">
