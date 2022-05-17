@@ -48,17 +48,14 @@ class AdmService(private var myProject: Project) {
             return false
         }
 
-        var containsVK = false
-        var containsKPHP = false
-
+        var containsGlobal = false
         composerPsiFile.accept(object : JsonRecursiveElementVisitor() {
             override fun visitStringLiteral(lit: JsonStringLiteral) {
-                containsVK = containsVK || lit.text.contains("vk")
-                containsKPHP = containsKPHP || lit.text.contains("kphp-polyfills")
+                containsGlobal = containsGlobal || lit.text.contains("vk/global")
             }
         })
 
-        myNeedBeEnabled = containsVK && containsKPHP
+        myNeedBeEnabled = containsGlobal
 
         LOG.info("Checking the current project for enable plugin: Is vkcom: $myNeedBeEnabled")
         return myNeedBeEnabled!!

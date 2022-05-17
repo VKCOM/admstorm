@@ -16,6 +16,12 @@
 - Now, when resetting the yubikey, the "Remember" checkbox will be selected by default in the yubikey password reset
   dialog
 
+### Fixed
+
+- Function of determining that this is vkcom project, now it does not consider kphp-polyfills to be the right project to
+  enable the plugin
+- Bug when, for third-party projects, when committing, the plugin tried to push changes on the server.
+
 ## 1.2.0 — 11.05.2022
 
 Debugging for PHP scripts and PHPUnit tests right in the IDE, new action "Run Anything on Server", support for new API
