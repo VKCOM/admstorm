@@ -265,8 +265,8 @@ abstract class BaseRunnableExecutor(
 
     fun showToolWindow() {
         ApplicationManager.getApplication().invokeLater {
-            ToolWindowManager.getInstance(myProject).getToolWindow(executorToolWindowId())!!
-                .activate(null, true, true)
+            ToolWindowManager.getInstance(myProject).getToolWindow(executorToolWindowId())
+                ?.activate(null, true, true)
         }
     }
 

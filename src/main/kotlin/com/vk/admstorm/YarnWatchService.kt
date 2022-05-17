@@ -7,6 +7,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
+import com.vk.admstorm.ssh.SshConnectionService
 import java.beans.PropertyChangeSupport
 
 @Service
@@ -36,6 +37,10 @@ class YarnWatchService(private val myProject: Project) : Disposable {
     }
 
     fun start() {
+        if (!isConnected()) {
+            return
+        }
+
         invokeLater {
             executor.run()
             setWorking(true)
@@ -74,6 +79,8 @@ class YarnWatchService(private val myProject: Project) : Disposable {
             setState(State.STOPPED)
         }
     }
+
+    private fun isConnected() = SshConnectionService.getInstance(myProject).isConnectedOrWarning()
 
     override fun dispose() {
         executor.dispose()
