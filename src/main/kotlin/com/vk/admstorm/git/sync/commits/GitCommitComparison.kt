@@ -27,9 +27,9 @@ class GitCommitComparison(
             return
         }
 
-        val commitsBetween = GitUtils.localCommitsInRange(myProject, remoteCommit, localCommit)
+        val (commitsBetween, countBetween) = GitUtils.localCommitsInRange(myProject, remoteCommit, localCommit)
 
-        showDialog(localCommit, remoteCommit, commitsBetween, true)
+        showDialog(localCommit, remoteCommit, commitsBetween, countBetween, true)
     }
 
     private fun localCommitBeforeRemote(localCommit: Commit, remoteCommit: Commit, distance: Int) {
@@ -38,15 +38,16 @@ class GitCommitComparison(
             return
         }
 
-        val commitsBetween = GitUtils.remoteCommitsInRange(myProject, localCommit, remoteCommit)
+        val (commitsBetween, countBetween) = GitUtils.remoteCommitsInRange(myProject, localCommit, remoteCommit)
 
-        showDialog(localCommit, remoteCommit, commitsBetween, false)
+        showDialog(localCommit, remoteCommit, commitsBetween, countBetween, false)
     }
 
     private fun showDialog(
         localCommit: Commit,
         remoteCommit: Commit,
         commitsBetween: List<Commit>,
+        countBetween: Int,
         needPushToServer: Boolean,
     ) {
         invokeLater {
@@ -56,6 +57,7 @@ class GitCommitComparison(
                     localCommit,
                     remoteCommit,
                     commitsBetween,
+                    countBetween,
                     needPushToServer,
                     myOnSync
                 )

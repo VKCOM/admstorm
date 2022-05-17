@@ -78,7 +78,7 @@ class PushOptionsDialog(
             ServerRepoTreeNode(branchName, !exists)
         }
 
-        myPushCommitsPanel = PushCommitsPanel(project, commits, commitBuilder, rootNodeBuilder)
+        myPushCommitsPanel = PushCommitsPanel(project, commits, commits.size, commitBuilder, rootNodeBuilder)
 
         myPushActions.add(object : AbstractAction("Push") {
             override fun actionPerformed(e: ActionEvent?) {

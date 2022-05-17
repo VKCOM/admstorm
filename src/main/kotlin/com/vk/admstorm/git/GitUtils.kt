@@ -171,25 +171,54 @@ object GitUtils {
     /**
      * Returns commits from the development server between [startCommit] and [endCommit] inclusive.
      */
-    fun remoteCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): List<Commit> {
+    fun remoteCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): Pair<List<Commit>, Int> {
+        val countCommits = remoteCountCommitsInRange(project, startCommit, endCommit)
+
         val output = CommandRunner.runRemotely(
             project,
-            commitRangeCommand.withParam("${startCommit.hash}..${endCommit.hash}")
+            commitRangeCommand
+                .withParam("-30")
+                .withParam("${startCommit.hash}..${endCommit.hash}")
         )
-        return outputToCommits(output).onEach { it.fromRemote = true }
+        return Pair(outputToCommits(output), countCommits)
+    }
+
+    /**
+     * Returns commits count from the development server between [startCommit] and [endCommit] inclusive.
+     */
+    fun remoteCountCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): Int {
+        return CommandRunner.runRemotely(
+            project,
+            countCommitsCommand
+                .withParam("${startCommit.hash}..${endCommit.hash}")
+        ).stdout.trim().toIntOrNull() ?: -1
     }
 
     /**
      * Returns commits from the local between [startCommit] and [endCommit] inclusive.
      */
-    fun localCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): List<Commit> {
+    fun localCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): Pair<List<Commit>, Int> {
+        val countCommits = localCountCommitsInRange(project, startCommit, endCommit)
+
         val output = CommandRunner.runLocally(
             project,
             commitRangeCommand
+                .withParam("-30")
                 .withParam("${startCommit.hash}..${endCommit.hash}")
                 .replace("\"", "")
         )
-        return outputToCommits(output)
+        return Pair(outputToCommits(output), countCommits)
+    }
+
+    /**
+     * Returns commits count from the local between [startCommit] and [endCommit] inclusive.
+     */
+    fun localCountCommitsInRange(project: Project, startCommit: Commit, endCommit: Commit): Int {
+        return CommandRunner.runLocally(
+            project,
+            countCommitsCommand
+                .withParam("${startCommit.hash}..${endCommit.hash}")
+        ).stdout.trim().toIntOrNull() ?: -1
     }
 
     /**
@@ -250,9 +279,10 @@ object GitUtils {
     }
 
     /**
-     * Base command for [countNewServerCommits] and [countNewLocalCommits].
+     * Base command for [countNewServerCommits], [countNewLocalCommits],
+     * [remoteCountCommitsInRange] and [localCountCommitsInRange]
      */
-    private const val countNewCommitsCommand = "git rev-list --count"
+    private const val countCommitsCommand = "git rev-list --count"
 
     /**
      * Returns the number of commits on the development server that
@@ -261,7 +291,7 @@ object GitUtils {
     fun countNewServerCommits(project: Project, branch: String): Int {
         return CommandRunner.runLocally(
             project,
-            countNewCommitsCommand
+            countCommitsCommand
                 .withParam("origin/$branch..")
         ).stdout.trim().toIntOrNull() ?: -1
     }
@@ -273,7 +303,7 @@ object GitUtils {
     fun countNewLocalCommits(project: Project, branchName: String): Int {
         return CommandRunner.runLocally(
             project,
-            countNewCommitsCommand
+            countCommitsCommand
                 .withParam("${ServerNameProvider.name()}/$branchName..")
         ).stdout.trim().toIntOrNull() ?: -1
     }
