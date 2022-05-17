@@ -4,6 +4,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.ide.IdeTooltip
 import com.intellij.ide.IdeTooltipManager
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.panels.NonOpaquePanel
 import com.vk.admstorm.console.filters.KphpErrorFileLinkFilter
@@ -18,7 +19,7 @@ import javax.swing.border.EmptyBorder
  * A console component with the ability to get the displayed text,
  * as well as applying some standard filters for the output.
  */
-class Console(project: Project, withFilters: Boolean = true) {
+class Console(project: Project, withFilters: Boolean = true) : Disposable {
     private var myConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console
 
     fun component() = myConsoleView.component
@@ -64,5 +65,9 @@ class Console(project: Project, withFilters: Boolean = true) {
             myConsoleView.addMessageFilter(PhpLinterFileLinkFilter(project))
             myConsoleView.addMessageFilter(PhpLinterCheckerLinkFilter(project, this))
         }
+    }
+
+    override fun dispose() {
+        myConsoleView.dispose()
     }
 }

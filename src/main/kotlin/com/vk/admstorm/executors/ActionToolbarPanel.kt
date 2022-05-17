@@ -28,5 +28,7 @@ abstract class ActionToolbarPanel(protected var project: Project, id: String) : 
         myToolbarComponent = panel
     }
 
-    override fun dispose() {}
+    override fun dispose() {
+        myConsole.dispose()
+    }
 }

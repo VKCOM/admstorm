@@ -1,6 +1,7 @@
 package com.vk.admstorm
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -9,7 +10,7 @@ import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import java.beans.PropertyChangeSupport
 
 @Service
-class YarnWatchService(private val myProject: Project) {
+class YarnWatchService(private val myProject: Project) : Disposable {
     companion object {
         const val PROPERTY_ID = "admstorm.yarn.watch.running.state"
         fun getInstance(project: Project) = project.service<YarnWatchService>()
@@ -21,8 +22,8 @@ class YarnWatchService(private val myProject: Project) {
         WITH_ERRORS
     }
 
+    private val executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
     val changes = PropertyChangeSupport(this)
-    val executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
 
     fun isRunning() = state() != State.STOPPED
 
@@ -72,5 +73,9 @@ class YarnWatchService(private val myProject: Project) {
         } else {
             setState(State.STOPPED)
         }
+    }
+
+    override fun dispose() {
+        executor.dispose()
     }
 }
