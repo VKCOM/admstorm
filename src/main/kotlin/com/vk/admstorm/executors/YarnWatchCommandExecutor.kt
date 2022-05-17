@@ -53,7 +53,7 @@ class YarnWatchCommandExecutor(project: Project, command: String) :
 
                     if (isErrorLine(text)) {
                         LOG.info("Line $text looks like error")
-                        service.setState(YarnWatchService.State.WITH_ERRORS)
+                        service.setErrorsState()
                     }
                 }
             }

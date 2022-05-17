@@ -271,6 +271,9 @@ abstract class BaseRunnableExecutor(
         }
     }
 
+    fun isToolWindowVisible() =
+        ToolWindowManager.getInstance(myProject).getToolWindow(executorToolWindowId())?.isVisible == true
+
     inner class ToolWindowListener : ToolWindowManagerListener {
         override fun toolWindowShown(toolWindow: ToolWindow) {
             if (toolWindow.id == executorToolWindowId()) {

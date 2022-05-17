@@ -9,6 +9,8 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
 import java.beans.PropertyChangeSupport
+import java.time.LocalTime
+import java.util.*
 
 @Service
 class YarnWatchService(private val myProject: Project) : Disposable {
@@ -23,6 +25,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         WITH_ERRORS
     }
 
+    private var setErrorsStateTime: LocalTime? = null
     private val executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
     val changes = PropertyChangeSupport(this)
 
@@ -59,12 +62,22 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         clearErrorsState()
     }
 
-    fun setState(value: State) {
-        PropertiesComponent.getInstance(myProject).setValue(PROPERTY_ID, value.name)
-        changes.firePropertyChange(PROPERTY_ID, "", value.name)
-    }
-
     fun state() = State.valueOf(PropertiesComponent.getInstance(myProject).getValue(PROPERTY_ID, State.STOPPED.name))
+
+    fun setErrorsState() {
+        // Если окно не открыто, то бесконечно показываем
+        // анимацию ошибки, если же открыто, то только 5
+        // секунд.
+        if (executor.isToolWindowVisible()) {
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    clearErrorsState()
+                }
+            }, 5000)
+        }
+        setState(State.WITH_ERRORS)
+        setErrorsStateTime = LocalTime.now()
+    }
 
     fun clearErrorsState() {
         if (state() == State.WITH_ERRORS) {
@@ -78,6 +91,11 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         } else {
             setState(State.STOPPED)
         }
+    }
+
+    private fun setState(value: State) {
+        PropertiesComponent.getInstance(myProject).setValue(PROPERTY_ID, value.name)
+        changes.firePropertyChange(PROPERTY_ID, "", value.name)
     }
 
     private fun isConnected() = SshConnectionService.getInstance(myProject).isConnectedOrWarning()
