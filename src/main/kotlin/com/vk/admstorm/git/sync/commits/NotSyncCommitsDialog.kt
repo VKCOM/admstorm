@@ -26,7 +26,8 @@ class NotSyncCommitsDialog(
     private val myProject: Project,
     localCommit: Commit,
     remoteCommit: Commit,
-    private val myBetweenCommits: List<Commit>,
+    myBetweenCommits: List<Commit>,
+    private val myCountBetween: Int,
     private val myNeedPushToServer: Boolean = false,
 ) : DialogWrapper(myProject, true) {
 
@@ -39,7 +40,8 @@ class NotSyncCommitsDialog(
         private const val CENTER_PANEL_WIDTH = 800
 
         fun show(
-            project: Project, localCommit: Commit, remoteCommit: Commit, myBetweenCommits: List<Commit>,
+            project: Project, localCommit: Commit, remoteCommit: Commit,
+            myBetweenCommits: List<Commit>, countBetween: Int,
             needPushToServer: Boolean = false,
             onSyncFinish: Runnable? = null,
         ): Choice {
@@ -48,6 +50,7 @@ class NotSyncCommitsDialog(
                 localCommit,
                 remoteCommit,
                 myBetweenCommits,
+                countBetween,
                 needPushToServer,
             )
 
@@ -95,13 +98,13 @@ class NotSyncCommitsDialog(
     private fun createMessageTextPane(): JTextPane {
         val messageText = if (myNeedPushToServer)
             """<html>
-            There are <b>${myBetweenCommits.size} commits</b> in <b>local</b> branch 
+            There are <b>$myCountBetween commits</b> in <b>local</b> branch 
             that were not pushed to <b>${ServerNameProvider.name()}</b> branch
             </html>
             """.trimIndent()
         else
             """<html>
-            There are <b>${myBetweenCommits.size} commits</b> in <b>${ServerNameProvider.name()}</b> branch 
+            There are <b>$myCountBetween commits</b> in <b>${ServerNameProvider.name()}</b> branch 
             that were not fetched to <b>local</b> branch
             </html>
             """.trimIndent()
@@ -165,7 +168,7 @@ class NotSyncCommitsDialog(
             commits.add(localCommit)
         }
 
-        myPushCommitsPanel = PushCommitsPanel(myProject, commits, commitBuilder, rootBuilder)
+        myPushCommitsPanel = PushCommitsPanel(myProject, commits, myCountBetween, commitBuilder, rootBuilder)
 
         okAction.putValue(Action.SHORT_DESCRIPTION, "Sync all changes")
         cancelAction.putValue(Action.SHORT_DESCRIPTION, "Don't sync")

@@ -33,6 +33,7 @@ import javax.swing.tree.TreeSelectionModel
 class PushCommitsPanel(
     private val myProject: Project,
     commits: List<Commit>,
+    count: Int,
     private val myCommitNodeBuilder: (Commit) -> CommitTreeNode,
     rootNodeBuilder: () -> TreeBaseNode,
 ) : JPanel() {
@@ -78,7 +79,7 @@ class PushCommitsPanel(
         myChangesBrowser.addToolbarAction(myShowDetailsAction)
 
         val rootNode = rootNodeBuilder()
-        buildTree(commits, rootNode)
+        buildTree(commits, count, rootNode)
 
         myTreeCellRenderer = MyTreeCellRenderer()
         myTree = object : CheckboxTree(myTreeCellRenderer, rootNode) {
@@ -100,6 +101,10 @@ class PushCommitsPanel(
                 val path: TreePath = myTree.getPathForLocation(event.x, event.y) ?: return ""
                 val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return ""
                 if (node is TooltipNode) {
+                    if (node is ShowMoreCommitsNode) {
+                        return (node as TooltipNode).tooltip
+                    }
+
                     val select = DvcsBundle.message("push.select.all.commit.details")
                     return (node as TooltipNode).tooltip + "<p style='font-style:italic;color:gray;'>" + select + "</p>"
                 }
@@ -150,8 +155,19 @@ class PushCommitsPanel(
 
     private fun buildTree(
         commits: List<Commit>,
+        count: Int,
         rootNode: TreeBaseNode
     ) {
+        if (count > commits.size) {
+            val commitsExceptLast = commits.dropLast(1)
+            commitsExceptLast.forEach {
+                rootNode.add(myCommitNodeBuilder(it))
+            }
+            rootNode.add(ShowMoreCommitsNode(count - commits.size))
+            rootNode.add(myCommitNodeBuilder(commits.last()))
+            return
+        }
+
         commits.forEach {
             rootNode.add(myCommitNodeBuilder(it))
         }

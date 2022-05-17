@@ -11,6 +11,11 @@
   - Checking the name of the benchmark class
 - Yarn Watch support
 
+### Other improvements
+
+- Number of commits that are shown during synchronization is reduced to 30
+  Now if more than 30 commits require synchronization, then only the first 30 and the ellipsis at the end will be shown.
+
 ### Changed
 
 - Now, when resetting the yubikey, the "Remember" checkbox will be selected by default in the yubikey password reset
