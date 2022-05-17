@@ -6,8 +6,8 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.vk.admstorm.YarnWatchService
 import com.vk.admstorm.git.sync.files.RemoteFileManager
+import com.vk.admstorm.services.YarnWatchService
 import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 

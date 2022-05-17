@@ -15,6 +15,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -178,7 +179,7 @@ abstract class BaseRunnableExecutor(
 
                 onReady()
 
-                ApplicationManager.getApplication().invokeLater {
+                invokeLater {
                     showToolWindow()
                     if (event.exitCode != 1) {
                         myStopAction.setEnabled(false)
@@ -264,7 +265,7 @@ abstract class BaseRunnableExecutor(
     }
 
     fun showToolWindow() {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             ToolWindowManager.getInstance(myProject).getToolWindow(executorToolWindowId())
                 ?.activate(null, true, true)
         }

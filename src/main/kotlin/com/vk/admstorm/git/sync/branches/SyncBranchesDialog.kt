@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.branches
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
@@ -85,7 +85,7 @@ class SyncBranchesDialog(
     }
 
     private fun copyTextAndShowNotification(text: String) {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             MyUtils.copyToClipboard(text)
             AdmNotification("Branch name $text copied").show()
         }

@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.commits
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.ui.MessageDialog
@@ -49,7 +49,7 @@ class GitCommitComparison(
         commitsBetween: List<Commit>,
         needPushToServer: Boolean,
     ) {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             val choice =
                 NotSyncCommitsDialog.show(
                     myProject,

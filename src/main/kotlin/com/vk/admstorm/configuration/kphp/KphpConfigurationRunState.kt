@@ -6,6 +6,7 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.BaseRunnableExecutor
 import com.vk.admstorm.executors.KphpComplexRunExecutor
@@ -70,7 +71,7 @@ class KphpConfigurationRunState(
     }
 
     private fun doKphpScript() {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             KphpScriptRunner(myEnv.project, myRunConfiguration).run()
         }
     }

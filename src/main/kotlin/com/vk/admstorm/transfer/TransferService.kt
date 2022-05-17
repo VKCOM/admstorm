@@ -2,6 +2,7 @@ package com.vk.admstorm.transfer
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -149,7 +150,7 @@ class TransferService(private var myProject: Project) {
             return
         }
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             if (remoteFile.size() > EDITABLE_FILE_SIZE) {
                 if (
                     !MessageDialogBuilder.yesNo(
@@ -252,7 +253,7 @@ class TransferService(private var myProject: Project) {
             }
 
             // run in EDT to start the download while the dialog is open
-            ApplicationManager.getApplication().invokeLater({
+            invokeLater(ModalityState.any()) {
                 ProgressManager.getInstance().run(object : Task.Backgroundable(
                     myProject,
                     "Admstorm: " + if (type === TransferType.UPLOAD) "Uploading" else "Downloading",
@@ -324,7 +325,7 @@ class TransferService(private var myProject: Project) {
                         this.cancelText = "Cancelling..."
                     }
                 })
-            }, ModalityState.any())
+            }
         } catch (e: Exception) {
             transferFileModel.result = TransferResult.FAIL
             transferFileModel.exception = e.message ?: "transfer failed"

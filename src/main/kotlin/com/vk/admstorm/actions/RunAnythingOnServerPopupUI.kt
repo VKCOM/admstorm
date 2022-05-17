@@ -1,14 +1,11 @@
 package com.vk.admstorm.actions
 
-import com.intellij.execution.RunManager
 import com.intellij.ide.actions.BigPopupUI
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CommonShortcuts
 import com.intellij.openapi.actionSystem.CustomShortcutSet
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
@@ -21,15 +18,12 @@ import com.intellij.ui.components.panels.NonOpaquePanel
 import com.intellij.util.BooleanFunction
 import com.intellij.util.ui.StartupUiUtil
 import com.intellij.util.ui.UIUtil
-import com.vk.admstorm.configuration.runanything.RunAnythingConfiguration
-import com.vk.admstorm.configuration.runanything.RunAnythingConfigurationFactory
-import com.vk.admstorm.configuration.runanything.RunAnythingConfigurationType
-import com.vk.admstorm.executors.RunAnythingExecutor
-import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.services.RunAnythingOnServerService
 import com.vk.admstorm.utils.ServerNameProvider
 import java.awt.BorderLayout
 import java.awt.Font
 import javax.swing.BorderFactory
+import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
@@ -59,29 +53,10 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
     }
 
     private fun executeCommand() {
-        val project = myProject!!
         val command = mySearchField.text
+        val saveAsConfiguration = mySaveAsConfigurationCheckBox.isSelected
 
-        if (mySaveAsConfigurationCheckBox.isSelected) {
-            val configurationSettings = RunManager.getInstance(project)
-                .createConfiguration(
-                    "Run '$command' on ${ServerNameProvider.name()}",
-                    RunAnythingConfigurationFactory(RunAnythingConfigurationType())
-                )
-
-            val configuration = configurationSettings.configuration as RunAnythingConfiguration
-            configuration.parameters = command
-
-            RunManager.getInstance(project).addConfiguration(configurationSettings)
-        }
-
-        val executor = MyUtils.invokeAndWaitResult {
-            RunAnythingExecutor(project, mySearchField.text)
-        }
-
-        ApplicationManager.getApplication().executeOnPooledThread {
-            executor.run()
-        }
+        RunAnythingOnServerService.getInstance(myProject!!).run(command, saveAsConfiguration)
 
         mySearchField.text = ""
         searchFinishedHandler.run()
@@ -93,7 +68,14 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
 
     override fun createCellRenderer() = SimpleListCellRenderer.create<Any>("") { it.toString() }
 
-    override fun createTopLeftPanel(): JPanel {
+    override fun createHeader(): JComponent {
+        val header = JPanel(BorderLayout())
+        header.add(createHeaderLeftPanel(), BorderLayout.WEST)
+        header.add(createHeaderSettingsPanel(), BorderLayout.EAST)
+        return header
+    }
+
+    private fun createHeaderLeftPanel(): JPanel {
         val textFieldTitle = JLabel("Run Anything on ${ServerNameProvider.name()}")
         val topPanel = NonOpaquePanel(BorderLayout())
         val foregroundColor =
@@ -115,7 +97,7 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
         return topPanel
     }
 
-    override fun createSettingsPanel(): JPanel {
+    private fun createHeaderSettingsPanel(): JPanel {
         val topPanel = NonOpaquePanel(BorderLayout())
 
         mySaveAsConfigurationCheckBox.isOpaque = false
@@ -129,25 +111,16 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
     override fun getAccessibleName() = "Run anything on server"
 
     private fun adjustMainListEmptyText(editor: JBTextField) {
-        adjustEmptyText(
-            editor,
-            { field: JBTextField -> field.text.isEmpty() },
-            "Run command on ${ServerNameProvider.name()}",
-            ""
-        )
+        adjustEmptyText(editor, "Run command on ${ServerNameProvider.name()}") { field ->
+            field.text.isEmpty()
+        }
     }
 
-    fun adjustEmptyText(
-        textEditor: JBTextField,
-        function: BooleanFunction<in JBTextField>,
-        leftText: @NlsContexts.StatusText String,
-        rightText: @NlsContexts.StatusText String
-    ) {
-        textEditor.putClientProperty("StatusVisibleFunction", function)
+    private fun adjustEmptyText(textEditor: JBTextField, text: String, condition: (JBTextField) -> Boolean) {
+        textEditor.putClientProperty("StatusVisibleFunction", BooleanFunction<JBTextField> { condition(textEditor) })
         val statusText = textEditor.emptyText
         statusText.isShowAboveCenter = false
-        statusText.setText(leftText, SimpleTextAttributes.GRAY_ATTRIBUTES)
-        statusText.appendText(false, 0, rightText, SimpleTextAttributes.GRAY_ATTRIBUTES, null)
+        statusText.setText(text, SimpleTextAttributes.GRAY_ATTRIBUTES)
         statusText.setFont(UIUtil.getLabelFont(UIUtil.FontSize.SMALL))
     }
 }

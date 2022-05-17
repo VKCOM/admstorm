@@ -1,7 +1,7 @@
 package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.vk.admstorm.YarnWatchService
+import com.vk.admstorm.services.YarnWatchService
 
 class YarnWatchAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {

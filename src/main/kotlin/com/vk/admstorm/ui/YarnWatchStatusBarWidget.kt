@@ -18,7 +18,7 @@ import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ExperimentalUI
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
-import com.vk.admstorm.YarnWatchService
+import com.vk.admstorm.services.YarnWatchService
 import org.jetbrains.annotations.Nls
 import javax.swing.BoxLayout
 import javax.swing.Icon

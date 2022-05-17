@@ -3,6 +3,7 @@ package com.vk.admstorm
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.BranchChangeListener
+import com.vk.admstorm.services.YarnWatchService
 
 class YarnWatchGitBranchContextTracker(project: Project) : BranchChangeListener {
     companion object {

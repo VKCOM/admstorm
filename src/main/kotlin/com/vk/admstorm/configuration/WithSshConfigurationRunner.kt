@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.RunnerSettings
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -38,7 +39,7 @@ abstract class WithSshConfigurationRunner(
     private fun runWithSyncCheck(environment: ExecutionEnvironment) {
         SyncChecker.getInstance(environment.project).doCheckSyncSilentlyTask({ onCanceledSync(environment) }) {
             if (inEDT) {
-                ApplicationManager.getApplication().invokeLater {
+                invokeLater {
                     run(environment)
                 }
             } else {

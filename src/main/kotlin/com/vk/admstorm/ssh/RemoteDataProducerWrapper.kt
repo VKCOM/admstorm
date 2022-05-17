@@ -2,6 +2,7 @@ package com.vk.admstorm.ssh
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
@@ -113,7 +114,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
         } else if (connectors.size == 1 && connectors[0] === RemoteConnectionSettingsForm.NONE_CONNECTOR) {
             // do nothing
         } else {
-            ApplicationManager.getApplication().invokeLater {
+            invokeLater {
                 consumer.accept(connectors[1])
             }
         }
@@ -161,7 +162,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
 
             override fun onChosen(selected: RemoteConnector, finalChoice: Boolean): PopupStep<*>? {
                 if (selected is SshConfigConnector) {
-                    ApplicationManager.getApplication().invokeLater {
+                    invokeLater {
                         consumer.accept(selected)
                     }
                 } else {
@@ -193,7 +194,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
     }
 
     private fun openSSHConfigurationsSettings() {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             ShowSettingsUtil.getInstance()
                 .showSettingsDialog(this@RemoteDataProducerWrapper.project, "SSH Configurations")
         }

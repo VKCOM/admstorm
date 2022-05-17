@@ -2,7 +2,7 @@ package com.vk.admstorm.executors
 
 import com.intellij.execution.Output
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.console.Console
@@ -28,11 +28,11 @@ class PushToRemoteExecutor(project: Project, command: String) :
     override fun onReady() {
         val output = myOutputListener.output
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             myOutputHandler.accept(output, Console(myProject))
         }
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             if (output.exitCode != 0) {
                 val problems = when {
                     output.stderr.contains("<critical>") -> {
@@ -48,7 +48,7 @@ class PushToRemoteExecutor(project: Project, command: String) :
                     val problemsTab = ProblemsTab()
                     problemsTab.addAsContentTo(myLayout)
 
-                    ApplicationManager.getApplication().invokeLater {
+                    invokeLater {
                         myLayout.selectAndFocus(problemsTab.content, true, true)
                     }
 

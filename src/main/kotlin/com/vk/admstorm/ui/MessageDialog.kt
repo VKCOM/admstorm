@@ -1,6 +1,6 @@
 package com.vk.admstorm.ui
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.messages.MessagesService
@@ -26,7 +26,7 @@ object MessageDialog {
     }
 
     private fun show(message: String, title: String, icon: Icon?, project: Project? = null) {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             LOG.info("MessageDialog: title: $title, content: $message")
             MessagesService.getInstance().showMessageDialog(
                 project = project, parentComponent = null,

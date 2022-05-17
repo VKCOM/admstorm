@@ -2,6 +2,7 @@ package com.vk.admstorm.utils
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -121,7 +122,7 @@ object MyEditorUtils {
         }
 
         NonProjectFileWritingAccessProvider.allowWriting(listOf(virtualFile))
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             val rightWindow = splitCurrentVertically(project, virtualFile) ?: return@invokeLater
 
             applyEachEditor<PsiAwareTextEditorImpl>(rightWindow) { fileEditor ->

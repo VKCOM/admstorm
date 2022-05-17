@@ -1,7 +1,7 @@
 package com.vk.admstorm.git.sync
 
 import com.intellij.execution.Output
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
@@ -179,12 +179,12 @@ class SyncChecker(private var myProject: Project) {
             return
         }
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             if (state == State.BranchNotSync) {
                 val dialog = SyncBranchesDialog(myProject, myLocalBranch, myRemoteBranch, {
                     onCancelSync?.run()
                 }) {
-                    ApplicationManager.getApplication().invokeLater invokeLater2@{
+                    invokeLater invokeLater2@{
                         val afterCheckoutState = measureTimeValue(LOG, "get current sync state") {
                             currentState()
                         }
@@ -273,7 +273,7 @@ class SyncChecker(private var myProject: Project) {
                 return@runBackground
             }
 
-            ApplicationManager.getApplication().invokeLater {
+            invokeLater {
                 onSync.accept(false)
             }
         }

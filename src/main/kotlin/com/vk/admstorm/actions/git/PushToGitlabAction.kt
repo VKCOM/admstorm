@@ -3,7 +3,7 @@ package com.vk.admstorm.actions.git
 import com.intellij.execution.Output
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -65,7 +65,7 @@ class PushToGitlabAction : AdmActionBase() {
             else
                 GitUtils.remoteCommitsSinceMaster(project)
 
-            ApplicationManager.getApplication().invokeLater {
+            invokeLater {
                 val dialog =
                     PushOptionsDialog(project, "Push Commits to Gitlab from ${ServerNameProvider.name()}", commits)
                 DialogManager.show(dialog)
@@ -191,7 +191,7 @@ class PushToGitlabAction : AdmActionBase() {
         }
 
         private fun doPushToGitlab(project: Project, options: PushOptions) {
-            ApplicationManager.getApplication().invokeLater {
+            invokeLater {
                 LOG.info("Run check git status")
 
                 val canPush = checkGitStatus(project)
@@ -201,7 +201,7 @@ class PushToGitlabAction : AdmActionBase() {
                         .withActions(
                             AdmNotification.Action("Resolve and push...") { _, notification ->
                                 notification.expire()
-                                ApplicationManager.getApplication().invokeLater {
+                                invokeLater {
                                     doPushToGitlabTask(project, options)
                                 }
                             }

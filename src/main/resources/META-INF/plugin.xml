@@ -60,7 +60,8 @@
     <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
     <projectService serviceImplementation="com.vk.admstorm.AdmStormStartupActivity"/>
-    <projectService serviceImplementation="com.vk.admstorm.YarnWatchService"/>
+    <projectService serviceImplementation="com.vk.admstorm.services.YarnWatchService"/>
+    <projectService serviceImplementation="com.vk.admstorm.services.RunAnythingOnServerService"/>
 
     <!-- Run Anything Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.runanything.RunAnythingConfigurationType"/>

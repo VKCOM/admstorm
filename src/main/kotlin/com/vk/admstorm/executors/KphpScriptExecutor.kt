@@ -4,6 +4,7 @@ import com.intellij.execution.Output
 import com.intellij.execution.OutputListener
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.kphp.KphpConfiguration
 import com.vk.admstorm.console.Console
@@ -49,7 +50,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
 
         myKphpOutputTab.console.clear()
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             if (output.exitCode != 0) {
                 myKphpOutputTab.content?.displayName = "Compilation Errors"
                 myKphpOutputTab.console.println(KphpScriptOutputParser.parse(output))

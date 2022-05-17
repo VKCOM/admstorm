@@ -4,7 +4,7 @@ import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.openapi.util.Pass
@@ -49,7 +49,7 @@ abstract class SelectionBasedPsiElementAction<T : PsiElement>(
     }
 
     private fun showError(editor: Editor) {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             val errorHint =
                 "Cannot find element of class " + myClass.simpleName + " at selection/offset"
             HintManager.getInstance().showErrorHint(editor, errorHint)

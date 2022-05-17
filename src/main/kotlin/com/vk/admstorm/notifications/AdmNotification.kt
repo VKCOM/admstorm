@@ -6,7 +6,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import java.util.function.BiConsumer
 
@@ -41,7 +41,7 @@ open class AdmNotification(
     }
 
     fun show() {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             Notifications.Bus.notify(this)
             LOG.info("Notification: title: $title, content: ${content.ifEmpty { "<empty>" }}, type: $type")
         }

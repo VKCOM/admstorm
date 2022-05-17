@@ -1,6 +1,6 @@
 package com.vk.admstorm.executors
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
@@ -19,11 +19,11 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
     }
 
     override fun onReady() {
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             myLayout.selectAndFocus(myCompilationErrorsTab.content, true, true)
         }
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             val problems = KphpErrorsParser.parse(myProject, myOutputListener.output.stdout)
             val panel = ProblemsPanel(myProject, problems)
             myCompilationErrorsTab.panel.addToCenter(panel)

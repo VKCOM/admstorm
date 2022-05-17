@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
@@ -234,7 +235,7 @@ require_once "vendor/autoload.php";
         myMainComponent.revalidate()
         myMainComponent.repaint()
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             myActionToolbar.updateActionsImmediately()
         }
     }
@@ -274,7 +275,7 @@ require_once "vendor/autoload.php";
                     myDiffViewer.withPhpOutput(phpOutput)
                     myDiffViewer.withKphpOutput(kphpOutput)
 
-                    ApplicationManager.getApplication().invokeLater {
+                    invokeLater {
                         myEditorOutputSplitter.secondComponent = myDiffViewer.component
                     }
 
@@ -343,7 +344,7 @@ require_once "vendor/autoload.php";
         myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
         myWrapper.show()
 
-        ApplicationManager.getApplication().invokeLater {
+        invokeLater {
             runCompilationAction()
         }
     }

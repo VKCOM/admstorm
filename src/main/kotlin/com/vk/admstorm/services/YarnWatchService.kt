@@ -1,4 +1,4 @@
-package com.vk.admstorm
+package com.vk.admstorm.services
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable

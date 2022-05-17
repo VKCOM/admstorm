@@ -2,6 +2,7 @@ package com.vk.admstorm.git.sync.files
 
 import com.intellij.execution.Output
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.impl.LoadTextUtil
@@ -301,7 +302,7 @@ class RemoteFileManager(private val myProject: Project) {
             val diffFiles = checker.getDiffFiles()
             val handler = RemoteFileManager(myProject)
 
-            ApplicationManager.getApplication().invokeLater {
+            invokeLater {
                 var countAdded = 0
                 var countChanged = 0
                 var countDeleted = 0
