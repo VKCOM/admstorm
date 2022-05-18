@@ -121,7 +121,7 @@ require_once 'vendor/autoload.php';
     }
 
     private val myShareAction = object : ActionToolbarFastEnableAction(
-        "Share link to Playground", "",
+        "Share Hastebin link to code", "",
         AllIcons.CodeWithMe.CwmShared,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
@@ -143,13 +143,13 @@ require_once 'vendor/autoload.php';
     }
 
     private val mySharePasteAction = object : ActionToolbarFastEnableAction(
-        "Paste code from Playground link", "",
+        "Paste code from Hastebin link", "",
         AllIcons.Actions.MenuPaste,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             val link = MyUtils.getClipboardContents() ?: return
             if (!link.contains("pastebin")) {
-                showShareLabel("Not a Playground link", isError = true)
+                showShareLabel("Not a Hastebin link", isError = true)
                 return
             }
             val rawLink = link.replace(".com/", ".com/raw/")
