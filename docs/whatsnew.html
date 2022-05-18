@@ -46,6 +46,189 @@
         <div class="chapter__block">
             <div class="chapter__version-block">
                 <h2 class="chapter__big-title chapter__big-title--bold">
+                    Версия v1.3.0
+                </h2>
+
+                <time datetime="2022-05-11">23 мая 2022</time>
+
+                <p class="chapter__text chapter__version-text">
+                    Бенчмарки для KPHP, поддержка <code class="chapter__action__inline">yarn watch</code>,
+                    деплой тестовых доменов, обновления в KPHP Playground и другие улучшения,
+                    а также исправления багов.
+                </p>
+
+                <div class="chapter__version-block-new chapter__version-block-new-features">
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">Полная поддержка бенчмарков KPHP</h2>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <p class="chapter__text">
+                                Одна из главных возможностей IDE — удобно отлаживать код. До текущего
+                                момента запускать отладку PHP скриптов приходилось через консоль.
+                                <br>
+                                <br>
+                                Однако теперь отладка доступна прямо в IDE через ее встроенные возможности!
+                                <br>
+                                <br>
+                                Для того, чтобы все точно заработало, обратитесь к документации по настройке дебаггера
+                                в PHPStorm в нашем Confluence.
+                                <br>
+                                <br>
+                                Обратите внимание на необходимость файла
+                                <code>~/.php_debug</code> и поднятого SSH туннеля.
+                                <br>
+                                <br>
+                                Если вы вдруг забудете открыть туннель, то плагин покажет уведомление где вы сможете запустить его в
+                                одно действие.
+                            </p>
+
+                            <div class="chapter__text-image-block-image">
+                                <img src="https://kphp.me/admstorm/images/debug-php.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                        chapter__version-block-new-feature__inner--two-column">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Виджет Yarn Watch
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Больше не нужно запускать <code class="chapter__code-block__inline">yarn watch</code>
+                                    вручную через консоль и переключаться между IDE и консолью, чтобы проверить не
+                                    было ли ошибок.
+                                    <br>
+                                    <br>
+                                    Виджет своим цветом показывает текущее состояние, если он серый, значит watcher
+                                    не включен, зеленый – все хорошо, watcher работает, мигает красным – была ошибка.
+                                    Благодаря этому вы не пропустите ошибку, если она произойдет.
+                                    <br>
+                                    <br>
+                                    Также плагин теперь понимает, что могли появиться изменения в автосгенерированных
+                                    файлах, поэтому он будет автоматически их синхронизировать с локальным репозиторием.
+                                    <br>
+                                    <br>
+                                    Не нужно также заботиться о выключении при переключении ветки, плагин сделает это
+                                    автоматически.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img class="js-security-image" src="https://kphp.me/admstorm/images/run-anything.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                        chapter__version-block-new-feature__inner--two-column">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Обновления в KPHP Playground
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Мы добавили два небольших дополнения:
+
+                                    <br>
+                                    <br>
+                                    1. Теперь можно поделиться кодом из Playground.
+                                    Плагин создаст новый Hastebin которым можно поделиться
+                                    с другим человеком. После этого код по ссылке можно загрузить
+                                    обратно с помощью кнопки вставки.
+
+                                    <br>
+                                    <br>
+                                    2. Теперь можно просматривать ход компиляции KPHP даже после
+                                    того, как отобразился вывод. Для этого нужно переключиться на
+                                    вкладку KPHP Compilation.
+                                </p>
+                            </div>
+
+                            <div class="js-security-video"
+                                 data-src="https://kphp.me/admstorm/images/playground-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column-narrow">
+                            <div>
+                                <h2 class="chapter__version-block-new-feature__small-title">
+                                    Deploy Test Domains
+                                </h2>
+
+                                <p class="chapter__text">
+                                    Мы добавили в меню Tool новый пункт
+                                    <code class="chapter__action__inline">Deploy Test Domains</code>, с помощью
+                                    которого теперь можно удобно раскатывать ветки на тестовые домены.
+                                    <br>
+                                    <br>
+                                    Плагин понимает, когда вы выкатываетесь на любой свободный домен и запоминает
+                                    на какой конкретно была выкатка, поэтому в следующий раз, когда вам нужно будет
+                                    обновить выкатку, то достаточно будет выбрать чебокс Last used и нажать на
+                                    кнопку Deploy.
+                                    <br>
+                                    <br>
+                                    В этом же окне можно и освободить нужный вам домен через ссылку под полем Domain.
+                                </p>
+                            </div>
+
+                            <div class="chapter__text-image-block-image">
+                                <img src="https://kphp.me/admstorm/images/auto-import-kphp-playground.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Другие улучшения
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Теперь, когда плагин синхронизирует коммиты, то если коммитов больше 30, то
+                                    он показывает только 30. Благодаря этому скорость открытия диалогового окна
+                                    для синхронизации коммитов стала гораздо быстрее даже если коммитов 1000
+                                    (например, после ребейза)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Исправлено
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Теперь плагин не считает репозиторий
+                                    <code class="chapter__code-block__inline">kphp-polyfills</code> проектом для которого
+                                    нужно включить функциональность плагина.
+                                </li>
+                                <li>
+                                    Теперь, когда запускается пуш в стороннем проект, то плагин не будет показывать
+                                    сообщение о том, что есть проблемы с пушем.
+                                </li>
+                                <li>
+                                    В окошке ввода пароля для сброса Yubikey теперь чекбокс "Remember" по-умолчанию
+                                    включен.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chapter__version-block">
+                <h2 class="chapter__big-title chapter__big-title--bold">
                     Версия v1.2.0
                 </h2>
 
