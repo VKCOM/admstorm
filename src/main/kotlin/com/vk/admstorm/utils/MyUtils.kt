@@ -16,10 +16,18 @@ import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.extensions.toHex
 import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
+import java.io.BufferedReader
 import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.MalformedURLException
+import java.net.URL
 import java.security.MessageDigest
+import java.util.*
 import kotlin.system.measureTimeMillis
+
 
 object MyUtils {
     val LOG = logger<MyUtils>()
@@ -31,6 +39,56 @@ object MyUtils {
                     data
                 ), null
             )
+    }
+
+    fun getClipboardContents(): String? {
+        val contents = try {
+            Toolkit.getDefaultToolkit().systemClipboard.getContents(null)
+        } catch (e: IllegalStateException) {
+            LOG.warn("getClipboardContents exception", e)
+            null
+        } ?: return null
+
+        val data = try {
+            contents.getTransferData(DataFlavor.stringFlavor)
+        } catch (e: Exception) {
+            LOG.warn("getClipboardContents exception", e)
+            null
+        } ?: return null
+
+        return data as? String
+    }
+
+    fun readFromWeb(path: String): String? {
+        val url = try {
+            URL(path)
+        } catch (e: Exception) {
+            LOG.warn("readFromWeb exception", e)
+            return null
+        }
+        val inputStream = try {
+            url.openStream()
+        } catch (e: Exception) {
+            LOG.warn("readFromWeb exception", e)
+            return null
+        }
+        val result = StringBuilder()
+        try {
+            BufferedReader(InputStreamReader(inputStream)).use { br ->
+                var line: String?
+                while (br.readLine().also { line = it } != null) {
+                    result.append(line + "\n")
+                }
+            }
+        } catch (e: MalformedURLException) {
+            LOG.warn("readFromWeb exception", e)
+            return null
+        } catch (e: IOException) {
+            LOG.warn("readFromWeb exception", e)
+            return null
+        }
+
+        return result.toString().removeSuffix("\n")
     }
 
     fun createHaste(project: Project, data: String): String {
@@ -133,5 +191,13 @@ object MyUtils {
         }
 
         return result!!
+    }
+
+    inline fun invokeAfter(delay: Long, crossinline block: () -> Unit) {
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                block()
+            }
+        }, delay)
     }
 }

@@ -9,8 +9,10 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ex.ToolbarLabelAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
@@ -45,7 +47,10 @@ import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyKphpUtils.scriptBinaryPath
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
+import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.MyUtils.invokeAfter
 import com.vk.admstorm.utils.extensions.fixIndent
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.io.File
 import java.io.IOException
 import javax.swing.JLabel
@@ -75,12 +80,14 @@ require_once 'vendor/autoload.php';
     private var myState: State = State.End
 
     private val myWrapper: WindowWrapper
-    private var myEditor: EditorEx
+    private lateinit var myEditor: EditorEx
 
     private val myMainComponent = JBUI.Panels.simplePanel()
 
     private val myActionToolbar: ActionToolbar
     private val myActionGroup = DefaultActionGroup()
+    private val myShareLabel =
+        JLabel("Link copied", AllIcons.General.InspectionsOK, SwingConstants.LEFT).apply { isVisible = false }
     private val myLoaderLabel = JLabel("Uploading...", AnimatedIcon.Default(), SwingConstants.LEFT)
     private val myHeaderComponent = JBUI.Panels.simplePanel()
 
@@ -88,8 +95,6 @@ require_once 'vendor/autoload.php';
     private val myEditorOutputSplitter = OnePixelSplitter(true, 0.6f)
     private val myDiffViewer = KphpPhpDiffViewer(myProject)
 
-    private val myKphpConsole = Console(myProject)
-    private val myPhpConsole = Console(myProject)
     private val myKphpCompilationProcessConsole = Console(myProject, withFilters = false)
 
     private val myScriptFile: VirtualFile
@@ -112,6 +117,83 @@ require_once 'vendor/autoload.php';
         override fun actionPerformed(e: AnActionEvent) {
             myProcessHandler.destroyProcess()
             setEnabled(false)
+        }
+    }
+
+    private val myShareAction = object : ActionToolbarFastEnableAction(
+        "Share Hastebin link to code", "",
+        AllIcons.CodeWithMe.CwmShared,
+    ) {
+        override fun actionPerformed(e: AnActionEvent) {
+            val content = myEditor.document.text
+
+            ApplicationManager.getApplication().executeOnPooledThread {
+                val link = MyUtils.createHaste(myProject, content)
+                MyUtils.copyToClipboard(link)
+
+                invokeLater {
+                    myShareLabel.text = "Link copied"
+                    myShareLabel.isVisible = true
+                    invokeAfter(2000) {
+                        myShareLabel.isVisible = false
+                    }
+                }
+            }
+        }
+    }
+
+    private val mySharePasteAction = object : ActionToolbarFastEnableAction(
+        "Paste code from Hastebin link", "",
+        AllIcons.Actions.MenuPaste,
+    ) {
+        override fun actionPerformed(e: AnActionEvent) {
+            val link = MyUtils.getClipboardContents() ?: return
+            if (!link.contains("pastebin")) {
+                showShareLabel("Not a Hastebin link", isError = true)
+                return
+            }
+            val rawLink = link.replace(".com/", ".com/raw/")
+
+            ApplicationManager.getApplication().executeOnPooledThread {
+                val data = MyUtils.readFromWeb(rawLink)
+                if (data == null) {
+                    showShareLabel("Unable get code from link", isError = true)
+                    return@executeOnPooledThread
+                }
+                invokeLater {
+                    runWriteAction {
+                        myEditor.document.setText(data)
+                    }
+
+                    showShareLabel("Code pasted")
+                }
+            }
+        }
+
+        private fun showShareLabel(text: String, isError: Boolean = false) {
+            if (isError) {
+                myShareLabel.icon = AllIcons.Ide.FatalError
+            }
+            myShareLabel.text = text
+            myShareLabel.isVisible = true
+            invokeAfter(2000) {
+                myShareLabel.isVisible = false
+                myShareLabel.icon = AllIcons.General.InspectionsOK
+            }
+        }
+    }
+
+    class LabelAction(private val text: String) : ToolbarLabelAction() {
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            val project = e.project
+
+            if (project == null || !project.pluginEnabled()) {
+                e.presentation.isEnabledAndVisible = false
+                return
+            }
+
+            e.presentation.text = "$text:"
         }
     }
 
@@ -159,8 +241,12 @@ require_once 'vendor/autoload.php';
 
         myStopCompilationAction.setEnabled(false)
 
+        myActionGroup.add(LabelAction("Run"))
         myActionGroup.add(myRunCompilationAction)
         myActionGroup.add(myStopCompilationAction)
+        myActionGroup.add(LabelAction("Share"))
+        myActionGroup.add(myShareAction)
+        myActionGroup.add(mySharePasteAction)
 
         myActionToolbar = ActionManager.getInstance()
             .createActionToolbar("KphpPlaygroundToolBar", myActionGroup, true)
@@ -169,8 +255,8 @@ require_once 'vendor/autoload.php';
         myActionToolbar.updateActionsImmediately()
 
         myHeaderComponent
-            .addToLeft(JLabel("Run: "))
-            .addToCenter(myActionToolbar.component)
+            .addToLeft(myActionToolbar.component)
+            .addToCenter(myShareLabel)
             .addToRight(myLoaderLabel)
             .apply { border = JBUI.Borders.empty(0, 5) }
 
@@ -194,8 +280,6 @@ require_once 'vendor/autoload.php';
 
     private fun runCompilationAction() {
         ApplicationManager.getApplication().invokeAndWait {
-            myPhpConsole.clear()
-            myKphpConsole.clear()
             myKphpCompilationProcessConsole.clear()
             myDiffViewer.clear()
             myTabs.selectedIndex = 0

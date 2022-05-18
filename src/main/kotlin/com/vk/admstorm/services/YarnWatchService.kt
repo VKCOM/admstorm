@@ -8,9 +8,9 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.MyUtils.invokeAfter
 import java.beans.PropertyChangeSupport
 import java.time.LocalTime
-import java.util.*
 
 @Service
 class YarnWatchService(private val myProject: Project) : Disposable {
@@ -69,11 +69,9 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         // анимацию ошибки, если же открыто, то только 5
         // секунд.
         if (executor.isToolWindowVisible()) {
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    clearErrorsState()
-                }
-            }, 5000)
+            invokeAfter(5000) {
+                clearErrorsState()
+            }
         }
         setState(State.WITH_ERRORS)
         setErrorsStateTime = LocalTime.now()

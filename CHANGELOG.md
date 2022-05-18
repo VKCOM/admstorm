@@ -10,6 +10,8 @@
   - Comparison of two classes and two methods
   - Checking the name of the benchmark class
 - Yarn Watch support
+- Ability to share code from KPHP Playground
+- Ability to view KPHP compilation output in Playground
 
 ### Other improvements
 
