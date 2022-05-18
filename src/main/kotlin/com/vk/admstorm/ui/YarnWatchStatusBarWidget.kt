@@ -18,6 +18,7 @@ import com.intellij.ui.AnimatedIcon
 import com.intellij.ui.ExperimentalUI
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
+import com.vk.admstorm.AdmService
 import com.vk.admstorm.services.YarnWatchService
 import org.jetbrains.annotations.Nls
 import javax.swing.BoxLayout
@@ -134,6 +135,10 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
     }
 
     override fun updateComponent(state: WidgetState) {
+        if (!AdmService.getInstance(myProject).needBeEnabled()) {
+            return
+        }
+
         myPanel!!.setIcon(state.icon)
         myPanel!!.setText(state.text)
         myPanel!!.toolTipText = state.toolTip
