@@ -48,7 +48,12 @@ data class EnvConfig(
     var debugLogUrl: String = "",
     var debugLogFqns: List<String> = listOf(),
     var syncScriptCommand: String = "",
-    var kphpCommands: List<KphpCommand> = listOf()
+    var deployTestDomainCommand: String = "",
+    var clearTestDomainCommand: String = "",
+    var deployPublicTestDomainCommand: String = "",
+    var clearPublicTestDomainCommand: String = "",
+    var testDomainSite: String = "",
+    var kphpCommands: List<KphpCommand> = listOf(),
 )
 
 object Env {
