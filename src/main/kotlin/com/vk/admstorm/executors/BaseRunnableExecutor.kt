@@ -297,6 +297,8 @@ abstract class BaseRunnableExecutor(
 
     open fun listeners() = emptyList<ProcessAdapter>()
 
+    fun output() = myOutputListener.output
+
     fun actions(): Collection<AnAction> = listOf(
         myRestartAction,
         myStopAction,

@@ -52,6 +52,7 @@ data class EnvConfig(
     var clearTestDomainCommand: String = "",
     var deployPublicTestDomainCommand: String = "",
     var clearPublicTestDomainCommand: String = "",
+    var testDomainSite: String = "",
     var kphpCommands: List<KphpCommand> = listOf(),
 )
 

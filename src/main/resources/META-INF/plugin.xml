@@ -182,6 +182,12 @@
       <add-to-group group-id="ToolsMenu" anchor="last"/>
     </action>
 
+    <action id="com.vk.admstorm.kphp.deploy.test.domain"
+            class="com.vk.admstorm.actions.DeployTestDomainAction"
+            text="Deploy Test Domain">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+
     <action id="com.vk.admstorm.run.anything.on.server"
             class="com.vk.admstorm.actions.RunAnythingOnServerAction"
             text="Run Anything on Server">
