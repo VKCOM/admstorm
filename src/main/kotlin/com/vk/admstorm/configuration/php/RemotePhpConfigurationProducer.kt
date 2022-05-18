@@ -9,8 +9,8 @@ import com.jetbrains.php.lang.psi.PhpFileImpl
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.FunctionImpl
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 open class RemotePhpConfigurationProducer : LazyRunConfigurationProducer<RemotePhpConfiguration>() {
     override fun getConfigurationFactory() =
@@ -21,7 +21,7 @@ open class RemotePhpConfigurationProducer : LazyRunConfigurationProducer<RemoteP
         configuration: RemotePhpConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val el = context.location?.psiElement ?: return false
 
@@ -59,7 +59,7 @@ open class RemotePhpConfigurationProducer : LazyRunConfigurationProducer<RemoteP
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val el = sourceElement.get()
 

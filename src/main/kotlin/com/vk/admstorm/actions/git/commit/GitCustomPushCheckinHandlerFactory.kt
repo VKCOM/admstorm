@@ -4,19 +4,19 @@ import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.checkin.CheckinHandler
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.AdmStormStartupActivity
 import com.vk.admstorm.actions.git.PushToGitlabAction
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
     override fun createHandler(panel: CheckinProjectPanel, commitContext: CommitContext): CheckinHandler {
         return object : CheckinHandler() {
             override fun checkinSuccessful() {
-                if (!AdmService.getInstance(panel.project).needBeEnabled()) {
+                if (!panel.project.pluginEnabled()) {
                     return
                 }
 

@@ -11,9 +11,9 @@ import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.jetbrains.php.phpunit.PhpUnitUtil
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.extensions.normalizeSlashes
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.io.File
 
 open class RemotePhpUnitConfigurationProducer :
@@ -36,7 +36,7 @@ open class RemotePhpUnitConfigurationProducer :
         configuration: RemotePhpUnitConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val el = context.location?.psiElement ?: return false
         if (el is PsiDirectory) {
@@ -103,7 +103,7 @@ open class RemotePhpUnitConfigurationProducer :
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val filepath = context.location?.virtualFile?.path ?: return false
         val element = sourceElement.get()

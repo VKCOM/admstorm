@@ -4,7 +4,6 @@ import com.intellij.execution.Output
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.actions.AdmActionBase
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.git.sync.SyncChecker
@@ -14,6 +13,7 @@ import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.LostConnectionHandler
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class PullFromGitlabAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
@@ -148,7 +148,7 @@ class PullFromGitlabAction : AdmActionBase() {
     }
 
     override fun update(e: AnActionEvent) {
-        if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
+        if (e.project == null || !e.project!!.pluginEnabled()) {
             e.presentation.isEnabledAndVisible = false
             return
         }

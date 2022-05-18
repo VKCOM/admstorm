@@ -9,15 +9,15 @@ import com.jetbrains.php.lang.psi.PhpFileImpl
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.FunctionImpl
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 open class KphpConfigurationProducer : LazyRunConfigurationProducer<KphpConfiguration>() {
     override fun getConfigurationFactory() =
         ConfigurationTypeUtil.findConfigurationType(KphpConfigurationType::class.java).configurationFactories[0]
 
     override fun isConfigurationFromContext(configuration: KphpConfiguration, context: ConfigurationContext): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         if (configuration.runType != KphpRunType.Sc) {
             return false
@@ -60,7 +60,7 @@ open class KphpConfigurationProducer : LazyRunConfigurationProducer<KphpConfigur
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val el = sourceElement.get()
         val parent = el.parent

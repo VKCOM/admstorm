@@ -3,7 +3,6 @@ package com.vk.admstorm.git
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.BranchChangeListener
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.AdmStormStartupActivity
 import com.vk.admstorm.git.sync.branches.RemoteBranchSwitcher
 import com.vk.admstorm.notifications.AdmNotification
@@ -11,6 +10,7 @@ import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.ServerNameProvider
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import git4idea.branch.GitBrancher
 import git4idea.repo.GitRepositoryManager
 import git4idea.util.GitUIUtil
@@ -30,9 +30,7 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
     }
 
     override fun branchHasChanged(branchName: String) {
-        if (!AdmStormSettingsState.getInstance().needSyncBranchCheckout ||
-            !AdmService.getInstance(myProject).needBeEnabled()
-        ) {
+        if (!AdmStormSettingsState.getInstance().needSyncBranchCheckout || !myProject.pluginEnabled()) {
             return
         }
 

@@ -8,8 +8,8 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.utils.KBenchUtils
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KBenchConfiguration>() {
     abstract fun configurationId(): String
@@ -24,7 +24,7 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
         configuration: KBenchConfiguration,
         context: ConfigurationContext
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         // Так как при конфигурации сравнения мы хотим каждый раз, запуская,
         // через иконку рядом с методом или классом получать окно в котором
@@ -65,7 +65,7 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        if (!AdmService.getInstance(configuration.project).needBeEnabled()) return false
+        if (!configuration.project.pluginEnabled()) return false
 
         val source = sourceElement.get()
         val element = source.parent ?: return false

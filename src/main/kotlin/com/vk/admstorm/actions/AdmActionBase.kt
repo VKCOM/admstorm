@@ -2,8 +2,8 @@ package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 /**
  * Base class for all plugin actions that require SSH connection.
@@ -25,7 +25,7 @@ abstract class AdmActionBase : AnAction() {
     override fun update(e: AnActionEvent) {
         beforeUpdate(e)
 
-        if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
+        if (e.project == null || !e.project!!.pluginEnabled()) {
             e.presentation.isEnabledAndVisible = false
         }
     }

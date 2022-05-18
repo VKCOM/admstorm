@@ -10,7 +10,6 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.encoding.EncodingRegistry
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.actions.AdmActionBase
 import com.vk.admstorm.env.Env
@@ -27,6 +26,7 @@ import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils.measureTimeValue
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import git4idea.DialogManager
 import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.code
@@ -392,7 +392,7 @@ class PushToGitlabAction : AdmActionBase() {
     }
 
     override fun update(e: AnActionEvent) {
-        if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
+        if (e.project == null || !e.project!!.pluginEnabled()) {
             e.presentation.isEnabledAndVisible = false
         }
 

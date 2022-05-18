@@ -28,6 +28,7 @@ import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
@@ -187,7 +188,7 @@ class AdmStormStartupActivity : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
-        if (!AdmService.getInstance(project).needBeEnabled()) {
+        if (!project.pluginEnabled()) {
             // We don't connect if this is not a vkcom project
             return
         }

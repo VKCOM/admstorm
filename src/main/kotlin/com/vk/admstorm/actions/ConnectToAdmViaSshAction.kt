@@ -2,9 +2,9 @@ package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.AdmStormStartupActivity
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class ConnectToAdmViaSshAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -14,7 +14,7 @@ class ConnectToAdmViaSshAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        if (e.project == null || !AdmService.getInstance(e.project!!).needBeEnabled()) {
+        if (e.project == null || !e.project!!.pluginEnabled()) {
             e.presentation.isEnabledAndVisible = false
             return
         }
