@@ -4,6 +4,7 @@ import com.intellij.dvcs.ui.CompareBranchesDialog
 import com.intellij.execution.OutputListener
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -28,6 +29,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.ui.AnimatedIcon
+import com.intellij.ui.JBTabsPaneImpl
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.util.ui.JBUI
 import com.jetbrains.php.lang.PhpFileType
@@ -49,15 +51,15 @@ import java.io.IOException
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
-class KphpPlaygroundWindow(private val myProject: Project) {
+class KphpPlaygroundWindow(private val myProject: Project) : Disposable {
     companion object {
         private val LOG = logger<KphpPlaygroundWindow>()
 
         private const val GENERATED_FILE_HEADER = """<?php
 
 #ifndef KPHP
-require_once "www/autoload.php";
-require_once "vendor/autoload.php";
+require_once 'www/autoload.php';
+require_once 'vendor/autoload.php';
 #endif
 
 """
@@ -82,12 +84,13 @@ require_once "vendor/autoload.php";
     private val myLoaderLabel = JLabel("Uploading...", AnimatedIcon.Default(), SwingConstants.LEFT)
     private val myHeaderComponent = JBUI.Panels.simplePanel()
 
+    private val myTabs = JBTabsPaneImpl(myProject, SwingConstants.TOP, this)
     private val myEditorOutputSplitter = OnePixelSplitter(true, 0.6f)
     private val myDiffViewer = KphpPhpDiffViewer(myProject)
 
     private val myKphpConsole = Console(myProject)
     private val myPhpConsole = Console(myProject)
-    private val myCompilationErrorsConsole = Console(myProject, withFilters = false)
+    private val myKphpCompilationProcessConsole = Console(myProject, withFilters = false)
 
     private val myScriptFile: VirtualFile
 
@@ -148,7 +151,11 @@ require_once "vendor/autoload.php";
         }
 
         myEditorOutputSplitter.firstComponent = myEditor.component
-        myEditorOutputSplitter.secondComponent = myDiffViewer.component
+
+        myTabs.insertTab("KPHP Compilation", null, myKphpCompilationProcessConsole.component(), "", 0)
+        myTabs.insertTab("Output", null, myDiffViewer.component, "", 1)
+
+        myEditorOutputSplitter.secondComponent = myTabs.component
 
         myStopCompilationAction.setEnabled(false)
 
@@ -187,11 +194,11 @@ require_once "vendor/autoload.php";
 
     private fun runCompilationAction() {
         ApplicationManager.getApplication().invokeAndWait {
-            myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
             myPhpConsole.clear()
             myKphpConsole.clear()
-            myCompilationErrorsConsole.clear()
+            myKphpCompilationProcessConsole.clear()
             myDiffViewer.clear()
+            myTabs.selectedIndex = 0
         }
 
         compileScriptBinary()
@@ -255,8 +262,8 @@ require_once "vendor/autoload.php";
             val command = KphpScriptRunner.buildCommand(myProject, "../../kphp_script_dummy.php")
             myProcessHandler = MySshUtils.exec(myProject, command, workingDir = "~/") ?: return@uploadFile
 
-            myCompilationErrorsConsole.clear()
-            myCompilationErrorsConsole.view().attachToProcess(myProcessHandler)
+            myKphpCompilationProcessConsole.clear()
+            myKphpCompilationProcessConsole.view().attachToProcess(myProcessHandler)
 
             val outputListener = object : OutputListener() {
                 override fun processTerminated(event: ProcessEvent) {
@@ -276,7 +283,7 @@ require_once "vendor/autoload.php";
                     myDiffViewer.withKphpOutput(kphpOutput)
 
                     invokeLater {
-                        myEditorOutputSplitter.secondComponent = myDiffViewer.component
+                        myTabs.selectedIndex = 1
                     }
 
                     setState(State.End)
@@ -341,7 +348,7 @@ require_once "vendor/autoload.php";
             }
         }
 
-        myEditorOutputSplitter.secondComponent = myCompilationErrorsConsole.component()
+        myTabs.selectedIndex = 0
         myWrapper.show()
 
         invokeLater {
@@ -380,7 +387,7 @@ require_once "vendor/autoload.php";
         return ""
     }
 
-    private fun dispose() {
+    override fun dispose() {
         if (!myEditor.isDisposed) {
             EditorFactory.getInstance().releaseEditor(myEditor)
         }
