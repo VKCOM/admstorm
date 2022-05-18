@@ -21,7 +21,7 @@ class PlaygroundFromSelectionAction : AdmActionBase() {
             init()
         }
 
-        fun isSorroundWithVarDump() = mySurroundWithVarDumpCheckBox.isSelected
+        fun isSurroundWithVarDump() = mySurroundWithVarDumpCheckBox.isSelected
         fun isImportClasses() = myImportClassesCheckBox.isSelected
 
         override fun createCenterPanel(): JComponent {
@@ -44,7 +44,7 @@ class PlaygroundFromSelectionAction : AdmActionBase() {
             return
         }
 
-        val code = if (dialog.isSorroundWithVarDump()) {
+        val code = if (dialog.isSurroundWithVarDump()) {
             "var_dump(${primaryCaret.selectedText!!.trim().removeSuffix(";")});"
         } else {
             primaryCaret.selectedText!!
