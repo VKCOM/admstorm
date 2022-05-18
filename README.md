@@ -14,10 +14,15 @@ server.
 
 - Checking the synchronization of the local repository and the repository on the development server
 - Additional actions for push and pull, taking into account hooks on the development server
+- Debugging remote PHP scripts and tests right in the IDE
 - Various configurations for launching KPHP
 - PHPUnit and PHPLinter run configurations
+- KPHP Benchmarks with ktest
+- Support for Yarn Watch, Builders, Debug Logs, Test Domains
 - Built-in KPHP Playground and Hastebin
 - Ability to view the generated C++ code for the entire site
+- Run Anything on Server action
+- And more...
 
 This plugin aims to reduce the necessary context switches when working. It implements this through synchronization
 checks, as well as built-in tools that can now be run directly from the IDE and additional push and pull actions

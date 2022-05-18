@@ -15,7 +15,8 @@
   <li>Debugging remote PHP scripts and tests right in the IDE</li>
   <li>Various configurations for launching KPHP</li>
   <li>PHPUnit and PHPLinter run configurations</li>
-  <li>Support for Yarn Watch, Builders, Debug Logs</li>
+  <li>KPHP Benchmarks with ktest</li>
+  <li>Support for Yarn Watch, Builders, Debug Logs, Test Domains</li>
   <li>Built-in KPHP Playground and Hastebin</li>
   <li>Ability to view the generated C++ code for the entire site</li>
   <li>Run Anything on Server action</li>
