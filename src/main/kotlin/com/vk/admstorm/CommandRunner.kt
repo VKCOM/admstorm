@@ -90,7 +90,7 @@ object CommandRunner {
         }
 
         val elapsedTime = System.currentTimeMillis() - startTime
-        LOG.info("Elapsed time for local command: $elapsedTime" + "ms")
+        LOG.info("Elapsed time for local command: ${elapsedTime}ms")
 
         return result
     }
@@ -112,8 +112,10 @@ object CommandRunner {
                 proc.exitValue()
             )
         } catch (e: SecurityException) {
+            LOG.warn("Security exception while running locally:", e)
             null
         } catch (e: IOException) {
+            LOG.warn("IO exception while running locally:", e)
             null
         }
     }

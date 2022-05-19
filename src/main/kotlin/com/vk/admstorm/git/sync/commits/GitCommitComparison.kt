@@ -29,7 +29,9 @@ class GitCommitComparison(
 
         val (commitsBetween, countBetween) = GitUtils.localCommitsInRange(myProject, remoteCommit, localCommit)
 
-        showDialog(localCommit, remoteCommit, commitsBetween, countBetween, true)
+        showDialog(
+            NotSyncCommitsDialog.Options(localCommit, remoteCommit, commitsBetween, countBetween, true)
+        )
     }
 
     private fun localCommitBeforeRemote(localCommit: Commit, remoteCommit: Commit, distance: Int) {
@@ -40,28 +42,14 @@ class GitCommitComparison(
 
         val (commitsBetween, countBetween) = GitUtils.remoteCommitsInRange(myProject, localCommit, remoteCommit)
 
-        showDialog(localCommit, remoteCommit, commitsBetween, countBetween, false)
+        showDialog(
+            NotSyncCommitsDialog.Options(localCommit, remoteCommit, commitsBetween, countBetween, false)
+        )
     }
 
-    private fun showDialog(
-        localCommit: Commit,
-        remoteCommit: Commit,
-        commitsBetween: List<Commit>,
-        countBetween: Int,
-        needPushToServer: Boolean,
-    ) {
+    private fun showDialog(options: NotSyncCommitsDialog.Options) {
         invokeLater {
-            val choice =
-                NotSyncCommitsDialog.show(
-                    myProject,
-                    localCommit,
-                    remoteCommit,
-                    commitsBetween,
-                    countBetween,
-                    needPushToServer,
-                    myOnSync
-                )
-
+            val choice = NotSyncCommitsDialog.show(myProject, options, myOnSync)
             if (choice == NotSyncCommitsDialog.Choice.CANCEL) {
                 myOnCancelSync?.run()
             }

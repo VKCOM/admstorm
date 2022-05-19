@@ -102,11 +102,11 @@ class PushCommitsPanel(
                 val node = path.lastPathComponent as? DefaultMutableTreeNode ?: return ""
                 if (node is TooltipNode) {
                     if (node is ShowMoreCommitsNode) {
-                        return (node as TooltipNode).tooltip
+                        return node.tooltip
                     }
 
                     val select = DvcsBundle.message("push.select.all.commit.details")
-                    return (node as TooltipNode).tooltip + "<p style='font-style:italic;color:gray;'>" + select + "</p>"
+                    return node.tooltip + "<p style='font-style:italic;color:gray;'>" + select + "</p>"
                 }
                 return ""
             }
@@ -322,6 +322,7 @@ class PushCommitsPanel(
     private class MyShowDetailsAction(project: Project, onUpdate: Consumer<Boolean>) :
         ToggleActionButton(DvcsBundle.message("push.show.details"), AllIcons.Actions.PreviewDetailsVertically),
         DumbAware {
+
         private val mySettings: PushSettings
         private val myOnUpdate: Consumer<Boolean>
 

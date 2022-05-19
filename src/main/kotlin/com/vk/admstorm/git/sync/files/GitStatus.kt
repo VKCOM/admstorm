@@ -158,7 +158,7 @@ object GitStatus {
             LOG.info("Parse git status result: '${res.joinToString(",")}'")
 
             val elapsedTime = System.currentTimeMillis() - startTime
-            LOG.info("Elapsed time to get ${if (local) "local" else "remote"} file status: $elapsedTime" + "ms")
+            LOG.info("Elapsed time to get ${if (local) "local" else "remote"} file status: ${elapsedTime}ms")
 
             return res
         }
@@ -177,7 +177,8 @@ object GitStatus {
                 if (StringUtil.isEmptyOrSpaces(line)) continue // skip empty lines if any (e.g. the whole output may be empty on a clean working tree).
                 if (line.startsWith("starting fsmonitor-daemon in ")) continue // skip debug output from experimental daemon in git-for-windows-2.33
                 // format: XY_filename where _ stands for space.
-                if (line.length < 4 || line[2] != ' ') { // X, Y, space and at least one symbol for the file
+                // X, Y, space and at least one symbol for the file
+                if (line.length < 4 || line[2] != ' ') {
                     return emptyList()
                 }
 

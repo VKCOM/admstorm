@@ -11,8 +11,8 @@ import com.jetbrains.php.lang.psi.PhpPsiUtil
  *
  * To use, override the [actionPerformed] method and the [errorHint] parameter.
  */
-abstract class PhpPsiElementAction<T : PsiElement>(aClass: Class<T>) :
-    SelectionBasedPsiElementAction<T>(aClass, PhpFile::class.java) {
+abstract class PhpPsiElementAction<T : PsiElement>(klass: Class<T>) :
+    SelectionBasedPsiElementAction<T>(klass, PhpFile::class.java) {
 
     override fun getElementFromSelection(file: PsiFile, selectionModel: SelectionModel): T? {
         val selectionStart = selectionModel.selectionStart

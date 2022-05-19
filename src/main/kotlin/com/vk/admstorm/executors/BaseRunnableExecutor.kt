@@ -43,7 +43,7 @@ abstract class BaseRunnableExecutor(
 ) : ActionToolbarPanel(myProject, myConfig.name) {
 
     companion object {
-        private val LOG = logger<BaseRunnableExecutor>();
+        private val LOG = logger<BaseRunnableExecutor>()
     }
 
     data class Config(

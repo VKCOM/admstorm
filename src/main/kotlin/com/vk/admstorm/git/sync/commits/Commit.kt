@@ -116,8 +116,8 @@ data class Commit(
     }
 
     companion object {
-        const val commitSeparator = "<<<--->>>"
-        private const val subjectBodySeparator = "<<!>>"
+        const val COMMIT_SEPARATOR = "<<<--->>>"
+        private const val SUBJECT_BODY_SEPARATOR = "<<!>>"
 
         // Hash
         // Author
@@ -128,14 +128,14 @@ data class Commit(
         // Committer Email
         // Subject
         // Body
-        const val outputFormat =
-            "\"%H;%an;%at;%aE;%cn;%ct;%cE$subjectBodySeparator%s$subjectBodySeparator%b$commitSeparator\""
+        const val OUTPUT_FORMAT =
+            "\"%H;%an;%at;%aE;%cn;%ct;%cE$SUBJECT_BODY_SEPARATOR%s$SUBJECT_BODY_SEPARATOR%b$COMMIT_SEPARATOR\""
 
         fun fromString(output: String): Commit {
             val parts = output
                 .trim()
-                .removeSuffix(commitSeparator)
-                .split(subjectBodySeparator)
+                .removeSuffix(COMMIT_SEPARATOR)
+                .split(SUBJECT_BODY_SEPARATOR)
             if (parts.size != 3) {
                 return Commit()
             }

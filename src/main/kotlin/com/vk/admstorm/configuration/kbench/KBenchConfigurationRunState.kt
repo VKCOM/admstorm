@@ -187,7 +187,6 @@ class KBenchConfigurationRunState(
             .show()
     }
 
-
     class SelectClassDialog(
         project: Project,
         private val exceptClass: String

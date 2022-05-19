@@ -127,8 +127,8 @@ class PullFromGitlabAction : AdmActionBase() {
         }
 
         private fun showNotification(output: Output, from: String, to: String) {
-            val alreadyUpToDate = output.stdout.contains("Already up to date")
-                    || output.stdout.contains("Уже обновлено")
+            val alreadyUpToDate = output.stdout.contains("Already up to date") ||
+                    output.stdout.contains("Уже обновлено")
 
             val message = output.stdout.split("\n").stream().filter {
                 it.contains("insertions") || it.contains("deletions") ||

@@ -55,7 +55,6 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
 
     private var myUseParatestCheckBox: JBCheckBox? = null
     private var myConfigurationFileTextField: TextFieldWithBrowseButton? = null
-    private var myWorkingDirectoryTextField: JTextField? = null
     private var myAdditionalParameters: JTextField? = null
 
     override fun resetEditorFrom(demoRunConfiguration: RemotePhpUnitConfiguration) {
