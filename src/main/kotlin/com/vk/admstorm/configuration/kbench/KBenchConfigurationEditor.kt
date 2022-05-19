@@ -146,7 +146,11 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
                 intTextField(0..1000, 1)
                     .horizontalAlign(HorizontalAlign.FILL)
                     .bindIntText(model::countIteration)
-            }.rowComment("Number of iterations, larger number slows down the process but increases the accuracy", 90)
+                    .comment(
+                        "Number of iterations, larger number slows down the process but increases the accuracy",
+                        90
+                    )
+            }
         }
 
         return mainPanel

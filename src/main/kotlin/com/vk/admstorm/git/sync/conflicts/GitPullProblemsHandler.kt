@@ -3,8 +3,8 @@ package com.vk.admstorm.git.sync.conflicts
 import com.intellij.execution.Output
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.vk.admstorm.git.GitConflictResolutionStrategy
 import com.vk.admstorm.settings.AdmStormSettingsState
-import com.vk.admstorm.settings.GitConflictResolutionStrategy
 import com.vk.admstorm.ui.MessageDialog
 import git4idea.util.GitUIUtil.bold
 
@@ -47,7 +47,7 @@ class GitPullProblemsHandler(project: Project) : GitProblemsHandlerBase(project)
     private fun handlePossiblyFileOverwrite(output: Output, stashAndAction: Runnable, forceAction: Runnable): State {
         if (output.exitCode == 0) return State.Ok
 
-        when (AdmStormSettingsState.getInstance().gitConflictResolutionStrategy) {
+        when (AdmStormSettingsState.getInstance().checkoutConflictResolutionStrategy) {
             GitConflictResolutionStrategy.Stash -> stashAndAction.run()
             GitConflictResolutionStrategy.ForceCheckout -> forceAction.run()
             else -> return showFilesDialog(output, "pull", stashAndAction, forceAction)

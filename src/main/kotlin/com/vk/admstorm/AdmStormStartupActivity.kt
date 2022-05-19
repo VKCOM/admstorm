@@ -4,7 +4,7 @@ import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Service
 class AdmStormStartupActivity : StartupActivity {
     companion object {
-        private val LOG = Logger.getInstance(AdmStormStartupActivity::class.java)
+        private val LOG = logger<AdmStormStartupActivity>()
 
         private var myConnection: MessageBusConnection? = null
 
