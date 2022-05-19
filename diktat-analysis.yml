@@ -1,14 +1,15 @@
 # Common configuration
 - name: DIKTAT_COMMON
+  enabled: true
   configuration:
     # put your package name here - it will be autofixed and checked
-    domainName: ru.danil42russia.noverify
+    domainName: com.vk.admstorm
     testDirs: test
     #    # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
     #    # or: "1, 2, 3, 4, 5, 6"
     #    disabledChapters: ""
     kotlinVersion: 1.6.10
-    srcDirectories: "main"
+    srcDirectories: main
 # Checks that the Class/Enum/Interface name does not match Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: false
@@ -61,7 +62,7 @@
   enabled: true
 # Checks that the path for a file matches with a package name
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: false
+  enabled: true
 # Checks that package name is in the file
 - name: PACKAGE_NAME_MISSING
   enabled: true
