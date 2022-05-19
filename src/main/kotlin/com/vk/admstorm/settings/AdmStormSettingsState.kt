@@ -1,10 +1,11 @@
 package com.vk.admstorm.settings
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.service
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.vk.admstorm.git.GitConflictResolutionStrategy
 
 /**
  * Supports storing the application settings in a persistent way.
@@ -17,17 +18,15 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 class AdmStormSettingsState : PersistentStateComponent<AdmStormSettingsState?> {
     companion object {
-        fun getInstance(): AdmStormSettingsState {
-            return ApplicationManager.getApplication().getService(AdmStormSettingsState::class.java)
-        }
+        fun getInstance() = service<AdmStormSettingsState>()
     }
 
     var needSyncBranchCheckout = true
-    var gitConflictResolutionStrategy = GitConflictResolutionStrategy.Ask
+    var checkoutConflictResolutionStrategy = GitConflictResolutionStrategy.Ask
     var checkSyncOnFocus = true
     var connectWhenProjectStarts = true
     var runPhpLinterAsInTeamcityWhenPushToGitlab = false
-    var autoPushToServerAfterCommit = true
+    var pushToServerAfterCommit = true
     var askYubikeyPassword = true
 
     override fun getState() = this

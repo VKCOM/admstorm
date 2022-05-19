@@ -21,7 +21,7 @@ class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
                 }
 
                 if (!commitContext.isPushToGitlabAfterCommit) {
-                    if (AdmStormSettingsState.getInstance().autoPushToServerAfterCommit) {
+                    if (AdmStormSettingsState.getInstance().pushToServerAfterCommit) {
                         pushToServer()
                     }
                     return
