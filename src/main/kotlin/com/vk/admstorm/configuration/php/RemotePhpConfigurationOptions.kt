@@ -9,7 +9,7 @@ class RemotePhpConfigurationOptions : RunConfigurationOptions() {
 
     var scriptName: String
         get() = myScriptName.getValue(this) ?: ""
-        set(scriptName) {
-            myScriptName.setValue(this, scriptName)
+        set(value) {
+            myScriptName.setValue(this, value)
         }
 }

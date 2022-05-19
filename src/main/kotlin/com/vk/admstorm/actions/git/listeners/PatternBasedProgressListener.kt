@@ -2,7 +2,7 @@ package com.vk.admstorm.actions.git.listeners
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.Key
 import java.util.regex.Matcher
@@ -10,7 +10,7 @@ import java.util.regex.Pattern
 
 abstract class PatternBasedProgressListener(protected val myIndicator: ProgressIndicator) : ProcessListener {
     companion object {
-        private val LOG = Logger.getInstance(GitPullProgressListener::class.java)
+        private val LOG = logger<PatternBasedProgressListener>()
     }
 
     override fun startNotified(event: ProcessEvent) {
@@ -45,6 +45,7 @@ abstract class PatternBasedProgressListener(protected val myIndicator: ProgressI
     protected fun getGroup(matcher: Matcher, groupName: String): String? = try {
         matcher.group(groupName)
     } catch (e: Exception) {
+        LOG.warn("Failed to get group $groupName", e)
         null
     }
 

@@ -125,7 +125,7 @@ class PushToGitlabAction : AdmActionBase() {
             val output =
                 CommandRunner.runRemotely(project, "${Env.data.syncScriptCommand} files_content '$filesString'")
 
-            val filesContents = output.stdout.split(SyncChecker.FileSeparator)
+            val filesContents = output.stdout.split(SyncChecker.FILE_SEPARATOR)
 
             val dialog = GitStatusFilesDialog(project, statusFiles, filesContents)
             val res = dialog.showAndGet()

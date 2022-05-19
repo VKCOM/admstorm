@@ -114,7 +114,7 @@ class RemoteFileManager(private val myProject: Project) {
             }
             val charset = try {
                 Charset.forName(remoteFile.encoding)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Charset.forName("windows-1251")
             }
 

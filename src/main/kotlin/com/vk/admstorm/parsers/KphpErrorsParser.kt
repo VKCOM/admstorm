@@ -30,7 +30,7 @@ object KphpErrorsParser {
             val file = pathLine.substring("  ".length until indexColon)
 
             val indexIn = pathLine.lastIndexOf("  in")
-            val lineIndexEnd = if (indexIn != -1) indexIn else pathLine.length - 1
+            val lineIndexEnd = if (indexIn != -1) indexIn else pathLine.lastIndex
 
             val stringLineIndex = pathLine.substring(indexAfterColon until lineIndexEnd)
             val line = stringLineIndex.toIntOrNull() ?: 0

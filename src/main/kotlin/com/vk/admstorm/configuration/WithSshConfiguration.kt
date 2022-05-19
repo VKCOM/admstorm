@@ -1,5 +1,3 @@
 package com.vk.admstorm.configuration
 
-interface WithSshConfiguration {
-
-}
+interface WithSshConfiguration

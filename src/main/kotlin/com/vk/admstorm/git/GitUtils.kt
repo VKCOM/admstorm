@@ -158,7 +158,7 @@ object GitUtils {
         val command = listOf(
             "git", "log", "-1",
             hash,
-            "--format=${Commit.outputFormat}".replace("\"", ""),
+            "--format=${Commit.OUTPUT_FORMAT}".replace("\"", ""),
         )
         return Commit.fromString(CommandRunner.runLocally(project, command).stdout)
     }
@@ -166,7 +166,7 @@ object GitUtils {
     /**
      * Base command for [remoteCommitsInRange] and [localCommitsInRange]
      */
-    private const val commitRangeCommand = "git log --format=${Commit.outputFormat}"
+    private const val commitRangeCommand = "git log --format=${Commit.OUTPUT_FORMAT}"
 
     /**
      * Returns commits from the development server between [startCommit] and [endCommit] inclusive.
@@ -228,8 +228,8 @@ object GitUtils {
         if (output.stdout.isBlank()) return emptyList()
 
         val rawCommits = output.stdout.trim()
-            .removeSuffix(Commit.commitSeparator)
-            .split(Commit.commitSeparator)
+            .removeSuffix(Commit.COMMIT_SEPARATOR)
+            .split(Commit.COMMIT_SEPARATOR)
         return rawCommits.map {
             Commit.fromString(it)
         }
@@ -311,7 +311,7 @@ object GitUtils {
     /**
      * Base command for [newServerCommits]
      */
-    private const val newServerCommitsCommand = "git log --format=${Commit.outputFormat}"
+    private const val newServerCommitsCommand = "git log --format=${Commit.OUTPUT_FORMAT}"
 
     /**
      * Returns a list of commits on the development server that
@@ -330,7 +330,7 @@ object GitUtils {
     /**
      * Base command for [remoteCommitsSinceMaster]
      */
-    private const val commitsSinceMasterCommand = "git log --format=${Commit.outputFormat} master..HEAD"
+    private const val commitsSinceMasterCommand = "git log --format=${Commit.OUTPUT_FORMAT} master..HEAD"
 
     /**
      * Returns a list of commits that have been created since master.
@@ -432,7 +432,7 @@ object GitUtils {
             parentCommitCommand.withParam(commit.hash.asString())
         ).stdout.trim()
 
-        val commitDataCommand = "git log -1 --format=${Commit.outputFormat}"
+        val commitDataCommand = "git log -1 --format=${Commit.OUTPUT_FORMAT}"
         val parentCommitData = CommandRunner.runLocally(
             project,
             commitDataCommand.replace("\"", "").withParam(parentHash)
@@ -450,7 +450,7 @@ object GitUtils {
             parentCommitCommand.withParam(commit.hash.asString())
         ).stdout.trim()
 
-        val commitDataCommand = "git log -1 --format=${Commit.outputFormat}"
+        val commitDataCommand = "git log -1 --format=${Commit.OUTPUT_FORMAT}"
         val parentCommitData = CommandRunner.runRemotely(
             project,
             commitDataCommand.withParam(parentHash)

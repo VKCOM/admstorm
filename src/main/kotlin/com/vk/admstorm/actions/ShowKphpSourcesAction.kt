@@ -173,10 +173,11 @@ class ShowKphpSourcesAction : PhpPsiElementAction<PhpPsiElement>(PhpPsiElement::
     }
 
     private fun PhpPsiElement.line(): Int {
-        var lineNumber = 0
         val document = PsiDocumentManager.getInstance(project).getDocument(containingFile)
-        if (document != null) {
-            lineNumber = document.getLineNumber(textRange.startOffset) + 1
+        val lineNumber = if (document != null) {
+            document.getLineNumber(textRange.startOffset) + 1
+        } else {
+            0
         }
         return lineNumber
     }

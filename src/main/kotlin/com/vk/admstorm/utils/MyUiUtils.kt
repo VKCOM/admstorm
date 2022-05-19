@@ -36,7 +36,7 @@ object MyUiUtils {
         component.border = null
 
         val kit = HTMLEditorKitBuilder().withWordWrapViewFactory().build()
-        kit.styleSheet.addRule("a {color: " + ColorUtil.toHtmlColor(JBUI.CurrentTheme.Link.Foreground.ENABLED) + "}")
+        kit.styleSheet.addRule("a {color: ${ColorUtil.toHtmlColor(JBUI.CurrentTheme.Link.Foreground.ENABLED)}}")
         component.editorKit = kit
         component.addHyperlinkListener(BrowserHyperlinkListener.INSTANCE)
 
@@ -69,7 +69,7 @@ object MyUiUtils {
     fun fileTypeIcon(filename: String) =
         createLayeredIcon(FileTypeChooser.getKnownFileTypeOrAssociate(filename)?.icon)
 
-    fun createLayeredIcon(icon: Icon?, vShift: Int = 0): LayeredIcon {
+    fun createLayeredIcon(icon: Icon?, verticalShift: Int = 0): LayeredIcon {
         val emptyFileTypeIcon = EmptyIcon.ICON_18
 
         val layeredIcon = LayeredIcon(2)
@@ -80,7 +80,7 @@ object MyUiUtils {
                 icon,
                 1,
                 (-icon.iconWidth + emptyFileTypeIcon.iconWidth) / 2,
-                (emptyFileTypeIcon.iconHeight - icon.iconHeight) / 2 + vShift
+                (emptyFileTypeIcon.iconHeight - icon.iconHeight) / 2 + verticalShift
             )
         }
 

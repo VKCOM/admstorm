@@ -7,7 +7,6 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.PhpFileImpl
 import com.jetbrains.php.lang.psi.elements.PhpClass
-import com.jetbrains.php.lang.psi.elements.impl.FunctionImpl
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -18,29 +17,16 @@ open class KphpConfigurationProducer : LazyRunConfigurationProducer<KphpConfigur
 
     override fun isConfigurationFromContext(configuration: KphpConfiguration, context: ConfigurationContext): Boolean {
         if (!configuration.project.pluginEnabled()) return false
+        if (configuration.runType != KphpRunType.Sc) return false
 
-        if (configuration.runType != KphpRunType.Sc) {
-            return false
-        }
+        val element = context.location?.psiElement ?: return false
+        val containingFile = element.containingFile
 
-        val el = context.location?.psiElement ?: return false
-        val parent = el.parent
-        if (el is PhpClass || parent is PhpClass ||
-            parent is MethodImpl || parent is FunctionImpl
-        ) {
-            return false
-        }
-
-        val containingFile = el.containingFile
-
-        if (el is PhpFileImpl || containingFile is PhpFileImpl) {
+        if (element is PhpFileImpl || containingFile is PhpFileImpl) {
             val filename = containingFile.name
             val filepath = containingFile.virtualFile.path
 
             if (configuration.name != "KPHP Script '$filename'") {
-                return false
-            }
-            if (configuration.runType != KphpRunType.Sc) {
                 return false
             }
 
@@ -62,17 +48,12 @@ open class KphpConfigurationProducer : LazyRunConfigurationProducer<KphpConfigur
     ): Boolean {
         if (!configuration.project.pluginEnabled()) return false
 
-        val el = sourceElement.get()
-        val parent = el.parent
-        if (el is PhpClass ||
-            parent is PhpClass || parent is MethodImpl || parent is FunctionImpl
-        ) {
-            return false
-        }
+        val element = sourceElement.get()
+        if (!needSetup(element)) return false
 
-        val containingFile = el.containingFile
+        val containingFile = element.containingFile
 
-        if (el is PhpFileImpl || containingFile is PhpFileImpl) {
+        if (element is PhpFileImpl || containingFile is PhpFileImpl) {
             val filename = containingFile.name
             val filepath = containingFile.virtualFile.path
 
@@ -85,5 +66,10 @@ open class KphpConfigurationProducer : LazyRunConfigurationProducer<KphpConfigur
         }
 
         return false
+    }
+
+    private fun needSetup(element: PsiElement): Boolean {
+        val parent = element.parent
+        return parent !is PhpClass && parent !is MethodImpl
     }
 }

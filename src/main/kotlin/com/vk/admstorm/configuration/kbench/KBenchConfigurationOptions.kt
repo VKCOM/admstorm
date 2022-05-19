@@ -47,7 +47,7 @@ class KBenchConfigurationOptions : RunConfigurationOptions() {
         }
 
     var countIteration: Int
-        get() = myCountIteration.getValue(this) ?: 5
+        get() = myCountIteration.getValue(this)
         set(value) {
             myCountIteration.setValue(this, value)
         }

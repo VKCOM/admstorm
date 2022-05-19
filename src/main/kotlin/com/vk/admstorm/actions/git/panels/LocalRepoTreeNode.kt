@@ -17,7 +17,7 @@ class LocalRepoTreeNode(private val myCurrentBranch: String) : TreeBaseNode() {
         val repositoryDetailsTextAttributes =
             PushLogTreeUtil.addTransparencyIfNeeded(renderer, SimpleTextAttributes.REGULAR_ATTRIBUTES, isChecked())
         renderer.append(myCurrentBranch)
-        renderer.append(" " + UIUtil.rightArrow() + " ", repositoryDetailsTextAttributes)
+        renderer.append(" ${UIUtil.rightArrow()} ", repositoryDetailsTextAttributes)
         renderer.append(ServerNameProvider.name(), SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
         renderer.append(SEPARATOR, repositoryDetailsTextAttributes)
         renderer.append(myCurrentBranch)

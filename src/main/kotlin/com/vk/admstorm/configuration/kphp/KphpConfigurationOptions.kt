@@ -10,25 +10,25 @@ class KphpConfigurationOptions : LocatableRunConfigurationOptions() {
 
     var runType: KphpRunType
         get() = KphpRunType.from(myRunType.getValue(this)!!)
-        set(runType) {
-            myRunType.setValue(this, runType.name)
+        set(value) {
+            myRunType.setValue(this, value.name)
         }
 
     var parameters: String
         get() = myParameters.getValue(this) ?: ""
-        set(scriptName) {
-            myParameters.setValue(this, scriptName)
+        set(value) {
+            myParameters.setValue(this, value)
         }
 
     var runScriptWithPhp: Boolean
         get() = myRunScriptWithPhp.getValue(this)
-        set(runScriptWithPhp) {
-            myRunScriptWithPhp.setValue(this, runScriptWithPhp)
+        set(value) {
+            myRunScriptWithPhp.setValue(this, value)
         }
 
     var envVariables: String
         get() = myEnvVariables.getValue(this) ?: ""
-        set(envVariables) {
-            myEnvVariables.setValue(this, envVariables)
+        set(value) {
+            myEnvVariables.setValue(this, value)
         }
 }

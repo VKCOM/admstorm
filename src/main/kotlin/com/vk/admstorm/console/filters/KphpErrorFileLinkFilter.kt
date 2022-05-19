@@ -27,7 +27,7 @@ class KphpErrorFileLinkFilter(project: Project) : BasePhpFileLinkFilter(project)
         val filepath = line.substring("  ".length until indexColon)
 
         val indexIn = line.lastIndexOf("  in")
-        val lineIndexEnd = if (indexIn != -1) indexIn else line.length - 1
+        val lineIndexEnd = if (indexIn != -1) indexIn else line.lastIndex
 
         val stringLineIndex = line.substring(indexAfterColon until lineIndexEnd)
         val lineIndex = stringLineIndex.toIntOrNull() ?: 0

@@ -147,10 +147,8 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
         consumer: Consumer<in RemoteConnector>
     ) {
         val sdkHomesStep: ListPopupStep<*> = object : BaseListPopupStep<RemoteConnector>(
-            RemoteSdkBundle.message(
-                "popup.title.select.host.to.connect",
-                *arrayOfNulls(0)
-            ), connectors
+            RemoteSdkBundle.message("popup.title.select.host.to.connect"),
+            connectors
         ) {
             override fun getTextFor(value: RemoteConnector): String {
                 return if (value.type == RemoteConnectionType.NONE) {

@@ -41,7 +41,7 @@ class SyncBranchesDialog(
 
     private fun doLocalCheckoutToRemoteBranch() {
         LocalBranchSwitcher(myProject)
-            .switch(myRemoteBranchLabelLink.text, false, onSyncFinish)
+            .switch(myRemoteBranchLabelLink.text, onSyncFinish)
     }
 
     private fun doRemoteCheckoutToLocalBranch() {

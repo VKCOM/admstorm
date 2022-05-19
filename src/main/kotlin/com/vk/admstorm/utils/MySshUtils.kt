@@ -91,7 +91,7 @@ object MySshUtils {
             AdmWarningNotification("Don't forget to touch the yubikey if it blinks when using the AdmStorm plugin's features")
                 .withTitle("Yubikey waiting timeout")
                 .show()
-            LOG.warn("Yubikey waiting timeout")
+            LOG.warn("Yubikey waiting timeout", e)
             null
         } catch (e: IllegalStateException) {
             handleSshException(project, e)
@@ -146,7 +146,6 @@ object MySshUtils {
         LOG.warn("Unexpected exception for execSync(builder)", e)
     }
 
-    @Throws(IllegalStateException::class, TimeoutException::class, Exception::class)
     private fun execSync(builder: ExecBuilder): SshExecProcess {
         // We start execution in a separate thread in separate cases
         // when the call builder.execute() gives an exception.

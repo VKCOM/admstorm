@@ -25,23 +25,27 @@ class AdmStormSettingsConfigurable : Configurable {
 
     override fun apply() {
         val settings = AdmStormSettingsState.getInstance()
-        settings.needSyncBranchCheckout = mySettingsComponent.syncBranchCheckout
-        settings.gitConflictResolutionStrategy = mySettingsComponent.gitConflictResolutionStrategy
-        settings.checkSyncOnFocus = mySettingsComponent.checkSyncOnFocus
-        settings.connectWhenProjectStarts = mySettingsComponent.connectWhenProjectStarts
-        settings.runPhpLinterAsInTeamcityWhenPushToGitlab = mySettingsComponent.runPhpLinterAsInTeamcity
-        settings.autoPushToServerAfterCommit = mySettingsComponent.autoPushToServerAfterCommit
-        settings.askYubikeyPassword = mySettingsComponent.askYubikeyPassword
+        settings.apply {
+            needSyncBranchCheckout = mySettingsComponent.syncBranchCheckout
+            gitConflictResolutionStrategy = mySettingsComponent.gitConflictResolutionStrategy
+            checkSyncOnFocus = mySettingsComponent.checkSyncOnFocus
+            connectWhenProjectStarts = mySettingsComponent.connectWhenProjectStarts
+            runPhpLinterAsInTeamcityWhenPushToGitlab = mySettingsComponent.runPhpLinterAsInTeamcity
+            autoPushToServerAfterCommit = mySettingsComponent.autoPushToServerAfterCommit
+            askYubikeyPassword = mySettingsComponent.askYubikeyPassword
+        }
     }
 
     override fun reset() {
         val settings = AdmStormSettingsState.getInstance()
-        mySettingsComponent.syncBranchCheckout = settings.needSyncBranchCheckout
-        mySettingsComponent.gitConflictResolutionStrategy = settings.gitConflictResolutionStrategy
-        mySettingsComponent.checkSyncOnFocus = settings.checkSyncOnFocus
-        mySettingsComponent.connectWhenProjectStarts = settings.connectWhenProjectStarts
-        mySettingsComponent.runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
-        mySettingsComponent.autoPushToServerAfterCommit = settings.autoPushToServerAfterCommit
-        mySettingsComponent.askYubikeyPassword = settings.askYubikeyPassword
+        mySettingsComponent.apply {
+            syncBranchCheckout = settings.needSyncBranchCheckout
+            gitConflictResolutionStrategy = settings.gitConflictResolutionStrategy
+            checkSyncOnFocus = settings.checkSyncOnFocus
+            connectWhenProjectStarts = settings.connectWhenProjectStarts
+            runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
+            autoPushToServerAfterCommit = settings.autoPushToServerAfterCommit
+            askYubikeyPassword = settings.askYubikeyPassword
+        }
     }
 }

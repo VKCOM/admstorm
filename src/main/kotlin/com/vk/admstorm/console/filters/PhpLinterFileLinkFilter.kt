@@ -29,7 +29,7 @@ class PhpLinterFileLinkFilter(project: Project) : BasePhpFileLinkFilter(project)
         val indexAfterLastColon = indexLastColon + 1
 
         val filepath = line.substring(indexAfterAt until indexLastColon)
-        val stringLineIndex = line.substring(indexAfterLastColon until line.length - 1)
+        val stringLineIndex = line.substring(indexAfterLastColon until line.lastIndex)
         val lineIndex = stringLineIndex.toIntOrNull() ?: 0
 
         return Pair(filepath, lineIndex)

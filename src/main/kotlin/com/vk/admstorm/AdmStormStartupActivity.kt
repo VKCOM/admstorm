@@ -79,7 +79,6 @@ class AdmStormStartupActivity : StartupActivity {
                         }
                     )
                     .show()
-
             } finally {
                 myCheckSyncRunning.set(false)
             }
@@ -162,7 +161,7 @@ class AdmStormStartupActivity : StartupActivity {
                 val connectionService = try {
                     SshConnectionService.getInstance(project)
                 } catch (e: AlreadyDisposedException) {
-                    LOG.info("Check has not started because project already disposed, disconnect")
+                    LOG.info("Check has not started because project already disposed, disconnect", e)
                     myConnection?.disconnect()
                     myConnection = null
                     return

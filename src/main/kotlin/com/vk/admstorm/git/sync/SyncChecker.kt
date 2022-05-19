@@ -28,8 +28,8 @@ class SyncChecker(private var myProject: Project) {
         fun getInstance(project: Project) = project.service<SyncChecker>()
 
         private val LOG = Logger.getInstance(SyncChecker::class.java)
-        const val FileSeparator = "<<<--->>>"
-        const val PartSeparator = "<--->"
+        const val FILE_SEPARATOR = "<<<--->>>"
+        const val PART_SEPARATOR = "<--->"
     }
 
     private var myLocalBranch: String = ""
@@ -86,7 +86,7 @@ class SyncChecker(private var myProject: Project) {
                 myDifferingFiles.clear()
 
                 output.stdout
-                    .split(FileSeparator)
+                    .split(FILE_SEPARATOR)
                     .filter { it.isNotEmpty() }
                     .forEach {
                         val remoteFile = RemoteFile.create(myProject, it) ?: return@forEach
@@ -119,7 +119,7 @@ class SyncChecker(private var myProject: Project) {
     }
 
     private fun handleBranchMismatch(output: Output): State {
-        val parts = output.stdout.split(PartSeparator)
+        val parts = output.stdout.split(PART_SEPARATOR)
         myRemoteBranch = parts[1].trim()
         return State.BranchNotSync
     }
@@ -128,7 +128,7 @@ class SyncChecker(private var myProject: Project) {
         output: Output,
         localLastCommit: Commit
     ): State {
-        val parts = output.stdout.split(PartSeparator)
+        val parts = output.stdout.split(PART_SEPARATOR)
         myCommitsDistance = parts[1].trim().toIntOrNull() ?: 0
         myRemoteCommit = Commit.fromString(parts[2]).also { it.fromRemote = true }
         myLocalCommit = localLastCommit
@@ -144,7 +144,7 @@ class SyncChecker(private var myProject: Project) {
 
         output.stdout
             .removePrefix("files mismatch\n")
-            .split(FileSeparator)
+            .split(FILE_SEPARATOR)
             .filter { it.isNotEmpty() }
             .forEach {
                 val file = RemoteFile.create(myProject, it) ?: return@forEach
