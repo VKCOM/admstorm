@@ -6,6 +6,7 @@ import com.intellij.execution.Output
 import com.intellij.ide.passwordSafe.PasswordSafe
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -61,7 +62,13 @@ class YubikeyHandler {
         LOG.info("Started the main command to reset")
 
         val echoBuilder = ProcessBuilder("echo", password)
-        val sshAddBuilder = ProcessBuilder("ssh-add", "-s", "/usr/local/lib/opensc-pkcs11.so")
+
+        val openscPath = if (SystemInfo.isLinux) {
+            "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
+        } else {
+            "/usr/local/lib/opensc-pkcs11.so"
+        }
+        val sshAddBuilder = ProcessBuilder("ssh-add", "-s", openscPath)
 
         sshAddBuilder.environment().apply {
             put("SSH_ASKPASS_REQUIRE", "force")
