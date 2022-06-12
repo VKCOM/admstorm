@@ -516,6 +516,10 @@ footer {
     white-space: pre-wrap
   }
 
+  .chapter__code-block:not(#chapter__code-block_active) {
+    display: none;
+  }
+
   .chapter__code-block__inline {
     background-color: #E8E9E8;
     padding: 3px 6px;
@@ -540,6 +544,35 @@ footer {
     &:hover {
       border-bottom: 1px solid #167DFF;
     }
+  }
+}
+
+.tabs {
+  ul {
+    padding-left: 0;
+
+    li {
+      display: inline;
+      cursor: pointer;
+      font-size: 18px;
+      color: #5e5e5e;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #5e5e5e;
+
+      &:not(#tabs__active):hover {
+        color: #18191c;
+        border-bottom: 1px solid #18191c;
+      }
+
+      &:not(:first-child) {
+        margin-left: 24px;
+      }
+    }
+  }
+
+  #tabs__active {
+    color: #167DFF;
+    border-bottom: 2px solid #167DFF;
   }
 }
 

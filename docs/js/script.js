@@ -38,4 +38,20 @@ window.onload = () => {
       el.innerHTML = `<img class="chapter__version-block-new-feature__image" src="${src}.png" alt=""/>`;
     }
   });
+
+  const tabsElements = document.querySelectorAll(".tabs ul li");
+  tabsElements.forEach((el) => {
+    el.addEventListener("click", function(_) {
+      const thisActiveElement = document.querySelector("#tabs__active");
+      thisActiveElement.removeAttribute("id");
+      el.setAttribute("id", "tabs__active");
+
+      const elementName = el.dataset.itemName;
+      let thisActiveCode = document.querySelector("#chapter__code-block_active");
+      thisActiveCode.removeAttribute("id");
+
+      const newActiveCode = document.querySelector(`.chapter__code-block[data-item-name='${elementName}']`);
+      newActiveCode.setAttribute("id", "chapter__code-block_active");
+    }, false);
+  });
 };

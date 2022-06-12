@@ -54,10 +54,24 @@
                         <h2 class="chapter__small-title">
                             Откройте файл <code class="chapter__code-block__inline">~/.ssh/config</code>
                         </h2>
+                        <div class="tabs">
+                            <ul>
+                                <li id="tabs__active" data-item-name="linux">Linux</li>
+                                <li data-item-name="macos">MacOS</li>
+                            </ul>
+                        </div>
+
                         <p class="chapter__text">
                             Удостоверьтесь, что у вас есть запись для хоста <span class="server-name"></span> с примерно
                             следующим содержанием:
-                            <code class="chapter__code-block">
+                            <code class="chapter__code-block" id="chapter__code-block_active" data-item-name="linux">
+Host <span class="server-name"></span>
+HostName &lt;ip address&gt;
+User &lt;user name&gt;
+Port &lt;port&gt;
+PKCS11Provider /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+                            </code>
+                            <code class="chapter__code-block" data-item-name="macos">
 Host <span class="server-name"></span>
 HostName &lt;ip address&gt;
 User &lt;user name&gt;
