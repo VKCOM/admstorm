@@ -508,9 +508,9 @@ footer {
   }
 
   .chapter__code-block {
-    //font-size: 15px;
     background-color: #f5f5f5;
-    padding-left: 25px;
+    padding: 24px;
+    margin-bottom: 25px;
     border-radius: 8px;
     display: block;
     white-space: pre-wrap
@@ -548,13 +548,15 @@ footer {
 }
 
 .tabs {
+  margin-bottom: 30px;
+
   ul {
     padding-left: 0;
 
     li {
       display: inline;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 16px;
       color: #5e5e5e;
       padding-bottom: 5px;
       border-bottom: 1px solid #5e5e5e;

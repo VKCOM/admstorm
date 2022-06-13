@@ -425,7 +425,8 @@ footer .footer__end-line .footer__code img {
 }
 .chapter .chapter__code-block {
   background-color: #f5f5f5;
-  padding-left: 25px;
+  padding: 24px;
+  margin-bottom: 25px;
   border-radius: 8px;
   display: block;
   white-space: pre-wrap;
@@ -455,13 +456,16 @@ footer .footer__end-line .footer__code img {
   border-bottom: 1px solid #167DFF;
 }
 
+.tabs {
+  margin-bottom: 30px;
+}
 .tabs ul {
   padding-left: 0;
 }
 .tabs ul li {
   display: inline;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   color: #5e5e5e;
   padding-bottom: 5px;
   border-bottom: 1px solid #5e5e5e;
@@ -533,7 +537,7 @@ footer .footer__end-line .footer__code img {
   text-align: center;
   width: 53%;
   font-size: 18px;
-  color: rgba(25, 25, 28, 0.6980392157);
+  color: #19191CB2;
 }
 @media only screen and (max-width: 800px) {
   .chapter.three-row-layout .chapter__header-row .chapter__header-text {
@@ -641,7 +645,7 @@ footer .footer__end-line .footer__code img {
 .chapter__line-block .chapter__text {
   margin: 0;
   font-size: 18px;
-  color: rgba(25, 25, 28, 0.6980392157) !important;
+  color: #19191CB2 !important;
 }
 .chapter__line-block .chapter__text-image-block-image {
   align-self: end;
