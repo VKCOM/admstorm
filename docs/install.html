@@ -54,17 +54,34 @@
                         <h2 class="chapter__small-title">
                             Откройте файл <code class="chapter__code-block__inline">~/.ssh/config</code>
                         </h2>
+
                         <p class="chapter__text">
                             Удостоверьтесь, что у вас есть запись для хоста <span class="server-name"></span> с примерно
                             следующим содержанием:
-                            <code class="chapter__code-block">
-Host <span class="server-name"></span>
+                        </p>
+
+                        <div class="tabbed_block">
+                            <div class="tabs">
+                                <ul>
+                                    <li data-item-name="linux" id="tabs__active">Linux</li>
+                                    <li data-item-name="macos">MacOS</li>
+                                </ul>
+                            </div>
+
+                            <code class="chapter__code-block" data-item-name="linux"
+                                  id="chapter__code-block_active">Host <span class="server-name"></span>
 HostName &lt;ip address&gt;
 User &lt;user name&gt;
 Port &lt;port&gt;
-PKCS11Provider /usr/local/lib/opensc-pkcs11.so
-                            </code>
-
+PKCS11Provider /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so</code>
+                            <code class="chapter__code-block"
+                                  data-item-name="macos">Host <span class="server-name"></span>
+HostName &lt;ip address&gt;
+User &lt;user name&gt;
+Port &lt;port&gt;
+PKCS11Provider /usr/local/lib/opensc-pkcs11.so</code>
+                        </div>
+                        <p class="chapter__text">
                             Это понадобится, чтобы плагин смог сам настроить <b>git remote</b>.
                         </p>
                     </div>
