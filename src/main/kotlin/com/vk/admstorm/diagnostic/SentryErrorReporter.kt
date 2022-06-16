@@ -3,24 +3,27 @@ package com.vk.admstorm.diagnostic
 import com.intellij.diagnostic.IdeaReportingEvent
 import com.intellij.ide.DataManager
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
-import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
+import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus
 import com.intellij.openapi.extensions.PluginId
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
+import com.vk.admstorm.git.GitUtils
+import com.vk.admstorm.notifications.AdmNotification
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
 import io.sentry.protocol.OperatingSystem
 import io.sentry.protocol.SentryId
 import io.sentry.protocol.SentryRuntime
-import java.awt.Component
-import com.vk.admstorm.git.GitUtils
 import io.sentry.protocol.User
+import java.awt.Component
 
 class SentryErrorReporter : ErrorReportSubmitter() {
     init {
@@ -85,11 +88,19 @@ class SentryErrorReporter : ErrorReportSubmitter() {
             val sentryId = Sentry.captureEvent(sentryEvents)
             if (sentryId != SentryId.EMPTY_ID) {
                 consumer.consume(SubmittedReportInfo(SubmissionStatus.NEW_ISSUE))
+                onSuccess(project, sentryId)
             } else {
                 consumer.consume(SubmittedReportInfo(SubmissionStatus.FAILED))
             }
         }
 
         return true
+    }
+
+    private fun onSuccess(project: Project?, sentryId: SentryId) {
+        val message = "The report was sent successfully, your unique error number: '$sentryId'"
+
+        AdmNotification(message, NotificationType.INFORMATION, false)
+            .withTitle("Sending Report").show(project)
     }
 }

@@ -8,6 +8,7 @@ import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import java.util.function.BiConsumer
 
 open class AdmNotification(
@@ -40,9 +41,9 @@ open class AdmNotification(
         return this
     }
 
-    fun show() {
+    fun show(project: Project? = null) {
         invokeLater {
-            Notifications.Bus.notify(this)
+            Notifications.Bus.notify(this, project)
             LOG.info("Notification: title: $title, content: ${content.ifEmpty { "<empty>" }}, type: $type")
         }
     }
