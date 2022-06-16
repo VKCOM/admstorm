@@ -34,6 +34,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains:markdown:0.2.4")
+    implementation("io.sentry:sentry:6.1.0")
 }
 
 // Configure gradle-intellij-plugin plugin.

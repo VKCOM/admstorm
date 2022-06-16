@@ -133,6 +133,8 @@
                      displayName="Wrong file name benchmark inspection"
                      enabledByDefault="true" level="WARNING"
                      implementationClass="com.vk.admstorm.inspections.WrongFileNameBenchmarkInspection"/>
+
+    <errorHandler implementation="com.vk.admstorm.diagnostic.SentryErrorReporter"/>
   </extensions>
 
   <actions>

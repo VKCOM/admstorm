@@ -562,6 +562,19 @@ object GitUtils {
         }
     }
 
+
+    private const val getUserNameCommand = "git -c core.quotepath=false config --local --null --get user.name"
+    private const val getUserEmailCommand = "git -c core.quotepath=false config --local --null --get user.email"
+
+    data class User(val name: String?, val email: String?)
+
+    fun localUser(project: Project): User {
+        val outputName = CommandRunner.runLocally(project, getUserNameCommand).stdout
+        val outputEmail = CommandRunner.runLocally(project, getUserEmailCommand).stdout
+
+        return User(outputName, outputEmail)
+    }
+
     /**
      * Helper function for building commands.
      *
