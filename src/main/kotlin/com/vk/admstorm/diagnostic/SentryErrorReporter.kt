@@ -3,7 +3,6 @@ package com.vk.admstorm.diagnostic
 import com.intellij.diagnostic.IdeaReportingEvent
 import com.intellij.ide.DataManager
 import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
@@ -16,6 +15,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.notifications.AdmNotification
+import com.vk.admstorm.utils.MyUtils
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
@@ -100,7 +100,12 @@ class SentryErrorReporter : ErrorReportSubmitter() {
     private fun onSuccess(project: Project?, sentryId: SentryId) {
         val message = "The report was sent successfully, your unique error number: '$sentryId'"
 
-        AdmNotification(message, NotificationType.INFORMATION, false)
-            .withTitle("Sending Report").show(project)
+        AdmNotification(message)
+            .withTitle("Sending Report")
+            .withActions(AdmNotification.Action("Copy error ID") { _, notification ->
+                MyUtils.copyToClipboard(sentryId.toString())
+                notification.expire()
+            })
+            .show(project)
     }
 }

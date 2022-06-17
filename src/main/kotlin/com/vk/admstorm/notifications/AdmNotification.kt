@@ -48,8 +48,7 @@ open class AdmNotification(
         }
     }
 
-    class Action(msg: String, private val runnable: BiConsumer<AnActionEvent, Notification>) :
-        NotificationAction(msg) {
+    class Action(msg: String, private val runnable: BiConsumer<AnActionEvent, Notification>) : NotificationAction(msg) {
         override fun actionPerformed(e: AnActionEvent, notification: Notification) {
             runnable.accept(e, notification)
         }
