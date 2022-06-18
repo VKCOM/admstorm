@@ -18,7 +18,7 @@ import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
 import com.intellij.util.messages.MessageBusConnection
-import com.vk.admstorm.diagnostic.AnyStormLoggerFactory
+import com.vk.admstorm.diagnostic.AdmStormLoggerFactory
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.highlight.CppTypeHighlightPatcher
@@ -215,6 +215,6 @@ class AdmStormStartupActivity : StartupActivity {
 
     private fun setupLogger() {
         val defaultLoggerFactory = Logger.getFactory()
-        Logger.setFactory(AnyStormLoggerFactory(defaultLoggerFactory))
+        Logger.setFactory(AdmStormLoggerFactory(defaultLoggerFactory))
     }
 }

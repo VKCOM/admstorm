@@ -2,7 +2,7 @@ package com.vk.admstorm.diagnostic
 
 import com.intellij.openapi.diagnostic.DefaultLogger
 
-class AnyStormLogger(delegateFactory: Factory, category: String) : DefaultLogger(category) {
+class AdmStormLogger(delegateFactory: Factory, category: String) : DefaultLogger(category) {
     private val delegate = delegateFactory.getLoggerInstance(category)
 
     override fun debug(message: String) {
