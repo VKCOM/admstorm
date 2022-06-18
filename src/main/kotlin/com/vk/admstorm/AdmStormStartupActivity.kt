@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
@@ -17,6 +18,7 @@ import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
 import com.intellij.util.messages.MessageBusConnection
+import com.vk.admstorm.diagnostic.AnyStormLoggerFactory
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.highlight.CppTypeHighlightPatcher
@@ -187,6 +189,8 @@ class AdmStormStartupActivity : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
+        setupLogger()
+
         if (!project.pluginEnabled()) {
             // We don't connect if this is not a vkcom project
             return
@@ -207,5 +211,10 @@ class AdmStormStartupActivity : StartupActivity {
         // который открывается при клике на иконку рядом с классом или методом.
         val key = Registry.get("suggest.all.run.configurations.from.context")
         key.setValue(true)
+    }
+
+    private fun setupLogger() {
+        val defaultLoggerFactory = Logger.getFactory()
+        Logger.setFactory(AnyStormLoggerFactory(defaultLoggerFactory))
     }
 }
