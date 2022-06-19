@@ -1,6 +1,6 @@
-@import "https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700";
-@import "https://fonts.googleapis.com/css?family=Montserrat:500";
-@import "https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&display=swap";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:500");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&display=swap");
 
 body {
   margin: 56px 0 0 0;
@@ -508,9 +508,16 @@ footer {
   }
 
   .chapter__code-block {
-    //font-size: 15px;
+    background-color: #f5f5f5;
+    padding: 24px;
+    margin-bottom: 25px;
+    border-radius: 8px;
     display: block;
     white-space: pre-wrap
+  }
+
+  .chapter__code-block:not(#chapter__code-block_active) {
+    display: none;
   }
 
   .chapter__code-block__inline {
@@ -537,6 +544,37 @@ footer {
     &:hover {
       border-bottom: 1px solid #167DFF;
     }
+  }
+}
+
+.tabs {
+  margin-bottom: 30px;
+
+  ul {
+    padding-left: 0;
+
+    li {
+      display: inline;
+      cursor: pointer;
+      font-size: 16px;
+      color: #5e5e5e;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #5e5e5e;
+
+      &:not(#tabs__active):hover {
+        color: #18191c;
+        border-bottom: 1px solid #18191c;
+      }
+
+      &:not(:first-child) {
+        margin-left: 24px;
+      }
+    }
+  }
+
+  #tabs__active {
+    color: #167DFF;
+    border-bottom: 2px solid #167DFF;
   }
 }
 
