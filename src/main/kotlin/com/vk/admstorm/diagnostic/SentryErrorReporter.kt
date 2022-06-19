@@ -21,7 +21,9 @@ class SentryErrorReporter : ErrorReportSubmitter() {
     }
 
     override fun submit(
-        events: Array<out IdeaLoggingEvent>, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>
+        events: Array<out IdeaLoggingEvent>,
+        additionalInfo: String?, parentComponent: Component,
+        consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
         if (project == null) {

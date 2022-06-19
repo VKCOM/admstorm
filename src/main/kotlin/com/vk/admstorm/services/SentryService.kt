@@ -8,6 +8,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.vk.admstorm.git.GitUtils
+import com.vk.admstorm.settings.AdmStormSettingsState
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
@@ -49,7 +50,7 @@ class SentryService(project: Project) {
                 event.contexts.setRuntime(runtime)
 
                 event.user = User().apply {
-                    id = null  // TODO
+                    id = AdmStormSettingsState.getInstance().userNameForSentry
                     email = user.email
                     username = user.name
                 }
