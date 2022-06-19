@@ -37,7 +37,7 @@ class JiraReferenceContributor : PsiReferenceContributor() {
             PlatformPatterns.psiElement().withParent(PhpDocComment::class.java),
             JiraCommonReferenceProvider()
         )
-        // /** See DT-100 */ for JS
+        // /** See DT-100 */ or /** @see DT-100 */ for JS
         // For some reason,
         //   PlatformPatterns.psiElement().withParent(JSDocComment::class.java)
         // doesn't work for JS, so we need this workaround.
