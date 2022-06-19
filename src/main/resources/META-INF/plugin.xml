@@ -31,9 +31,11 @@
   <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
        on how to target different products -->
   <depends>com.intellij.modules.platform</depends>
+  <depends>JavaScript</depends>
+  <depends>Git4Idea</depends>
   <depends>org.jetbrains.plugins.remote-run</depends>
   <depends>org.jetbrains.plugins.terminal</depends>
-  <depends>Git4Idea</depends>
+  <depends>com.intellij.css</depends>
   <depends>com.jetbrains.php</depends>
 
   <projectListeners>
@@ -133,6 +135,9 @@
                      displayName="Wrong file name benchmark inspection"
                      enabledByDefault="true" level="WARNING"
                      implementationClass="com.vk.admstorm.inspections.WrongFileNameBenchmarkInspection"/>
+
+    <psi.referenceContributor
+            implementation="com.vk.admstorm.psi.references.JiraReferenceContributor"/>
   </extensions>
 
   <actions>
