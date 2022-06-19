@@ -1,4 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -71,6 +72,17 @@ detekt {
 }
 
 tasks {
+    processResources {
+        val tokens = mapOf(
+            "sentry_dsn" to System.getenv("SENTRY_DSN"),
+        )
+
+        filesMatching("plugin_config.json") {
+            filteringCharset = "UTF-8"
+            filter<ReplaceTokens>("tokens" to tokens)
+        }
+    }
+
     properties("javaVersion").let {
         withType<JavaCompile> {
             sourceCompatibility = it
