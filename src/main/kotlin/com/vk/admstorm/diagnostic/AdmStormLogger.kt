@@ -1,8 +1,9 @@
 package com.vk.admstorm.diagnostic
 
 import com.intellij.openapi.diagnostic.DefaultLogger
+import com.vk.admstorm.services.SentryService
 
-class AdmStormLogger(delegateFactory: Factory, category: String) : DefaultLogger(category) {
+class AdmStormLogger(private val sentry: SentryService, delegateFactory: Factory, category: String) : DefaultLogger(category) {
     private val delegate = delegateFactory.getLoggerInstance(category)
 
     override fun debug(message: String) {
@@ -31,5 +32,6 @@ class AdmStormLogger(delegateFactory: Factory, category: String) : DefaultLogger
 
     override fun error(message: String, t: Throwable?, vararg details: String?) {
         delegate.error(message, t, *details)
+        sentry.sendError(t)
     }
 }

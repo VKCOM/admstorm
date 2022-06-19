@@ -24,6 +24,7 @@ import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.highlight.CppTypeHighlightPatcher
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
+import com.vk.admstorm.services.SentryService
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
@@ -189,7 +190,7 @@ class AdmStormStartupActivity : StartupActivity {
     }
 
     override fun runActivity(project: Project) {
-        setupLogger()
+        setupLogger(project)
 
         if (!project.pluginEnabled()) {
             // We don't connect if this is not a vkcom project
@@ -213,8 +214,10 @@ class AdmStormStartupActivity : StartupActivity {
         key.setValue(true)
     }
 
-    private fun setupLogger() {
+    private fun setupLogger(project: Project) {
         val defaultLoggerFactory = Logger.getFactory()
-        Logger.setFactory(AdmStormLoggerFactory(defaultLoggerFactory))
+        val sentry = SentryService.getInstance(project)
+
+        Logger.setFactory(AdmStormLoggerFactory(sentry, defaultLoggerFactory))
     }
 }
