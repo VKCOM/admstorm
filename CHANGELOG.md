@@ -12,6 +12,7 @@
 - Yarn Watch support
 - Ability to share code from KPHP Playground
 - Ability to view KPHP compilation output in Playground
+- Links for Jira tickets in PHP, JS, and CSS comments
 
 ### Other improvements
 
