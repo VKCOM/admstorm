@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
 import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.Consumer
 import com.vk.admstorm.notifications.AdmNotification
@@ -16,9 +17,11 @@ import io.sentry.protocol.SentryId
 import java.awt.Component
 
 class SentryErrorReporter : ErrorReportSubmitter() {
-    override fun getReportActionText(): String {
-        return "Report to Sentry"
+    companion object {
+        private val LOG = logger<SentryErrorReporter>()
     }
+
+    override fun getReportActionText(): String = "Report to Sentry"
 
     override fun submit(
         events: Array<out IdeaLoggingEvent>,
@@ -27,6 +30,7 @@ class SentryErrorReporter : ErrorReportSubmitter() {
     ): Boolean {
         val project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(parentComponent))
         if (project == null) {
+            LOG.info("Cannot get project to submit exception to Sentry")
             consumer.consume(SubmittedReportInfo(SubmissionStatus.FAILED))
             return false
         }
@@ -43,6 +47,7 @@ class SentryErrorReporter : ErrorReportSubmitter() {
                 onSuccess(project, sentryId)
                 true
             } else {
+                LOG.info("An error occurred when sending an error to Sentry")
                 consumer.consume(SubmittedReportInfo(SubmissionStatus.FAILED))
                 false
             }
@@ -51,7 +56,7 @@ class SentryErrorReporter : ErrorReportSubmitter() {
         return true
     }
 
-    private fun onSuccess(project: Project?, sentryId: SentryId) {
+    private fun onSuccess(project: Project, sentryId: SentryId) {
         val message = "The report was sent successfully, your unique error number: '$sentryId'"
 
         AdmNotification(message)
