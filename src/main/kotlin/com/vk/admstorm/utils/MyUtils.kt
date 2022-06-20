@@ -129,7 +129,7 @@ object MyUtils {
      * Measures the execution time of the [block] in milliseconds and
      * writes it to the logs via [log] with the passed [subject].
      */
-    fun measureTime(log: Logger, subject: String, block: () -> Unit) {
+    inline fun measureTime(log: Logger, subject: String, block: () -> Unit) {
         val elapsed = measureTimeMillis {
             block()
         }
@@ -141,7 +141,7 @@ object MyUtils {
      * writes it to the logs via [log] with the passed [subject]
      * and returns the result of the [block] execution.
      */
-    fun <T> measureTimeValue(log: Logger, subject: String, block: () -> T): T {
+    inline fun <T> measureTimeValue(log: Logger, subject: String, block: () -> T): T {
         var res: T
         val elapsed = measureTimeMillis {
             res = block()
@@ -182,7 +182,7 @@ object MyUtils {
         })
     }
 
-    fun <T> invokeAndWaitResult(block: () -> T): T {
+    inline fun <T> invokeAndWaitResult(crossinline block: () -> T): T {
         var result: T? = null
 
         ApplicationManager.getApplication().invokeAndWait {
