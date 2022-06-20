@@ -29,6 +29,7 @@
 - Function of determining that this is vkcom project, now it does not consider kphp-polyfills to be the right project to
   enable the plugin
 - Bug when, for third-party projects, when committing, the plugin tried to push changes on the server.
+- OpenSC path, now automatic collection of yubikey will work on Linux.
 
 ## 1.2.0 — 11.05.2022
 
