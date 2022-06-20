@@ -89,10 +89,10 @@ class JiraCommonReferenceProvider : PsiReferenceProvider() {
             fastCheck: Boolean = false,
             rightShift: Int = 0,
         ): Array<PsiReference> {
-            if (text.isBlank()) {
+            if (text.isEmpty()) {
                 return PsiReference.EMPTY_ARRAY
             }
-            if (fastCheck && (!text.first().isLetter() || !text.last().isDigit())) {
+            if (fastCheck && (!text.last().isDigit() || !text.first().isLetter())) {
                 return PsiReference.EMPTY_ARRAY
             }
             if (!text.contains('-')) {
