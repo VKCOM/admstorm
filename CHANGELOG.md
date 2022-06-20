@@ -19,6 +19,7 @@
 - Number of commits that are shown during synchronization is reduced to 30
   Now if more than 30 commits require synchronization, then only the first 30 and the ellipsis at the end will be shown.
 - Settings page has become more descriptive, comments have been added to some settings.
+- Added sending errors to Sentry
 
 ### Changed
 

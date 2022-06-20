@@ -138,6 +138,8 @@
 
     <psi.referenceContributor
             implementation="com.vk.admstorm.psi.references.JiraReferenceContributor"/>
+
+    <errorHandler implementation="com.vk.admstorm.diagnostic.SentryErrorReporter"/>
   </extensions>
 
   <actions>
