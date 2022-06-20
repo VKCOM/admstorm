@@ -200,7 +200,7 @@ class AdmStormStartupActivity : StartupActivity {
         }
 
         val output = CommandRunner.runRemotely(project, "whoami")
-        if (output.exitCode == 1 || output.stdout == null){
+        if (output.exitCode != 0 || output.stdout == null){
             LOG.warn("Error while getting username from server")
             return
         }
