@@ -70,4 +70,13 @@ class SentryService(project: Project) {
 
         return Sentry.captureEvent(sentryEvents)
     }
+
+    fun sendWarn(t: Throwable?): SentryId {
+        val sentryEvents = SentryEvent().apply {
+            throwable = t
+            level = SentryLevel.WARNING
+        }
+
+        return Sentry.captureEvent(sentryEvents)
+    }
 }
