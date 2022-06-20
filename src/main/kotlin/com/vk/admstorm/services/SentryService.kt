@@ -26,6 +26,7 @@ class SentryService(project: Project) {
     }
 
     init {
+        val config = ConfigService.getInstance(project)
         val plugin = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
         val application = ApplicationInfo.getInstance()
         val user = project.let {
@@ -33,7 +34,7 @@ class SentryService(project: Project) {
         }
 
         Sentry.init { options ->
-            options.dsn = "sensitive information"
+            options.dsn = config.sentryDsn
             options.release = plugin?.version ?: "UNKNOWN"
 
             options.setBeforeSend { event, _ ->
