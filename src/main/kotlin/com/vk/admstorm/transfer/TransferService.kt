@@ -152,14 +152,14 @@ class TransferService(private var myProject: Project) {
 
         invokeLater {
             if (remoteFile.size() > EDITABLE_FILE_SIZE) {
-                if (
-                    !MessageDialogBuilder.yesNo(
-                        "This file is too large for text editor",
-                        "Do you still want to download and edit it?"
-                    )
-                        .asWarning()
-                        .ask(myProject)
-                ) {
+                val needDownload = MessageDialogBuilder.yesNo(
+                    "This file is too large for text editor",
+                    "Do you still want to download and edit it?"
+                )
+                    .asWarning()
+                    .ask(myProject)
+
+                if (!needDownload) {
                     return@invokeLater
                 }
             }
@@ -190,7 +190,7 @@ class TransferService(private var myProject: Project) {
                     }
                 }
             } catch (e: IOException) {
-                AdmErrorNotification("Unable to create cache file: " + e.message).show()
+                AdmErrorNotification("Unable to create cache file: ${e.message}").show()
                 LOG.warn("Unexpected download exception", e)
             }
         }
@@ -201,7 +201,6 @@ class TransferService(private var myProject: Project) {
      *
      * @param localFile file that will be uploaded to the server or a file
      *                  in which the content of a file from the server will be placed
-     *
      * @param remoteFile file that will be downloaded from the server or a file
      *                   in which the content of the loaded local file will be placed
      *

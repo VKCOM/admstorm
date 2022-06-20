@@ -43,7 +43,7 @@ abstract class BaseRunnableExecutor(
 ) : ActionToolbarPanel(myProject, myConfig.name) {
 
     companion object {
-        private val LOG = logger<BaseRunnableExecutor>();
+        private val LOG = logger<BaseRunnableExecutor>()
     }
 
     data class Config(
@@ -296,6 +296,8 @@ abstract class BaseRunnableExecutor(
     abstract fun icon(): Icon
 
     open fun listeners() = emptyList<ProcessAdapter>()
+
+    fun output() = myOutputListener.output
 
     fun actions(): Collection<AnAction> = listOf(
         myRestartAction,

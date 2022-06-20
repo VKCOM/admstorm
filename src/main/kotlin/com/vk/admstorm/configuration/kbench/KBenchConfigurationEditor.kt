@@ -8,17 +8,16 @@ import com.intellij.ui.LanguageTextField
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import com.intellij.ui.layout.ComboBoxPredicate
-import com.intellij.ui.layout.ComponentPredicate
 import com.intellij.ui.layout.and
 import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLanguage
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.vk.admstorm.utils.KBenchUtils
+import com.vk.admstorm.utils.MyUiUtils.bindText
+import com.vk.admstorm.utils.MyUiUtils.selectedValueMatches
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JRadioButton
-import kotlin.reflect.KMutableProperty0
 
 open class KBenchConfigurationEditor(private val myProject: Project) : SettingsEditor<KBenchConfiguration>() {
     data class Model(
@@ -65,23 +64,6 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
     }
 
     override fun createEditor(): JComponent = component()
-
-
-    private fun <T> ComboBox<T>.selectedValueMatches(predicate: (T?) -> Boolean): ComponentPredicate {
-        return ComboBoxPredicate(this, predicate)
-    }
-
-    private fun <T> Cell<ComboBox<T>>.selectedValueMatches(predicate: (T?) -> Boolean): ComponentPredicate {
-        return component.selectedValueMatches(predicate)
-    }
-
-    private fun <T : LanguageTextField> Cell<T>.bindText(prop: KMutableProperty0<String>): Cell<T> {
-        return bindText(prop.toMutableProperty())
-    }
-
-    private fun <T : LanguageTextField> Cell<T>.bindText(prop: MutableProperty<String>): Cell<T> {
-        return bind(LanguageTextField::getText, LanguageTextField::setText, prop)
-    }
 
     fun component(): JPanel {
         lateinit var classRadioButton: Cell<JRadioButton>
@@ -164,7 +146,11 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
                 intTextField(0..1000, 1)
                     .horizontalAlign(HorizontalAlign.FILL)
                     .bindIntText(model::countIteration)
-            }.rowComment("Number of iterations, larger number slows down the process but increases the accuracy", 90)
+                    .comment(
+                        "Number of iterations, larger number slows down the process but increases the accuracy",
+                        90
+                    )
+            }
         }
 
         return mainPanel

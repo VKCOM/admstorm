@@ -23,15 +23,9 @@ import javax.swing.*
 import javax.swing.border.Border
 
 class NotSyncCommitsDialog(
-    private val myProject: Project,
-    localCommit: Commit,
-    remoteCommit: Commit,
-    myBetweenCommits: List<Commit>,
-    private val myCountBetween: Int,
-    private val myNeedPushToServer: Boolean = false,
-) : DialogWrapper(myProject, true) {
-
-    private var myPushCommitsPanel: PushCommitsPanel
+    private val project: Project,
+    private val options: Options,
+) : DialogWrapper(project, true) {
 
     companion object {
         private val LOG = logger<NotSyncCommitsDialog>()
@@ -39,22 +33,10 @@ class NotSyncCommitsDialog(
         private const val CENTER_PANEL_HEIGHT = 400
         private const val CENTER_PANEL_WIDTH = 800
 
-        fun show(
-            project: Project, localCommit: Commit, remoteCommit: Commit,
-            myBetweenCommits: List<Commit>, countBetween: Int,
-            needPushToServer: Boolean = false,
-            onSyncFinish: Runnable? = null,
-        ): Choice {
-            val dialog = NotSyncCommitsDialog(
-                project,
-                localCommit,
-                remoteCommit,
-                myBetweenCommits,
-                countBetween,
-                needPushToServer,
-            )
-
+        fun show(project: Project, options: Options, onSync: Runnable): Choice {
+            val dialog = NotSyncCommitsDialog(project, options)
             DialogManager.show(dialog)
+
             val choice = Choice.fromDialogExitCode(dialog.exitCode)
 
             val force = when (choice) {
@@ -62,10 +44,10 @@ class NotSyncCommitsDialog(
                 Choice.CANCEL -> return choice
             }
 
-            if (needPushToServer) {
-                doPushNewCommitsToServerTask(project, force, onSyncFinish)
+            if (options.needPushToServer) {
+                doPushNewCommitsToServerTask(project, force, onSync)
             } else {
-                doPullNewCommitsFromServerTask(project, onSyncFinish)
+                doPullNewCommitsFromServerTask(project, onSync)
             }
 
             return choice
@@ -95,16 +77,26 @@ class NotSyncCommitsDialog(
         }
     }
 
+    data class Options(
+        val localCommit: Commit,
+        val remoteCommit: Commit,
+        val betweenCommits: List<Commit>,
+        val countBetween: Int,
+        val needPushToServer: Boolean,
+    )
+
+    private var myPushCommitsPanel: PushCommitsPanel
+
     private fun createMessageTextPane(): JTextPane {
-        val messageText = if (myNeedPushToServer)
+        val messageText = if (options.needPushToServer)
             """<html>
-            There are <b>$myCountBetween commits</b> in <b>local</b> branch 
+            There are <b>${options.countBetween} commits</b> in <b>local</b> branch 
             that were not pushed to <b>${ServerNameProvider.name()}</b> branch
             </html>
             """.trimIndent()
         else
             """<html>
-            There are <b>$myCountBetween commits</b> in <b>${ServerNameProvider.name()}</b> branch 
+            There are <b>${options.countBetween} commits</b> in <b>${ServerNameProvider.name()}</b> branch 
             that were not fetched to <b>local</b> branch
             </html>
             """.trimIndent()
@@ -113,7 +105,7 @@ class NotSyncCommitsDialog(
     }
 
     private fun createInfoMessageTextPane(): JTextPane {
-        val messageText = if (myNeedPushToServer)
+        val messageText = if (options.needPushToServer)
             """<html>
             Synchronization will push <b>local commits</b> to the <b>${ServerNameProvider.name()}</b> branch
             </html>
@@ -132,43 +124,43 @@ class NotSyncCommitsDialog(
 
         val commitBuilder = { commit: Commit ->
             when {
-                commit == remoteCommit && myNeedPushToServer -> {
+                commit == options.remoteCommit && options.needPushToServer -> {
                     CommitWithCommentTreeNode(
-                        myProject, commit,
+                        project, commit,
                         "remote HEAD",
                         JBColor(0xCA7045, 0xCA8564),
                         JBColor(0xFCF2EB, 0x3B332E)
                     )
                 }
-                commit == localCommit && !myNeedPushToServer -> {
+                commit == options.localCommit && !options.needPushToServer -> {
                     CommitWithCommentTreeNode(
-                        myProject, commit,
+                        project, commit,
                         "local HEAD",
                         JBColor(0xCA7045, 0xCA8564),
                         JBColor(0xFCF2EB, 0x3B332E)
                     )
                 }
                 else -> CommitWithCommentTreeNode(
-                    myProject, commit,
-                    if (myNeedPushToServer) "new local" else "new remote"
+                    project, commit,
+                    if (options.needPushToServer) "new local" else "new remote"
                 )
             }
         }
 
         val rootBuilder = {
-            val branchName = GitBranchUtil.getCurrentRepository(myProject)?.currentBranch?.name!!
+            val branchName = GitBranchUtil.getCurrentRepository(project)?.currentBranch?.name!!
             LocalRepoTreeNode(branchName)
         }
 
         val commits = mutableListOf<Commit>()
-        commits.addAll(myBetweenCommits)
-        if (myNeedPushToServer) {
-            commits.add(remoteCommit)
+        commits.addAll(options.betweenCommits)
+        if (options.needPushToServer) {
+            commits.add(options.remoteCommit)
         } else {
-            commits.add(localCommit)
+            commits.add(options.localCommit)
         }
 
-        myPushCommitsPanel = PushCommitsPanel(myProject, commits, myCountBetween, commitBuilder, rootBuilder)
+        myPushCommitsPanel = PushCommitsPanel(project, commits, options.countBetween, commitBuilder, rootBuilder)
 
         okAction.putValue(Action.SHORT_DESCRIPTION, "Sync all changes")
         cancelAction.putValue(Action.SHORT_DESCRIPTION, "Don't sync")

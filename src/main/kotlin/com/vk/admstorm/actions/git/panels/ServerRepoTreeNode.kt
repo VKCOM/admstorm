@@ -37,7 +37,7 @@ class ServerRepoTreeNode(
         renderer.append(ServerNameProvider.name(), SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
         renderer.append(SEPARATOR, repositoryDetailsTextAttributes)
         renderer.append(myCurrentBranch)
-        renderer.append(" " + UIUtil.rightArrow() + " ", repositoryDetailsTextAttributes)
+        renderer.append(" ${UIUtil.rightArrow()} ", repositoryDetailsTextAttributes)
         renderer.append("gitlab", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES)
         renderer.append(SEPARATOR, repositoryDetailsTextAttributes)
         renderer.append(myCurrentBranch)

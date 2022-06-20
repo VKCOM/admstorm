@@ -137,7 +137,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
             ProgressManager.getInstance().run(object : Task.Backgroundable(
                 myProject,
-                "AdmStorm: Connecting to " + getSshConnectionName(),
+                "AdmStorm: Connecting to ${getSshConnectionName()}",
                 true
             ) {
                 private var cancelled = false
@@ -149,11 +149,9 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
                         onSuccessful?.run()
                     } catch (e: SshException) {
-                        if (!cancelled) {
-                            if (e.message == "Cancelled by user") {
-                                LOG.warn("Cancelled by user", e)
-                                return
-                            }
+                        if (!cancelled && e.message == "Cancelled by user") {
+                            LOG.warn("Cancelled by user", e)
+                            return
                         }
 
                         val exceptionMessage = e.message

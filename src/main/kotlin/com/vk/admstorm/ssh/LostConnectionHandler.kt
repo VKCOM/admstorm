@@ -11,10 +11,10 @@ import git4idea.util.GitUIUtil.code
 
 object LostConnectionHandler {
     private val LOG = Logger.getInstance(LostConnectionHandler::class.java)
-    private const val lostConnectionMessage = "Permission denied"
+    private const val LOST_CONNECTION_MESSAGE = "Permission denied"
 
     fun handle(project: Project, output: Output, action: Runnable): Boolean {
-        if (!output.stderr.contains(lostConnectionMessage)) return false
+        if (!output.stderr.contains(LOST_CONNECTION_MESSAGE)) return false
 
         LOG.warn("Lost SSH connection for local commands: ${output.stderr}")
 

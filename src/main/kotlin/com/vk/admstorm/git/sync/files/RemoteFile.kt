@@ -28,7 +28,7 @@ data class RemoteFile(
          * if file was removed (in git status) content must be equal "<removed>"
          */
         fun create(project: Project, data: String): RemoteFile? {
-            val parts = data.split(SyncChecker.PartSeparator)
+            val parts = data.split(SyncChecker.PART_SEPARATOR)
             if (parts.size != 5) {
                 LOG.warn("Incorrect file format: $data")
                 return null

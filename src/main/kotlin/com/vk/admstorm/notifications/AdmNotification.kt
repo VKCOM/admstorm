@@ -15,7 +15,7 @@ open class AdmNotification(
     type: NotificationType = NotificationType.INFORMATION,
     important: Boolean = false,
 ) : Notification(
-    if (important) importantID else ID,
+    if (important) IMPORTANT_ID else ID,
     "AdmStorm",
     content,
     type,
@@ -23,7 +23,7 @@ open class AdmNotification(
 
     companion object {
         const val ID = "AdmStorm"
-        const val importantID = "AdmStorm Important"
+        const val IMPORTANT_ID = "AdmStorm Important"
         private val LOG = Logger.getInstance(AdmNotification::class.java)
     }
 

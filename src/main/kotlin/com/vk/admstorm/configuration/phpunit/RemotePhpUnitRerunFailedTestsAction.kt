@@ -46,7 +46,7 @@ open class RemotePhpUnitRerunFailedTestsAction(
     override fun getRunProfile(environment: ExecutionEnvironment): MyRunProfile? {
         val configuration = myConsoleProperties.configuration
         return if (configuration !is RemotePhpUnitConfiguration) {
-            LOG.warn("Expected PHPUnit run-configuration type, got: " + configuration.javaClass)
+            LOG.warn("Expected PHPUnit run-configuration type, got: ${configuration.javaClass}")
             null
         } else {
             RemotePhpUnitRerunProfile(configuration, getFailedTestPatterns(configuration.project))
@@ -168,11 +168,11 @@ open class RemotePhpUnitRerunFailedTestsAction(
 
         private fun buildCommand(env: ExecutionEnvironment): String {
             val phpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
-            val phpunit = "./vendor/bin/phpunit"
 
             val filterArgument = createFilterArgument(env.project, myFailedTests)
             val filterFlag = "--filter '/$filterArgument$/'"
 
+            val phpunit = "./vendor/bin/phpunit"
             val base = "$phpunit --teamcity --configuration $phpUnitXml $filterFlag"
 
             if (myRunConfiguration.isDirectoryScope) {

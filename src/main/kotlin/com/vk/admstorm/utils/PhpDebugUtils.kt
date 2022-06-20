@@ -75,7 +75,6 @@ object PhpDebugUtils {
                                 myWasRestarted = true
                             }
                         }
-
                     })
                 }
             )

@@ -26,7 +26,7 @@ object MyKphpUtils {
         return Env.data.kphpRelativeIncludeDirs.stream().map {
             if (it.startsWith('/')) it
             else MyPathUtils.absoluteDataBasedRemotePath(project, it) ?: it
-        }.collect(Collectors.toList());
+        }.collect(Collectors.toList())
     }
 
     fun scriptBinaryPath(project: Project): String {

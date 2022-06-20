@@ -13,7 +13,7 @@ import javax.swing.JPanel
 abstract class ActionToolbarPanel(protected var project: Project, id: String) : Disposable {
     protected var myActionGroup = DefaultActionGroup()
     protected var myActionGroupToolBar = ActionToolbarImpl("AdmStormToolPanel$id", myActionGroup, false)
-    protected var myConsole: Console = Console(project)
+    protected var myConsole = Console(project)
     protected var myToolbarComponent: JComponent
 
     init {
@@ -27,6 +27,8 @@ abstract class ActionToolbarPanel(protected var project: Project, id: String) : 
 
         myToolbarComponent = panel
     }
+
+    fun console() = myConsole
 
     override fun dispose() {
         myConsole.dispose()

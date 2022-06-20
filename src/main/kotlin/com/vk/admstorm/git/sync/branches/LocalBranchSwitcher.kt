@@ -17,18 +17,18 @@ class LocalBranchSwitcher(private val myProject: Project) {
         private val LOG = Logger.getInstance(LocalBranchSwitcher::class.java)
     }
 
-    fun switch(branchName: String, force: Boolean, onReady: Runnable? = null) {
-        doSwitchTask(branchName, force, onReady)
+    fun switch(branchName: String, onReady: Runnable? = null) {
+        doSwitchTask(branchName, onReady)
     }
 
-    private fun doSwitchTask(branchName: String, force: Boolean, onReady: Runnable? = null) {
+    private fun doSwitchTask(branchName: String, onReady: Runnable? = null) {
         ProgressManager.getInstance().run(object : Task.Modal(
             myProject,
             "Checkout to $branchName locally",
             true,
         ) {
             override fun run(indicator: ProgressIndicator) {
-                switchAction(branchName, force, indicator) {
+                switchAction(branchName, indicator) {
                     onReady?.run()
                     LOG.info("Switched to a branch '$branchName' locally")
                 }
@@ -38,7 +38,6 @@ class LocalBranchSwitcher(private val myProject: Project) {
 
     private fun switchAction(
         branchName: String,
-        force: Boolean,
         indicator: ProgressIndicator,
         onReady: Runnable? = null
     ) {

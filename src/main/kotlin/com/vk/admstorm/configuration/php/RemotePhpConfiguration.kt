@@ -18,8 +18,8 @@ open class RemotePhpConfiguration(project: Project, factory: ConfigurationFactor
 
     var scriptName: String
         get() = options.scriptName
-        set(scriptName) {
-            options.scriptName = scriptName
+        set(value) {
+            options.scriptName = value
         }
 
     override fun writeExternal(element: Element) {

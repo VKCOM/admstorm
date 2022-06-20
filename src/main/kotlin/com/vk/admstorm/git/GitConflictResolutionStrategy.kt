@@ -1,4 +1,4 @@
-package com.vk.admstorm.settings
+package com.vk.admstorm.git
 
 enum class GitConflictResolutionStrategy {
     Ask,

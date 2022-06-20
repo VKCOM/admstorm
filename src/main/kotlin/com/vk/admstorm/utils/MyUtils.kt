@@ -28,7 +28,6 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.system.measureTimeMillis
 
-
 object MyUtils {
     val LOG = logger<MyUtils>()
 
@@ -98,7 +97,7 @@ object MyUtils {
 
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {
         val projectDir = project.guessProjectDir()?.path ?: ""
-        val absolutePath = "${projectDir}/${filepath}"
+        val absolutePath = "$projectDir/$filepath"
         return LocalFileSystem.getInstance().findFileByIoFile(File(absolutePath))
     }
 

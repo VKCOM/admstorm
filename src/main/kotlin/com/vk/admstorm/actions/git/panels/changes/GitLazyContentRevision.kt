@@ -41,10 +41,10 @@ class GitLazyContentRevision(
             ?: Charset.forName("windows-1251")
 
         if (myContent.isEmpty()) {
-            val fileContentCommand = "git show"
             val path = MyPathUtils.absoluteLocalPath(myProject, "file_content.txt")
             val tempFile = File(path)
 
+            val fileContentCommand = "git show"
             val relFilepath = MyPathUtils.relativeLocalPath(myProject, myFilePath.path)
             CommandRunner.runLocallyToFile(
                 myProject,

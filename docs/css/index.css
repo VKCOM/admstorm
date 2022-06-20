@@ -1,6 +1,6 @@
-@import "https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700";
-@import "https://fonts.googleapis.com/css?family=Montserrat:500";
-@import "https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&display=swap";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700");
+@import url("https://fonts.googleapis.com/css?family=Montserrat:500");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@700;800&display=swap");
 body {
   margin: 56px 0 0 0;
   padding: 0;
@@ -424,8 +424,15 @@ footer .footer__end-line .footer__code img {
   }
 }
 .chapter .chapter__code-block {
+  background-color: #f5f5f5;
+  padding: 24px;
+  margin-bottom: 25px;
+  border-radius: 8px;
   display: block;
   white-space: pre-wrap;
+}
+.chapter .chapter__code-block:not(#chapter__code-block_active) {
+  display: none;
 }
 .chapter .chapter__code-block__inline {
   background-color: #E8E9E8;
@@ -447,6 +454,32 @@ footer .footer__end-line .footer__code img {
 }
 .chapter .chapter__external-link:hover {
   border-bottom: 1px solid #167DFF;
+}
+
+.tabs {
+  margin-bottom: 30px;
+}
+.tabs ul {
+  padding-left: 0;
+}
+.tabs ul li {
+  display: inline;
+  cursor: pointer;
+  font-size: 16px;
+  color: #5e5e5e;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #5e5e5e;
+}
+.tabs ul li:not(#tabs__active):hover {
+  color: #18191c;
+  border-bottom: 1px solid #18191c;
+}
+.tabs ul li:not(:first-child) {
+  margin-left: 24px;
+}
+.tabs #tabs__active {
+  color: #167DFF;
+  border-bottom: 2px solid #167DFF;
 }
 
 .chapter.two-column-layout .chapter_inner {

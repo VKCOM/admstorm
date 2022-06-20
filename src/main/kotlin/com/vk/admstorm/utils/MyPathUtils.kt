@@ -26,7 +26,7 @@ object MyPathUtils {
         val remoteRoot = resolveRemoteRoot() ?: ""
         return try {
             remoteRoot.split("/")[2]
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
     }
@@ -57,7 +57,7 @@ object MyPathUtils {
     fun absoluteLocalPath(project: Project, path: String): String {
         if (File(path).isAbsolute) return path
         val projectDir = resolveProjectDir(project) ?: return path
-        return "${projectDir}/$path"
+        return "$projectDir/$path"
     }
 
     fun absoluteDataBasedRemotePath(project: Project, relativePath: String): String? {

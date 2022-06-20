@@ -3,8 +3,8 @@ package com.vk.admstorm.git.sync.conflicts
 import com.intellij.execution.Output
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.vk.admstorm.git.GitConflictResolutionStrategy
 import com.vk.admstorm.settings.AdmStormSettingsState
-import com.vk.admstorm.settings.GitConflictResolutionStrategy
 
 class GitCheckoutProblemsHandler(project: Project) : GitProblemsHandlerBase(project) {
     companion object {
@@ -24,7 +24,7 @@ class GitCheckoutProblemsHandler(project: Project) : GitProblemsHandlerBase(proj
             return State.Handled
         }
 
-        when (AdmStormSettingsState.getInstance().gitConflictResolutionStrategy) {
+        when (AdmStormSettingsState.getInstance().checkoutConflictResolutionStrategy) {
             GitConflictResolutionStrategy.Stash -> stashAndAction.run()
             GitConflictResolutionStrategy.ForceCheckout -> forceAction.run()
             else -> return showFilesDialog(output, "checkout", stashAndAction, forceAction)
