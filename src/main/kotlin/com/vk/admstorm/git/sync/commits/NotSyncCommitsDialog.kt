@@ -90,7 +90,7 @@ class NotSyncCommitsDialog(
     private fun createMessageTextPane(): JTextPane {
         val messageText = if (options.needPushToServer)
             """<html>
-            There are <b>$${options.countBetween} commits</b> in <b>local</b> branch 
+            There are <b>${options.countBetween} commits</b> in <b>local</b> branch 
             that were not pushed to <b>${ServerNameProvider.name()}</b> branch
             </html>
             """.trimIndent()
