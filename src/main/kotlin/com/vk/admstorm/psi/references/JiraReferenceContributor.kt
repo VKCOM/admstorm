@@ -52,8 +52,9 @@ class JiraReferenceContributor : PsiReferenceContributor() {
 class JiraMultilineJsCommentReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(docComment: PsiElement, context: ProcessingContext): Array<PsiReference> {
         // In registerReferenceProviders we can't get a project, so we need to check it here.
-        if (!AdmService.getInstance(docComment.project).needBeEnabled()) return PsiReference.EMPTY_ARRAY
-        if (docComment !is JSDocComment) return PsiReference.EMPTY_ARRAY
+        if (!AdmService.getInstance(docComment.project).needBeEnabled() || docComment !is JSDocComment) {
+            return PsiReference.EMPTY_ARRAY
+        }
 
         val identifiers = PsiTreeUtil.collectElements(docComment) {
             it.elementType == JSDocTokenTypes.DOC_COMMENT_DATA
