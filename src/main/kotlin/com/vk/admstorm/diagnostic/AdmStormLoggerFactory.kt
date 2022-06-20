@@ -5,7 +5,7 @@ import com.vk.admstorm.services.SentryService
 
 class AdmStormLoggerFactory(private val sentry: SentryService, private val factoryDelegate: Logger.Factory) : Logger.Factory {
     override fun getLoggerInstance(category: String): Logger {
-        if (category.contains("com.vk.admstorm")) {
+        if (category.contains(SentryService.PLUGIN_ID)) {
             return AdmStormLogger(sentry, factoryDelegate, category)
         }
 
