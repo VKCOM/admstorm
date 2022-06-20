@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 1.3.0 — 21.06.2022
+
 ### Added
 
 - Full support for ktest benchmarks:
