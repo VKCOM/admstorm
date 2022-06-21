@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.vk.admstorm</id>
   <name>AdmStorm</name>
-  <vendor email="mr.makhneff@gmail.com" url="https://vk.com/petrmakhnev">Petr Makhnev</vendor>
+  <vendor email="mr.makhneff@gmail.com" url="https://vk.com/ide">Petr Makhnev</vendor>
 
   <description><![CDATA[
 <p>AdmStorm is a PhpStorm plugin that adds VK internal tools directly to the IDE and adds knowledge about the development server.</p>
