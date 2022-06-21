@@ -12,6 +12,8 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.extensions.toHex
@@ -103,6 +105,10 @@ object MyUtils {
 
     fun virtualFileByName(name: String): VirtualFile? {
         return LocalFileSystem.getInstance().findFileByIoFile(File(name))
+    }
+
+    fun psiFileByName(project: Project, name: String): PsiFile? {
+        return virtualFileByName(name)?.let { PsiManager.getInstance(project).findFile(it) }
     }
 
     fun md5file(file: VirtualFile?): String {
@@ -198,5 +204,15 @@ object MyUtils {
                 block()
             }
         }, delay)
+    }
+
+    fun String.unquote(): String {
+        if (length >= 2 &&
+            (get(0) == '"' && get(length - 1) == '"' || get(0) == '\'' && get(length - 1) == '\'')
+        ) {
+            return substring(1, length - 1);
+        }
+
+        return this
     }
 }

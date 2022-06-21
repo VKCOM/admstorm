@@ -12,14 +12,14 @@ import com.intellij.execution.testframework.sm.runner.SMTestProxy
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.ssh.SshConnectionService
-import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.PhpDebugUtils
 import java.io.File
 
 class RemotePhpUnitConfigurationRunState(
-    private val myEnv: ExecutionEnvironment,
-    private val myRunConfiguration: RemotePhpUnitConfiguration
+    private val env: ExecutionEnvironment,
+    private val conf: RemotePhpUnitConfiguration
 ) : RunProfileState {
 
     companion object {
@@ -75,32 +75,25 @@ class RemotePhpUnitConfigurationRunState(
     }
 
     private fun buildCommand(): String {
-        val defaultPhpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
-        val phpUnitXml =
-            if (myRunConfiguration.configPath.isEmpty()) defaultPhpUnitXml
-            else MyPathUtils.remotePathByLocalPath(myEnv.project, myRunConfiguration.configPath)
+        val phpUnitXml = remotePathByLocalPath(env.project, conf.configPath)
+        val phpUnitExe = remotePathByLocalPath(env.project, conf.phpUnitPath)
 
-        val phpunit =
-            if (myRunConfiguration.useParatest)
-                Env.data.phpunitCommand.replace("phpunit", "paratest")
-            else
-                "${Env.data.projectRoot}/vendor/bin/phpunit"
-        val additional = myRunConfiguration.additionalParameters
-        val base = "$phpunit --teamcity --configuration $phpUnitXml $additional"
+        val additional = conf.additionalParameters
+        val base = "$phpUnitExe --teamcity --configuration $phpUnitXml $additional"
 
-        if (myRunConfiguration.isDirectoryScope) {
-            val remoteDir = MyPathUtils.remotePathByLocalPath(myEnv.project, myRunConfiguration.directory)
+        if (conf.isDirectoryScope) {
+            val remoteDir = remotePathByLocalPath(env.project, conf.directory)
             return "$base $remoteDir"
         }
 
-        if (myRunConfiguration.isClassScope || myRunConfiguration.isMethodScope) {
-            val className = getClassNameFromFQN(myRunConfiguration.className)
-            val localDir = File(myRunConfiguration.filename).parentFile.path ?: ""
-            val localFile = File(myRunConfiguration.filename).name
-            val remoteDir = MyPathUtils.remotePathByLocalPath(myEnv.project, localDir)
+        if (conf.isClassScope || conf.isMethodScope) {
+            val className = getClassNameFromFQN(conf.className)
+            val localDir = File(conf.filename).parentFile.path ?: ""
+            val localFile = File(conf.filename).name
+            val remoteDir = remotePathByLocalPath(env.project, localDir)
 
-            val filter = if (myRunConfiguration.isMethodScope) {
-                "$className::${myRunConfiguration.method}"
+            val filter = if (conf.isMethodScope) {
+                "$className::${conf.method}"
             } else className
 
             return "$base --filter $filter --test-suffix $localFile $remoteDir"
@@ -118,7 +111,7 @@ class RemotePhpUnitConfigurationRunState(
     }
 
     private fun runPhpUnitDebug(exec: Executor?): ExecutionResult? {
-        val project = myEnv.project
+        val project = env.project
         PhpDebugUtils.enablePhpDebug(project)
         val ok = PhpDebugUtils.checkSshTunnel(project) { runPhpUnitDebug(exec) }
         if (!ok) {
@@ -130,10 +123,10 @@ class RemotePhpUnitConfigurationRunState(
         val commandWithoutPhpUnit = command.substring(command.indexOf(' ') + 1)
         val fullCommand = "source ~/.php_debug && php_debug_test $commandWithoutPhpUnit"
 
-        return executeRemotePhpUnitCommand(exec, fullCommand, myEnv, myRunConfiguration)
+        return executeRemotePhpUnitCommand(exec, fullCommand, env, conf)
     }
 
     private fun runPhpUnit(exec: Executor?): ExecutionResult? {
-        return executeRemotePhpUnitCommand(exec, buildCommand(), myEnv, myRunConfiguration)
+        return executeRemotePhpUnitCommand(exec, buildCommand(), env, conf)
     }
 }

@@ -6,7 +6,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.testframework.AbstractTestProxy
 import com.intellij.execution.testframework.actions.AbstractRerunFailedTestsAction
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentContainer
 import com.intellij.openapi.util.text.StringUtil
@@ -28,19 +28,15 @@ import com.vk.admstorm.utils.MyPathUtils
 import java.io.File
 import java.util.*
 
-open class RemotePhpUnitRerunFailedTestsAction(
-    componentContainer: ComponentContainer,
-    consoleProperties: RemotePhpUnitConsoleProperties,
-) : AbstractRerunFailedTestsAction(componentContainer) {
+open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, props: RemotePhpUnitConsoleProperties) :
+    AbstractRerunFailedTestsAction(container) {
 
     companion object {
-        private val LOG = Logger.getInstance(
-            RemotePhpUnitRerunFailedTestsAction::class.java
-        )
+        private val LOG = logger<RemotePhpUnitRerunFailedTestsAction>()
     }
 
     init {
-        init(consoleProperties)
+        init(props)
     }
 
     override fun getRunProfile(environment: ExecutionEnvironment): MyRunProfile? {
@@ -167,6 +163,7 @@ open class RemotePhpUnitRerunFailedTestsAction(
         }
 
         private fun buildCommand(env: ExecutionEnvironment): String {
+            // TODO
             val phpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
 
             val filterArgument = createFilterArgument(env.project, myFailedTests)

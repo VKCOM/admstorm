@@ -79,6 +79,12 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
             options.configPath = value
         }
 
+    var phpUnitPath: String
+        get() = options.phpUnitPath
+        set(value) {
+            options.phpUnitPath = value
+        }
+
     var workingDir: String
         get() = options.workingDir
         set(value) {
@@ -89,6 +95,12 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
         get() = options.isApiTest
         set(value) {
             options.isApiTest = value
+        }
+
+    var isPackageTest: Boolean
+        get() = options.isPackageTest
+        set(value) {
+            options.isPackageTest = value
         }
 
     override fun writeExternal(element: Element) {
@@ -102,9 +114,11 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
         element.writeString("filename", filename)
         element.writeBool("useParatest", useParatest)
         element.writeString("configPath", configPath)
+        element.writeString("phpUnitPath", phpUnitPath)
         element.writeString("workingDir", workingDir)
         element.writeString("additionalParameters", additionalParameters)
         element.writeBool("isApiTest", isApiTest)
+        element.writeBool("isPackageTest", isPackageTest)
     }
 
     override fun readExternal(element: Element) {
@@ -118,9 +132,11 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
         element.readString("filename")?.let { filename = it }
         element.readBool("useParatest")?.let { useParatest = it }
         element.readString("configPath")?.let { configPath = it }
+        element.readString("phpUnitPath")?.let { phpUnitPath = it }
         element.readString("workingDir")?.let { workingDir = it }
         element.readString("additionalParameters")?.let { additionalParameters = it }
         element.readBool("isApiTest")?.let { isApiTest = it }
+        element.readBool("isPackageTest")?.let { isPackageTest = it }
     }
 
     override fun getConfigurationEditor() = RemotePhpUnitConfigurationEditor(project)

@@ -55,6 +55,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
 
     private var myUseParatestCheckBox: JBCheckBox? = null
     private var myConfigurationFileTextField: TextFieldWithBrowseButton? = null
+    private var myPhpUnitExeTextField: TextFieldWithBrowseButton? = null
     private var myAdditionalParameters: JTextField? = null
 
     override fun resetEditorFrom(demoRunConfiguration: RemotePhpUnitConfiguration) {
@@ -69,6 +70,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
 
         myUseParatestCheckBox!!.isSelected = demoRunConfiguration.useParatest
         myConfigurationFileTextField!!.text = demoRunConfiguration.configPath
+        myPhpUnitExeTextField!!.text = demoRunConfiguration.phpUnitPath
         myAdditionalParameters!!.text = demoRunConfiguration.additionalParameters
     }
 
@@ -84,6 +86,7 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
 
         demoRunConfiguration.useParatest = myUseParatestCheckBox!!.isSelected
         demoRunConfiguration.configPath = myConfigurationFileTextField!!.text
+        demoRunConfiguration.phpUnitPath = myPhpUnitExeTextField!!.text
         demoRunConfiguration.additionalParameters = myAdditionalParameters!!.text
     }
 
@@ -105,10 +108,10 @@ open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
         val pathsWithClassByFqn: Set<String> =
             DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<Set<String>, RuntimeException> {
                 PhpIndex.getInstance(project).getClassesByFQN(fqn).stream()
-                    .filter { phpClass: PhpClass? ->
-                        PhpUnitUtil.isTestClass(phpClass!!)
+                    .filter { klass ->
+                        klass == null || PhpUnitUtil.isTestClass(klass)
                     }
-                    .map { clazz: PhpClass -> clazz.containingFile.virtualFile.path }
+                    .map { klass -> klass.containingFile.virtualFile.path }
                     .collect(Collectors.toSet()) as Set<String>
             }
 
