@@ -9,6 +9,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComponentContainer
+import com.intellij.openapi.util.component1
+import com.intellij.openapi.util.component2
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.ContainerUtil
@@ -20,12 +22,9 @@ import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.phpunit.PhpUnitExecutionUtil
 import com.jetbrains.php.phpunit.PhpUnitTestPattern
 import com.jetbrains.php.phpunit.PhpUnitUtil
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
-import com.vk.admstorm.utils.MyPathUtils
-import java.io.File
 import java.util.*
 
 open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, props: RemotePhpUnitConsoleProperties) :
@@ -163,33 +162,14 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
         }
 
         private fun buildCommand(env: ExecutionEnvironment): String {
-            // TODO
-            val phpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
-
             val filterArgument = createFilterArgument(env.project, failed)
-            val filterFlag = "--filter '/$filterArgument$/'"
+            val filter = "--filter '/$filterArgument$/'"
 
-            val phpunit = "./vendor/bin/phpunit"
-            val base = "$phpunit --teamcity --configuration $phpUnitXml $filterFlag"
-
-            if (conf.scope == PhpUnitScope.Directory) {
-                val remoteDir = MyPathUtils.remotePathByLocalPath(env.project, conf.directory)
-                return "$base $remoteDir"
-            }
-
-            if (conf.scope == PhpUnitScope.Class || conf.scope == PhpUnitScope.Method) {
-                val localDir = File(conf.filename).parentFile.path ?: ""
-                val localFile = File(conf.filename).name
-                val remoteDir = MyPathUtils.remotePathByLocalPath(env.project, localDir)
-
-                return "$base --test-suffix $localFile $remoteDir"
-            }
-
-            return base
+            return RemotePhpUnitConfigurationRunState.buildCommand(env, conf, filter)
         }
 
         private fun createFilterArgument(project: Project, patterns: List<PhpUnitTestPattern?>): String {
-            val patternsWithDependencies = HashSet(patterns)
+            val patternsWithDependencies = patterns.toMutableSet()
 
             val iterator: Iterator<*> = patterns.iterator()
             while (true) {
@@ -221,8 +201,9 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
         private fun collectMethodDependencies(testMethod: Method, testClass: PhpClass): Collection<Method?> {
             val testNamespace = testClass.namespaceName
             val testClassFQN = testClass.fqn
-            val dependencies: Deque<Method?> = ArrayDeque()
+            val dependencies = ArrayDeque<Method>()
             dependencies.addLast(testMethod)
+
             val visited = HashSet<Method?>()
             while (true) {
                 var currentMethod: Method?
@@ -243,22 +224,15 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
 
                 tags.forEach { tag ->
                     val dependencyPair = PhpUnitUtil.getClassFqnAndMethodName(
-                        PsiTreeUtil.getChildOfType(
-                            tag,
-                            PhpDocRef::class.java
-                        ), testNamespace
+                        PsiTreeUtil.getChildOfType(tag, PhpDocRef::class.java), testNamespace
                     )
-                    val dependencyClassFQN = dependencyPair.first
-                    val dependencyMethodName = dependencyPair.second
-                    if (PhpLangUtil.compareFQN(
-                            dependencyClassFQN,
-                            testClassFQN
-                        ) == 0
-                    ) {
-                        ContainerUtil.addIfNotNull(
-                            dependencies,
-                            testClass.findOwnMethodByName(dependencyMethodName)
-                        )
+                    val (dependencyClassFQN, dependencyMethodName) = dependencyPair
+
+                    if (PhpLangUtil.compareFQN(dependencyClassFQN, testClassFQN) == 0) {
+                        val ownMethod = testClass.findOwnMethodByName(dependencyMethodName)
+                        if (ownMethod != null) {
+                            dependencies.add(ownMethod)
+                        }
                     }
                 }
             }
