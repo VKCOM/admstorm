@@ -41,7 +41,16 @@ open class RemotePhpUnitConfigurationProducer :
 
         val el = context.location?.psiElement ?: return false
         if (el is PsiDirectory) {
-            if (!el.virtualFile.path.contains("tests")) {
+            val rawPath = el.virtualFile.path
+            // if run tests for package folder
+            val nextTestsFolder = File(rawPath, "tests")
+            val path = if (nextTestsFolder.exists()) {
+                nextTestsFolder.path
+            } else {
+                rawPath
+            }
+
+            if (!path.contains("tests")) {
                 return false
             }
 
@@ -49,7 +58,7 @@ open class RemotePhpUnitConfigurationProducer :
                 return false
             }
 
-            return conf.directory == el.virtualFile.path
+            return conf.directory == path
         }
 
         if (el is PhpFile) {
