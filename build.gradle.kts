@@ -74,7 +74,7 @@ detekt {
 tasks {
     processResources {
         val tokens = mapOf(
-            "sentry_dsn" to System.getenv("SENTRY_DSN"),
+            "sentry_dsn" to (System.getenv("SENTRY_DSN") ?: ""),
         )
 
         filesMatching("plugin_config.json") {

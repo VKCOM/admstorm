@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -25,6 +26,8 @@ import java.nio.charset.StandardCharsets
 @Service
 class SentryService(project: Project) {
     companion object {
+        private val LOG = logger<SentryService>()
+
         const val PLUGIN_ID = "com.vk.admstorm"
         const val MAX_READ_LINES = 300
 
@@ -37,6 +40,10 @@ class SentryService(project: Project) {
         val application = ApplicationInfo.getInstance()
         val user = project.let {
             GitUtils.localUser(it)
+        }
+
+        if (config.sentryDsn.isEmpty()) {
+            LOG.info("Sending errors to Sentry is disabled")
         }
 
         Sentry.init { options ->
