@@ -145,7 +145,15 @@ open class RemotePhpUnitConfigurationProducer :
         replaceDirectoryName: Boolean = false,
     ): Boolean {
         if (element is PsiDirectory) {
-            if (!element.virtualFile.path.contains("tests")) {
+            // if run tests for package folder
+            val nextTestsFolder = File(filepath, "tests")
+            val path = if (nextTestsFolder.exists()) {
+                nextTestsFolder.path
+            } else {
+                filepath
+            }
+
+            if (!path.contains("tests")) {
                 return false
             }
 
@@ -154,7 +162,7 @@ open class RemotePhpUnitConfigurationProducer :
 
             conf.name = configName
             conf.scope = PhpUnitScope.Directory
-            conf.directory = filepath
+            conf.directory = path
 
             return true
         }
