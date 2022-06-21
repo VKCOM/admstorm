@@ -563,6 +563,24 @@ object GitUtils {
     }
 
     /**
+     * Base command for [localUser]
+     */
+    private const val getUserNameCommand = "git -c core.quotepath=false config --local --null --get user.name"
+    private const val getUserEmailCommand = "git -c core.quotepath=false config --local --null --get user.email"
+
+    data class User(val name: String?, val email: String?)
+
+    /**
+     * Returns the current local git user.
+     */
+    fun localUser(project: Project): User {
+        val outputName = CommandRunner.runLocally(project, getUserNameCommand).stdout
+        val outputEmail = CommandRunner.runLocally(project, getUserEmailCommand).stdout
+
+        return User(outputName, outputEmail)
+    }
+
+    /**
      * Helper function for building commands.
      *
      * Function recognizes when the passed parameter has spaces and

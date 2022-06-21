@@ -3,6 +3,7 @@ package com.vk.admstorm.utils
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.jetbrains.php.debug.PhpProjectDebugConfiguration
@@ -12,6 +13,8 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 
 object PhpDebugUtils {
+    private val LOG = logger<PhpDebugUtils>()
+
     fun enablePhpDebug(project: Project) {
         val accepter = PhpDebugExternalConnectionsAccepter.getInstance(project)
         if (!accepter.isStarted) {
@@ -19,7 +22,15 @@ object PhpDebugUtils {
         }
     }
 
+    private const val MAX_OPEN_ATTEMPTS = 10
+    private var countOpeningAttempts = 0
+
     fun checkSshTunnel(project: Project, onStart: Runnable): Boolean {
+        if (countOpeningAttempts > MAX_OPEN_ATTEMPTS) {
+            LOG.warn("Max attempts to open ssh tunnel reached")
+            return false
+        }
+
         val ports = PhpProjectDebugConfiguration.getInstance(project).state.xDebugDebugPorts
         val hasOpenTunnels = ports.any { port ->
             CommandRunner.runRemotely(project, "nc -z localhost $port").exitCode == 0
@@ -60,6 +71,8 @@ object PhpDebugUtils {
                                 )
                                     .withTitle("Unable to open SSH tunnel on port ${ports.first()}")
                                     .show()
+
+                                countOpeningAttempts++
                             }
                         }
 

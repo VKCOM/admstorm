@@ -4,6 +4,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.bind
+import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import com.vk.admstorm.git.GitConflictResolutionStrategy
@@ -21,6 +22,7 @@ class AdmStormSettingsConfigurable : Configurable {
         var pushToServerAfterCommit: Boolean,
         var runPhpLinterAsInTeamcity: Boolean,
         var askYubikeyPassword: Boolean,
+        var userNameForSentry: String,
     )
 
     private val mainPanel: DialogPanel
@@ -32,6 +34,7 @@ class AdmStormSettingsConfigurable : Configurable {
         pushToServerAfterCommit = false,
         runPhpLinterAsInTeamcity = false,
         askYubikeyPassword = false,
+        userNameForSentry = "",
     )
 
     init {
@@ -85,6 +88,14 @@ class AdmStormSettingsConfigurable : Configurable {
                         .bindSelected(model::askYubikeyPassword)
                 }
             }
+
+            group("Sentry Error Reporting") {
+                row("User name:") {
+                    textField()
+                        .comment("Will be used to identify the user in Sentry. It is recommended to use the same name as in ${ServerNameProvider.name()}.")
+                        .bindText(model::userNameForSentry)
+                }
+            }
         }
     }
 
@@ -102,7 +113,8 @@ class AdmStormSettingsConfigurable : Configurable {
                 model.connectWhenProjectStarts != settings.connectWhenProjectStarts ||
                 model.runPhpLinterAsInTeamcity != settings.runPhpLinterAsInTeamcityWhenPushToGitlab ||
                 model.pushToServerAfterCommit != settings.pushToServerAfterCommit ||
-                model.askYubikeyPassword != settings.askYubikeyPassword
+                model.askYubikeyPassword != settings.askYubikeyPassword ||
+                model.userNameForSentry != settings.userNameForSentry
     }
 
     override fun apply() {
@@ -117,6 +129,7 @@ class AdmStormSettingsConfigurable : Configurable {
             runPhpLinterAsInTeamcityWhenPushToGitlab = model.runPhpLinterAsInTeamcity
             pushToServerAfterCommit = model.pushToServerAfterCommit
             askYubikeyPassword = model.askYubikeyPassword
+            userNameForSentry = model.userNameForSentry
         }
     }
 
@@ -130,6 +143,7 @@ class AdmStormSettingsConfigurable : Configurable {
             runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
             pushToServerAfterCommit = settings.pushToServerAfterCommit
             askYubikeyPassword = settings.askYubikeyPassword
+            userNameForSentry = settings.userNameForSentry
         }
 
         mainPanel.reset()
