@@ -1,9 +1,6 @@
 package com.vk.admstorm.notifications
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
+import com.intellij.notification.*
 import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeLater
@@ -20,6 +17,7 @@ open class AdmNotification(
     "AdmStorm",
     content,
     type,
+    NotificationListener.URL_OPENING_LISTENER,
 ), NotificationFullContent {
 
     companion object {

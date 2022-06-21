@@ -1,5 +1,7 @@
 package com.vk.admstorm
 
+import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.util.RunOnceUtil
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
@@ -8,6 +10,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
+import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.progress.ProgressManager
@@ -119,12 +122,26 @@ class AdmStormStartupActivity : StartupActivity {
                         setSentryUser(project)
                     }
 
+                    showWelcomeMessage(project)
+
                     onReady?.run()
                 } catch (e: SshException) {
                     LOG.warn("Unexpected exception while afterConnectionTasks", e)
                 }
             }
         })
+    }
+
+    private fun showWelcomeMessage(project: Project) {
+        val plugin = PluginManagerCore.getPlugin(PluginId.getId(SentryService.PLUGIN_ID)) ?: return
+        RunOnceUtil.runOnceForApp("com.vk.admstorm.welcome.test.message.${plugin.version}") {
+            AdmNotification(
+                """
+                    The plugin has been successfully updated to version ${plugin.version}.
+                    See <a href="https://vkcom.github.io/admstorm/whatsnew.html?server_name=${ServerNameProvider.name()}">what's new</a> in the plugin.
+                """.trimIndent()
+            ).show(project)
+        }
     }
 
     /**
@@ -200,7 +217,7 @@ class AdmStormStartupActivity : StartupActivity {
         }
 
         val output = CommandRunner.runRemotely(project, "whoami")
-        if (output.exitCode != 0 || output.stdout == null){
+        if (output.exitCode != 0 || output.stdout == null) {
             LOG.warn("Error while getting username from server")
             return
         }
