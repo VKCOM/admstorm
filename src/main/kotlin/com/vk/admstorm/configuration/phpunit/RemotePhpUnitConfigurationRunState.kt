@@ -75,25 +75,25 @@ class RemotePhpUnitConfigurationRunState(
     }
 
     private fun buildCommand(): String {
-        val phpUnitXml = remotePathByLocalPath(env.project, conf.configPath)
-        val phpUnitExe = remotePathByLocalPath(env.project, conf.phpUnitPath)
+        val phpUnitXml = remotePathByLocalPath(env.project, conf.phpUnitConfig)
+        val phpUnitExe = remotePathByLocalPath(env.project, conf.phpUnitExe)
 
         val additional = conf.additionalParameters
         val base = "$phpUnitExe --teamcity --configuration $phpUnitXml $additional"
 
-        if (conf.isDirectoryScope) {
+        if (conf.scope == PhpUnitScope.Directory) {
             val remoteDir = remotePathByLocalPath(env.project, conf.directory)
             return "$base $remoteDir"
         }
 
-        if (conf.isClassScope || conf.isMethodScope) {
+        if (conf.scope == PhpUnitScope.Class || conf.scope == PhpUnitScope.Method) {
             val className = getClassNameFromFQN(conf.className)
             val localDir = File(conf.filename).parentFile.path ?: ""
             val localFile = File(conf.filename).name
             val remoteDir = remotePathByLocalPath(env.project, localDir)
 
-            val filter = if (conf.isMethodScope) {
-                "$className::${conf.method}"
+            val filter = if (conf.scope == PhpUnitScope.Method) {
+                "$className::${conf.methodName}"
             } else className
 
             return "$base --filter $filter --test-suffix $localFile $remoteDir"

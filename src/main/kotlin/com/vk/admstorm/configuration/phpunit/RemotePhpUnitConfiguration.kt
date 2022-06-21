@@ -19,22 +19,10 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
 
     override fun getOptions() = super.getOptions() as RemotePhpUnitConfigurationOptions
 
-    var isDirectoryScope: Boolean
-        get() = options.isDirectoryScope
+    var scope: PhpUnitScope
+        get() = options.scope
         set(value) {
-            options.isDirectoryScope = value
-        }
-
-    var isClassScope: Boolean
-        get() = options.isClassScope
-        set(value) {
-            options.isClassScope = value
-        }
-
-    var isMethodScope: Boolean
-        get() = options.isMethodScope
-        set(value) {
-            options.isMethodScope = value
+            options.scope = value
         }
 
     var directory: String
@@ -49,10 +37,10 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
             options.className = value
         }
 
-    var method: String
-        get() = options.method
+    var methodName: String
+        get() = options.methodName
         set(value) {
-            options.method = value
+            options.methodName = value
         }
 
     var filename: String
@@ -61,28 +49,22 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
             options.filename = value
         }
 
-    var useParatest: Boolean
-        get() = options.useParatest
+    var phpUnitExe: String
+        get() = options.phpUnitExe
         set(value) {
-            options.useParatest = value
+            options.phpUnitExe = value
+        }
+
+    var phpUnitConfig: String
+        get() = options.phpUnitConfig
+        set(value) {
+            options.phpUnitConfig = value
         }
 
     var additionalParameters: String
         get() = options.additionalParameters
         set(value) {
             options.additionalParameters = value
-        }
-
-    var configPath: String
-        get() = options.configPath
-        set(value) {
-            options.configPath = value
-        }
-
-    var phpUnitPath: String
-        get() = options.phpUnitPath
-        set(value) {
-            options.phpUnitPath = value
         }
 
     var workingDir: String
@@ -105,16 +87,13 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
-        element.writeBool("isDirectoryScope", isDirectoryScope)
-        element.writeBool("isClassScope", isClassScope)
-        element.writeBool("isMethodScope", isMethodScope)
+        element.writeString("scope", scope.name)
         element.writeString("directory", directory)
         element.writeString("className", className)
-        element.writeString("method", method)
+        element.writeString("method", methodName)
         element.writeString("filename", filename)
-        element.writeBool("useParatest", useParatest)
-        element.writeString("configPath", configPath)
-        element.writeString("phpUnitPath", phpUnitPath)
+        element.writeString("configPath", phpUnitConfig)
+        element.writeString("phpUnitExe", phpUnitExe)
         element.writeString("workingDir", workingDir)
         element.writeString("additionalParameters", additionalParameters)
         element.writeBool("isApiTest", isApiTest)
@@ -123,16 +102,13 @@ open class RemotePhpUnitConfiguration(project: Project, factory: ConfigurationFa
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
-        element.readBool("isDirectoryScope")?.let { isDirectoryScope = it }
-        element.readBool("isClassScope")?.let { isClassScope = it }
-        element.readBool("isMethodScope")?.let { isMethodScope = it }
+        element.readString("scope")?.let { scope = PhpUnitScope.from(it) }
         element.readString("directory")?.let { directory = it }
         element.readString("className")?.let { className = it }
-        element.readString("method")?.let { method = it }
+        element.readString("method")?.let { methodName = it }
         element.readString("filename")?.let { filename = it }
-        element.readBool("useParatest")?.let { useParatest = it }
-        element.readString("configPath")?.let { configPath = it }
-        element.readString("phpUnitPath")?.let { phpUnitPath = it }
+        element.readString("configPath")?.let { phpUnitConfig = it }
+        element.readString("phpUnitExe")?.let { phpUnitExe = it }
         element.readString("workingDir")?.let { workingDir = it }
         element.readString("additionalParameters")?.let { additionalParameters = it }
         element.readBool("isApiTest")?.let { isApiTest = it }

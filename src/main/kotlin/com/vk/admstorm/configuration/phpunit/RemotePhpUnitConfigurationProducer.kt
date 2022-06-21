@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.findParentOfType
 import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.PhpClass
@@ -46,7 +45,7 @@ open class RemotePhpUnitConfigurationProducer :
                 return false
             }
 
-            if (!conf.isDirectoryScope) {
+            if (conf.scope != PhpUnitScope.Directory) {
                 return false
             }
 
@@ -58,7 +57,7 @@ open class RemotePhpUnitConfigurationProducer :
                 return false
             }
 
-            if (conf.isDirectoryScope || conf.isMethodScope) {
+            if (conf.scope == PhpUnitScope.Directory || conf.scope == PhpUnitScope.Method) {
                 return false
             }
 
@@ -68,20 +67,18 @@ open class RemotePhpUnitConfigurationProducer :
         }
 
         if (el.parent is MethodImpl) {
-            if (!conf.isMethodScope) {
+            if (conf.scope != PhpUnitScope.Method) {
                 return false
             }
 
             val method = el.parent as MethodImpl
-            val klass = PsiTreeUtil.findFirstParent(method) { parent ->
-                parent is PhpClass
-            } as PhpClass? ?: return false
+            val klass = method.findParentOfType<PhpClass>() ?: return false
 
             if (!PhpUnitUtil.isTestClass(klass)) {
                 return false
             }
 
-            return conf.className == klass.fqn && conf.method == method.name
+            return conf.className == klass.fqn && conf.methodName == method.name
         }
 
         if (el.parent !is PhpClass) {
@@ -97,7 +94,7 @@ open class RemotePhpUnitConfigurationProducer :
 
         return conf.className == klass.fqn &&
                 conf.filename == file.virtualFile.path &&
-                conf.isClassScope
+                conf.scope == PhpUnitScope.Class
     }
 
     override fun setupConfigurationFromContext(
@@ -116,8 +113,8 @@ open class RemotePhpUnitConfigurationProducer :
             val suffix = " API Test"
 
             conf.isApiTest = true
-            conf.phpUnitPath = "$projectDir/tests/api/phpunit.xml"
-            conf.configPath = "$projectDir/vendor/bin/phpunit"
+            conf.phpUnitExe = "$projectDir/tests/api/phpunit.xml"
+            conf.phpUnitConfig = "$projectDir/vendor/bin/phpunit"
 
             return setupCommonTest(conf, element, filepath, suffix)
         }
@@ -128,14 +125,14 @@ open class RemotePhpUnitConfigurationProducer :
             val suffix = " '$packageName' Package Test"
 
             conf.isPackageTest = true
-            conf.phpUnitPath = (packageRoot ?: projectDir) + "/vendor/bin/phpunit"
-            conf.configPath = (packageRoot ?: projectDir) + "/phpunit.xml"
+            conf.phpUnitExe = (packageRoot ?: projectDir) + "/vendor/bin/phpunit"
+            conf.phpUnitConfig = (packageRoot ?: projectDir) + "/phpunit.xml"
 
             return setupCommonTest(conf, element, filepath, suffix, replaceDirectoryName = true)
         }
 
-        conf.phpUnitPath = "$projectDir/vendor/bin/phpunit"
-        conf.configPath = "$projectDir/phpunit.xml"
+        conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
+        conf.phpUnitConfig = "$projectDir/phpunit.xml"
 
         return setupCommonTest(conf, element, filepath)
     }
@@ -156,7 +153,7 @@ open class RemotePhpUnitConfigurationProducer :
             val configName = if (replaceDirectoryName) "Remote$suffixName" else "Remote '$lastDir'$suffixName"
 
             conf.name = configName
-            conf.isDirectoryScope = true
+            conf.scope = PhpUnitScope.Directory
             conf.directory = filepath
 
             return true
@@ -175,8 +172,7 @@ open class RemotePhpUnitConfigurationProducer :
             conf.name = configName
             conf.className = klass.fqn
             conf.filename = filepath
-            conf.isDirectoryScope = false
-            conf.isClassScope = true
+            conf.scope = PhpUnitScope.Class
 
             return true
         }
@@ -194,8 +190,7 @@ open class RemotePhpUnitConfigurationProducer :
             conf.name = configName
             conf.className = klass.fqn
             conf.filename = filepath
-            conf.isDirectoryScope = false
-            conf.isClassScope = true
+            conf.scope = PhpUnitScope.Class
 
             return true
         }
@@ -213,10 +208,9 @@ open class RemotePhpUnitConfigurationProducer :
 
             conf.name = configName
             conf.className = klass.fqn
-            conf.method = method.name
+            conf.methodName = method.name
             conf.filename = filepath
-            conf.isDirectoryScope = false
-            conf.isMethodScope = true
+            conf.scope = PhpUnitScope.Method
 
             return true
         }

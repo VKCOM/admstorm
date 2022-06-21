@@ -125,11 +125,11 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
     }
 
     protected class RemotePhpUnitRerunProfile(
-        private val myRunConfiguration: RemotePhpUnitConfiguration,
-        private val myFailedTests: List<PhpUnitTestPattern?>
-    ) : MyRunProfile(myRunConfiguration) {
+        private val conf: RemotePhpUnitConfiguration,
+        private val failed: List<PhpUnitTestPattern?>
+    ) : MyRunProfile(conf) {
         private fun doCheckSync() {
-            SyncChecker.getInstance(myRunConfiguration.project).doCheckSyncSilentlyTask({
+            SyncChecker.getInstance(conf.project).doCheckSyncSilentlyTask({
                 onCanceledSync()
             }) {}
         }
@@ -140,7 +140,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
                 .withActions(
                     AdmNotification.Action("Synchronize...") { _, notification ->
                         notification.expire()
-                        SyncChecker.getInstance(myRunConfiguration.project).doCheckSyncSilentlyTask({}, {})
+                        SyncChecker.getInstance(conf.project).doCheckSyncSilentlyTask({}, {})
                     }
                 )
                 .show()
@@ -157,7 +157,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
                     executor,
                     command,
                     env,
-                    myRunConfiguration
+                    conf
                 )
             }
         }
@@ -166,20 +166,20 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
             // TODO
             val phpUnitXml = "${Env.data.projectRoot}/phpunit.xml"
 
-            val filterArgument = createFilterArgument(env.project, myFailedTests)
+            val filterArgument = createFilterArgument(env.project, failed)
             val filterFlag = "--filter '/$filterArgument$/'"
 
             val phpunit = "./vendor/bin/phpunit"
             val base = "$phpunit --teamcity --configuration $phpUnitXml $filterFlag"
 
-            if (myRunConfiguration.isDirectoryScope) {
-                val remoteDir = MyPathUtils.remotePathByLocalPath(env.project, myRunConfiguration.directory)
+            if (conf.scope == PhpUnitScope.Directory) {
+                val remoteDir = MyPathUtils.remotePathByLocalPath(env.project, conf.directory)
                 return "$base $remoteDir"
             }
 
-            if (myRunConfiguration.isClassScope || myRunConfiguration.isMethodScope) {
-                val localDir = File(myRunConfiguration.filename).parentFile.path ?: ""
-                val localFile = File(myRunConfiguration.filename).name
+            if (conf.scope == PhpUnitScope.Class || conf.scope == PhpUnitScope.Method) {
+                val localDir = File(conf.filename).parentFile.path ?: ""
+                val localFile = File(conf.filename).name
                 val remoteDir = MyPathUtils.remotePathByLocalPath(env.project, localDir)
 
                 return "$base --test-suffix $localFile $remoteDir"

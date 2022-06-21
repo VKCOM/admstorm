@@ -2,6 +2,7 @@ package com.vk.admstorm.configuration.phpunit
 
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -9,11 +10,12 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.IdeBorderFactory
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.LanguageTextField
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBRadioButton
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.layout.not
+import com.intellij.ui.layout.or
 import com.intellij.util.TextFieldCompletionProvider
 import com.intellij.util.indexing.DumbModeAccessType
 import com.intellij.util.textCompletion.TextFieldWithCompletion
@@ -23,199 +25,203 @@ import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLangUtil
 import com.jetbrains.php.lang.PhpLanguage
-import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.phpunit.PhpUnitUtil
 import com.jetbrains.php.run.PhpRunUtil
-import java.awt.event.ActionListener
-import java.util.stream.Collectors
-import javax.swing.ButtonGroup
+import com.vk.admstorm.utils.MyUiUtils.bindText
+import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.JTextField
+import javax.swing.JRadioButton
 
-open class RemotePhpUnitConfigurationEditor(private val myProject: Project) :
+open class RemotePhpUnitConfigurationEditor(val project: Project) :
     SettingsEditor<RemotePhpUnitConfiguration>() {
 
-    private var myPanel: JPanel? = null
-    private var myDirectoryPanel: JPanel? = null
-    private var myClassPanel: JPanel? = null
-    private var myMethodPanel: JPanel? = null
-    private var myFilePanel: JPanel? = null
-    private var myAdditionalPanel: JPanel? = null
+    data class Model(
+        var scope: PhpUnitScope = PhpUnitScope.Directory,
 
-    private var myDirectoryRadioButton: JBRadioButton? = null
-    private var myClassRadioButton: JBRadioButton? = null
-    private var myMethodRadioButton: JBRadioButton? = null
+        var directory: String = "",
+        var className: String = "",
+        var methodName: String = "",
+        var filename: String? = "",
 
-    private var myDirectoryTextField: TextFieldWithBrowseButton? = null
-    private var myClassTextField: LanguageTextField? = null
-    private var myMethodTextField: TextFieldWithCompletion? = null
-    private var myFileTextCombo: ComboBox<String>? = null
+        var phpUnitExe: String = "",
+        var phpUnitConfig: String = "",
+        var additionalParameters: String = "",
+    )
 
-    private var myUseParatestCheckBox: JBCheckBox? = null
-    private var myConfigurationFileTextField: TextFieldWithBrowseButton? = null
-    private var myPhpUnitExeTextField: TextFieldWithBrowseButton? = null
-    private var myAdditionalParameters: JTextField? = null
+    private var myFileTextCombo = ComboBox<String>()
+    private lateinit var mainPanel: DialogPanel
+    private val model = Model()
+
+    override fun createEditor(): JComponent = component()
+
+    fun component(): JPanel {
+        lateinit var directoryRadioButton: Cell<JRadioButton>
+        lateinit var classRadioButton: Cell<JRadioButton>
+        lateinit var methodRadioButton: Cell<JRadioButton>
+
+        val classTextField = LanguageTextField(PhpLanguage.INSTANCE, project, "")
+        PhpCompletionUtil.installClassCompletion(classTextField, null, {}, {
+            PhpUnitUtil.isTestClass(it)
+        })
+
+        val methodTextField = TextFieldWithCompletion(
+            project,
+            MethodCompletionProvider(),
+            "", true, true, true
+        )
+
+        mainPanel = panel {
+            group("Test Runner") {
+                buttonsGroup {
+                    row("Scope:") {
+                        directoryRadioButton = radioButton("Directory", PhpUnitScope.Directory)
+                            .horizontalAlign(HorizontalAlign.LEFT)
+                            .apply {
+                                component.isSelected = true
+                            }
+
+                        classRadioButton = radioButton("Class", PhpUnitScope.Class)
+                            .horizontalAlign(HorizontalAlign.LEFT)
+                        methodRadioButton = radioButton("Method", PhpUnitScope.Method)
+                            .horizontalAlign(HorizontalAlign.LEFT)
+                    }.bottomGap(BottomGap.SMALL)
+                }.bind(model::scope)
+
+                row("Directory:") {
+                    textFieldWithBrowseButton(
+                        "Select PHPUnit Tests Folder",
+                        project,
+                        FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                    )
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindText(model::directory)
+                }.visibleIf(directoryRadioButton.selected)
+                    .bottomGap(BottomGap.SMALL)
+
+                row("Class:") {
+                    cell(classTextField)
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindText(model::className)
+                }.visibleIf(classRadioButton.selected.or(methodRadioButton.selected))
+                    .bottomGap(BottomGap.SMALL)
+
+                row("Method:") {
+                    cell(methodTextField)
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindText(model::methodName)
+                }.visibleIf(methodRadioButton.selected)
+                    .bottomGap(BottomGap.SMALL)
+
+                row("File:") {
+                    cell(myFileTextCombo)
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindItemNullable(model::filename)
+                }.visibleIf(directoryRadioButton.selected.not())
+                    .bottomGap(BottomGap.SMALL)
+            }.bottomGap(BottomGap.NONE)
+
+            group("Command Line") {
+                row("PHPUnit Executable:") {
+                    textFieldWithBrowseButton(
+                        "Select PHPUnit Executable",
+                        project,
+                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                    )
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindText(model::phpUnitExe)
+                }
+                row("Configuration file:") {
+                    textFieldWithBrowseButton(
+                        "Select PHPUnit Configuration File",
+                        project,
+                        FileChooserDescriptorFactory.createSingleFileDescriptor(XmlFileType.INSTANCE)
+                    )
+                        .horizontalAlign(HorizontalAlign.FILL)
+                        .bindText(model::phpUnitConfig)
+                }
+            }.topGap(TopGap.NONE)
+        }
+
+        classTextField.addDocumentListener(object : DocumentListener {
+            override fun documentChanged(event: DocumentEvent) {
+                mainPanel.reset()
+
+                fillFileFieldVariants(project, PhpLangUtil.toFQN(model.className))
+            }
+        })
+
+        return mainPanel
+    }
 
     override fun resetEditorFrom(demoRunConfiguration: RemotePhpUnitConfiguration) {
-        myDirectoryRadioButton!!.isSelected = demoRunConfiguration.isDirectoryScope
-        myClassRadioButton!!.isSelected = demoRunConfiguration.isClassScope
-        myMethodRadioButton!!.isSelected = demoRunConfiguration.isMethodScope
+        with(model) {
+            scope = demoRunConfiguration.scope
+            directory = demoRunConfiguration.directory
+            className = demoRunConfiguration.className
+            methodName = demoRunConfiguration.methodName
+            filename = demoRunConfiguration.filename
+            myFileTextCombo.addItem(demoRunConfiguration.filename)
 
-        myDirectoryTextField!!.text = demoRunConfiguration.directory
-        myClassTextField!!.text = demoRunConfiguration.className
-        myMethodTextField!!.text = demoRunConfiguration.method
-        myFileTextCombo!!.addItem(demoRunConfiguration.filename)
+            phpUnitExe = demoRunConfiguration.phpUnitExe
+            phpUnitConfig = demoRunConfiguration.phpUnitConfig
+            additionalParameters = demoRunConfiguration.additionalParameters
+        }
 
-        myUseParatestCheckBox!!.isSelected = demoRunConfiguration.useParatest
-        myConfigurationFileTextField!!.text = demoRunConfiguration.configPath
-        myPhpUnitExeTextField!!.text = demoRunConfiguration.phpUnitPath
-        myAdditionalParameters!!.text = demoRunConfiguration.additionalParameters
+        mainPanel.reset()
     }
 
     override fun applyEditorTo(demoRunConfiguration: RemotePhpUnitConfiguration) {
-        demoRunConfiguration.isDirectoryScope = myDirectoryRadioButton!!.isSelected
-        demoRunConfiguration.isClassScope = myClassRadioButton!!.isSelected
-        demoRunConfiguration.isMethodScope = myMethodRadioButton!!.isSelected
+        mainPanel.apply()
 
-        demoRunConfiguration.directory = myDirectoryTextField!!.text
-        demoRunConfiguration.className = myClassTextField!!.text
-        demoRunConfiguration.method = myMethodTextField!!.text
-        demoRunConfiguration.filename = myFileTextCombo!!.selectedItem as String
+        with(demoRunConfiguration) {
+            scope = model.scope
+            directory = model.directory
+            className = model.className
+            methodName = model.methodName
 
-        demoRunConfiguration.useParatest = myUseParatestCheckBox!!.isSelected
-        demoRunConfiguration.configPath = myConfigurationFileTextField!!.text
-        demoRunConfiguration.phpUnitPath = myPhpUnitExeTextField!!.text
-        demoRunConfiguration.additionalParameters = myAdditionalParameters!!.text
-    }
-
-    override fun createEditor() = myPanel!!
-
-    fun createUIComponents() {
-        myMethodTextField =
-            TextFieldWithCompletion(myProject, createMethodCompletionProvider(myProject), "", true, true, true)
-
-        myClassTextField = LanguageTextField(PhpLanguage.INSTANCE, myProject, "")
-
-        PhpCompletionUtil.installClassCompletion(myClassTextField!!, null, {}, { phpClass: PhpClass ->
-            PhpUnitUtil.isTestClass(phpClass)
-        })
+            filename = model.filename ?: ""
+            phpUnitExe = model.phpUnitExe
+            phpUnitConfig = model.phpUnitConfig
+            additionalParameters = model.additionalParameters
+        }
     }
 
     private fun fillFileFieldVariants(project: Project, fqn: String) {
-        val oldText = getSelectedFilePath()
+        val oldText = model.filename
         val pathsWithClassByFqn: Set<String> =
             DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<Set<String>, RuntimeException> {
-                PhpIndex.getInstance(project).getClassesByFQN(fqn).stream()
-                    .filter { klass ->
-                        klass == null || PhpUnitUtil.isTestClass(klass)
-                    }
-                    .map { klass -> klass.containingFile.virtualFile.path }
-                    .collect(Collectors.toSet()) as Set<String>
+                PhpIndex.getInstance(project).getClassesByFQN(fqn)
+                    .filter { it != null && PhpUnitUtil.isTestClass(it) }
+                    .map { it.containingFile.virtualFile.path }
+                    .toSet()
             }
 
-        if (pathsWithClassByFqn.isNotEmpty()) {
-            myFileTextCombo!!.removeAllItems()
-            pathsWithClassByFqn.forEach { path ->
-                myFileTextCombo!!.addItem(path)
-                if (oldText == path) {
-                    myFileTextCombo!!.selectedItem = path
-                }
+        if (pathsWithClassByFqn.isEmpty()) {
+            return
+        }
+
+        myFileTextCombo.removeAllItems()
+
+        pathsWithClassByFqn.forEach { path ->
+            myFileTextCombo.addItem(path)
+
+            if (oldText == path) {
+                myFileTextCombo.selectedItem = path
             }
         }
     }
 
-    private fun getSelectedFilePath() = myFileTextCombo?.selectedItem as String? ?: ""
-
-    private fun createMethodCompletionProvider(project: Project) =
-        MyTextFieldCompletionProvider(this, project)
-
-    init {
-        val group = ButtonGroup()
-        group.add(myDirectoryRadioButton)
-        group.add(myClassRadioButton)
-        group.add(myMethodRadioButton)
-
-        myDirectoryRadioButton?.isSelected = true
-
-        myDirectoryTextField?.addBrowseFolderListener(
-            "Select PHPUnit Folder", "Select PHPUnit test folder to run", null,
-            FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        )
-
-        val updateStateActionListener = ActionListener { updateState() }
-
-        myDirectoryRadioButton?.addActionListener(updateStateActionListener)
-        myClassRadioButton?.addActionListener(updateStateActionListener)
-        myMethodRadioButton?.addActionListener(updateStateActionListener)
-        myFileTextCombo?.addActionListener(updateStateActionListener)
-        myDirectoryTextField?.addActionListener(updateStateActionListener)
-
-        myClassTextField?.addDocumentListener(object : DocumentListener {
-            override fun documentChanged(event: DocumentEvent) {
-                fillFileFieldVariants(myProject, PhpLangUtil.toFQN(myClassTextField!!.text))
-                updateFieldsAvailability()
-            }
-        })
-
-        myPanel?.border = IdeBorderFactory.createTitledBorder("Test Runner")
-        myAdditionalPanel?.border = IdeBorderFactory.createTitledBorder("Other", false)
-
-        myUseParatestCheckBox?.isVisible = false
-
-        myConfigurationFileTextField?.addBrowseFolderListener(
-            "Select PHPUnit Configuration", "Select PHPUnit Configuration to run", null,
-            FileChooserDescriptorFactory.createSingleFileDescriptor("xml")
-        )
-
-        setVisibleComponents(directory = true, file = false, clazz = false, method = false)
-    }
-
-    private fun updatePanelsVisibility() {
-        if (myDirectoryRadioButton!!.isSelected) {
-            setVisibleComponents(directory = true, file = false, clazz = false, method = false)
-        } else if (myClassRadioButton!!.isSelected) {
-            setVisibleComponents(directory = false, file = true, clazz = true, method = false)
-        } else if (myMethodRadioButton!!.isSelected) {
-            setVisibleComponents(directory = false, file = true, clazz = true, method = true)
-        }
-    }
-
-    private fun updateFieldsAvailability() {
-        myDirectoryTextField!!.isEnabled = true
-        myMethodTextField!!.isEnabled = true
-        myClassTextField!!.isEnabled = true
-        if (myMethodRadioButton!!.isSelected && (getSelectedFilePath().isEmpty() || myClassTextField!!.text.isEmpty())) {
-            myMethodTextField!!.isEnabled = false
-        }
-        myFileTextCombo!!.isEnabled = myFileTextCombo!!.itemCount > 1
-    }
-
-    private fun updateState() {
-        updatePanelsVisibility()
-        updateFieldsAvailability()
-    }
-
-    private fun setVisibleComponents(directory: Boolean, file: Boolean, clazz: Boolean, method: Boolean) {
-        myDirectoryPanel?.isVisible = directory
-        myFilePanel?.isVisible = file
-        myClassPanel?.isVisible = clazz
-        myMethodPanel?.isVisible = method
-    }
-
-    private class MyTextFieldCompletionProvider(
-        private val myParent: RemotePhpUnitConfigurationEditor,
-        private val myProject: Project
-    ) : TextFieldCompletionProvider(), DumbAware {
+    private inner class MethodCompletionProvider :
+        TextFieldCompletionProvider(), DumbAware {
 
         override fun addCompletionVariants(text: String, offset: Int, prefix: String, result: CompletionResultSet) {
-            val selectedFile =
-                PhpRunUtil.findPsiFile(myProject, myParent.getSelectedFilePath(), true) as? PhpFile ?: return
+            val selectedFile = PhpRunUtil.findPsiFile(project, model.filename, true) ?: return
 
             val selectedClass =
                 DumbModeAccessType.RELIABLE_DATA_ONLY.ignoreDumbMode<PhpClass?, RuntimeException> {
-                    PhpUnitUtil.findClassByFQNInFile(myParent.myClassTextField!!.text, selectedFile, myProject)
+                    PhpUnitUtil.findClassByFQNInFile(model.className, selectedFile, project)
                 } as PhpClass
 
             PhpClassHierarchyUtils.processMethods(
