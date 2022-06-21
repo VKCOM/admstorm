@@ -98,12 +98,12 @@ class RemotePhpUnitConfigurationRunState(
                 val classFilter = if (filter.isNotEmpty()) {
                     "" // not set other filter
                 } else if (conf.scope == PhpUnitScope.Method) {
-                    "$className::${conf.methodName}"
+                    "--filter $className::${conf.methodName}"
                 } else {
-                    className
+                    "--filter $className"
                 }
 
-                return "$base --filter $classFilter --test-suffix $localFile $remoteDir"
+                return "$base $classFilter --test-suffix $localFile $remoteDir"
             }
 
             return base
