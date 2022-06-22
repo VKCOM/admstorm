@@ -249,7 +249,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
             try {
                 mySftpChannel!!.close()
             } catch (e: IOException) {
-                LOG.info("Unexpected exception while disconnect", e)
+                LOG.warn("Unexpected exception while disconnect", e)
             }
         }
         myConnectionBuilder = null

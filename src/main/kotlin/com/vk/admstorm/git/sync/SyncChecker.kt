@@ -75,7 +75,7 @@ class SyncChecker(private var myProject: Project) {
         }
 
         if (output.stderr.isNotEmpty()) {
-            LOG.info("Output stderr for sync checker: '${output.stderr}'")
+            LOG.warn("Output stderr for sync checker is not empty: '${output.stderr}'")
         }
 
         if (output.exitCode == 0) {

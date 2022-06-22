@@ -31,16 +31,12 @@ class SentryService(project: Project) {
         fun getInstance(project: Project) = project.service<SentryService>()
     }
 
-    private val user: GitUtils.User?
+    private val user = GitUtils.localUser(project)
 
     init {
         val config = ConfigService.getInstance(project)
         val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID))
         val application = ApplicationInfo.getInstance()
-
-        user = project.let {
-            GitUtils.localUser(it)
-        }
 
         if (config.sentryDsn.isEmpty()) {
             LOG.info("Sending errors to Sentry is disabled")
@@ -49,6 +45,7 @@ class SentryService(project: Project) {
         Sentry.init { options ->
             options.dsn = config.sentryDsn
             options.release = plugin?.version ?: "UNKNOWN"
+            options.isEnableNdk = false
 
             options.setBeforeSend { event, _ ->
                 val os = OperatingSystem().apply {
@@ -76,31 +73,30 @@ class SentryService(project: Project) {
         }
     }
 
-    fun sendError(t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, t)
+    fun sendError(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
 
-    fun sendWarn(t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, t)
+    fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, withFullLog = true)
+    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user.name}", withFullLog = true)
 
-    private fun sendEvent(level: SentryLevel, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
+    private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
             val file = readIdeaLogFile(withFullLog)
             scope.addAttachment(Attachment(file, "idea.log"))
 
-            val sentryEvents = SentryEvent().also {
-                it.throwable = t
-                it.level = level
+            val sentryEvents = SentryEvent().also { event ->
+                event.throwable = t
+                event.level = level
 
-                if (withFullLog) {
-                    it.message = Message().apply {
-                        message = "Logs by ${user?.name}"
-                    }
+                event.message = Message().also { msg ->
+                    msg.message = message
                 }
             }
 
             sentryId = Sentry.captureEvent(sentryEvents)
+            LOG.info("Sentry event sent: $sentryId")
         }
 
         return sentryId

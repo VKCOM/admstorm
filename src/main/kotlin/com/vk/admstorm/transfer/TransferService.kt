@@ -107,17 +107,17 @@ class TransferService(private var myProject: Project) {
                             .withActions(*actions)
                             .show()
 
-                        LOG.info("Transfer of ${localFile.path} failed: $res", Exception(res.exception))
+                        LOG.warn("Transfer of ${localFile.path} failed: $res", Exception(res.exception))
                     }
                     TransferResult.CANCELLED -> {
                         AdmWarningNotification(res.exception ?: "")
                             .withTitle("Transfer canceled")
                             .show()
 
-                        LOG.info("Transfer of ${localFile.path} canceled: $res", Exception(res.exception))
+                        LOG.warn("Transfer of ${localFile.path} canceled: $res", Exception(res.exception))
                     }
                     else -> {
-                        LOG.info("Transfer of ${localFile.path}: $res", Exception(res.exception))
+                        LOG.warn("Transfer of ${localFile.path}: $res", Exception(res.exception))
                     }
                 }
 
