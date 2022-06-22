@@ -228,6 +228,11 @@
       <add-to-group group-id="SegmentedVcsActionsBarGroup" anchor="last"/>
     </action>
 
+    <action id="com.vk.admstorm.send.logs" class="com.vk.admstorm.actions.SendLogsToSentryAction"
+            text="Send Log to Sentry">
+      <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="ShowLog"/>
+    </action>
+
     <!-- Problems viewer popup -->
     <group id="AdmProblemsView.ToolWindow.TreePopup">
       <action id="AdmProblemsView.ShowProblemDescription"
