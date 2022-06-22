@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Action on the Help menu to send logs to Sentry.
+
 ## 1.3.0 — 22.06.2022
 
 ### Added
