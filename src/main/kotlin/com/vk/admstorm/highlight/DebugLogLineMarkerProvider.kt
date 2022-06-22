@@ -40,12 +40,14 @@ class DebugLogLineMarkerProvider : RelatedItemLineMarkerProvider() {
             return
         }
 
-        val sizePsi = call.parameterList?.getParameter(1) ?: return
-        if (sizePsi.elementType != PhpElementTypes.NUMBER) return
+        val lineMarker = OpenUrlLineMarkerInfo(prefix, needInput, inputExpression?.text, call) {
+            val sizePsi = call.parameterList?.getParameter(1) ?: return@OpenUrlLineMarkerInfo "1000"
+            if (sizePsi.elementType != PhpElementTypes.NUMBER) return@OpenUrlLineMarkerInfo "1000"
 
-        val size = sizePsi.text
+            sizePsi.text
+        }
 
-        result.add(OpenUrlLineMarkerInfo(prefix, size, needInput, inputExpression?.text, call))
+        result.add(lineMarker)
     }
 
     private fun logNameParts(prefixPsi: PsiElement?): Triple<String?, Boolean, PsiElement?> {
@@ -77,10 +79,10 @@ class DebugLogLineMarkerProvider : RelatedItemLineMarkerProvider() {
 
     private class OpenUrlLineMarkerInfo(
         private val prefix: String,
-        private val size: String,
         private val needInput: Boolean,
         private val inputExpressionString: String?,
-        element: PsiElement
+        element: PsiElement,
+        private val size: () -> String
     ) :
         RelatedItemLineMarkerInfo<PsiElement>(element, element.textRange, AllIcons.Ide.External_link_arrow,
             { "Open debug log page" }, null, GutterIconRenderer.Alignment.CENTER, { emptyList() }) {
@@ -108,7 +110,7 @@ class DebugLogLineMarkerProvider : RelatedItemLineMarkerProvider() {
                             } else {
                                 prefix
                             }
-                            val searchQuery = "buffer_prefix=$prefix&buffer_size=$size"
+                            val searchQuery = "buffer_prefix=$prefix&buffer_size=${size()}"
                             val url = Env.data.debugLogUrl + "?" + searchQuery
                             BrowserUtil.browse(url)
                         }
