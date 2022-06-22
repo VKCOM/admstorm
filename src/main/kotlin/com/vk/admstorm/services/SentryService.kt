@@ -16,7 +16,10 @@ import io.sentry.Attachment
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
-import io.sentry.protocol.*
+import io.sentry.protocol.OperatingSystem
+import io.sentry.protocol.SentryId
+import io.sentry.protocol.SentryRuntime
+import io.sentry.protocol.User
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -72,15 +75,17 @@ class SentryService(project: Project) {
         }
     }
 
-    fun sendError(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
+    fun sendError(t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, t)
 
-    fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
+    fun sendWarn(t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, t)
 
-    private fun sendEvent(level: SentryLevel, message: String, t: Throwable?): SentryId {
+    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name}", withFullLog = true)
+
+    private fun sendEvent(level: SentryLevel, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
-            val file = readIdeaLogFile()
+            val file = readIdeaLogFile(withFullLog)
             scope.addAttachment(Attachment(file, "idea.log"))
 
             val sentryEvents = SentryEvent().also { event ->
@@ -93,18 +98,23 @@ class SentryService(project: Project) {
             }
 
             sentryId = Sentry.captureEvent(sentryEvents)
-            LOG.info("Sentry event sent: $sentryId")
         }
 
         return sentryId
     }
 
-    private fun readIdeaLogFile(): ByteArray {
+    private fun readIdeaLogFile(full: Boolean = false): ByteArray {
         val logFile = File(PathManager.getLogPath(), "idea.log")
+        val countNeedLines = if (full) {
+            MAX_FULL_LOG_READ_LINES
+        } else {
+            MAX_LOGGING_READ_LINES
+        }
+
         val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
 
         var lines = ""
-        for (i in 0 until MAX_READ_LINES) {
+        for (i in 0 until countNeedLines) {
             val line = reader.readLine() ?: break
             lines += "$line\n"
         }
