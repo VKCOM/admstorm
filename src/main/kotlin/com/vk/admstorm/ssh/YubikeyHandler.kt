@@ -33,6 +33,7 @@ class YubikeyHandler {
                 PasswordSafe.instance.getPassword(credentialAttributes) == null
 
         var needSavePassword = false
+        var needRemovePassword = false
         val password = if (needAskPassword) {
             LOG.info("Requesting a password from the user")
             EnterPasswordDialog.requestPassword(project) {
@@ -99,21 +100,27 @@ class YubikeyHandler {
             proc.errorStream.bufferedReader().readText(),
             proc.exitValue()
         )
-        val result = if (!out.stderr.contains("Card added")) {
+        val successfully = if (!out.stderr.contains("Card added")) {
             showYubikeyResetFailNotification(project, "Possibly an incorrect password was entered", out, onFail)
-            needSavePassword = false
+            // If the passed or saved password is incorrect, we remove it.
+            needRemovePassword = true
             false
-        } else true
+        } else {
+            true
+        }
 
-        if (needSavePassword) {
+        // Don't save the password if the reset failed.
+        if (needSavePassword && !needRemovePassword) {
             LOG.info("Saving the new password")
             PasswordSafe.instance.setPassword(credentialAttributes, password)
-        } else {
+        }
+
+        if (needRemovePassword) {
             LOG.info("Removing the old password")
             PasswordSafe.instance.setPassword(credentialAttributes, null)
         }
 
-        return result
+        return successfully
     }
 
     private fun createScriptIfNotExists(project: Project): File? {
