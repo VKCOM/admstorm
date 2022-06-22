@@ -217,11 +217,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
                 } while (!visited.add(currentMethod))
 
                 val docComment = currentMethod!!.docComment
-                val tags =
-                    if (docComment != null)
-                        docComment.getTagElementsByName("@depends")
-                    else
-                        PhpDocTag.EMPTY_ARRAY
+                val tags = docComment?.getTagElementsByName("@depends") ?: PhpDocTag.EMPTY_ARRAY
 
                 tags.forEach { tag ->
                     val dependencyPair = PhpUnitUtil.getClassFqnAndMethodName(
