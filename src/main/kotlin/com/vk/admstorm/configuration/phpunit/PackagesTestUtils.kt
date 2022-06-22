@@ -17,6 +17,7 @@ object PackagesTestUtils {
             if (count > 5) {
                 break
             }
+
             val curComposerJson = File(curFolder, "composer.json")
             if (curComposerJson.exists()) {
                 return curComposerJson.parent

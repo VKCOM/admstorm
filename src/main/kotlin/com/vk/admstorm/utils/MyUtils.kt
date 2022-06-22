@@ -206,13 +206,5 @@ object MyUtils {
         }, delay)
     }
 
-    fun String.unquote(): String {
-        if (length >= 2 &&
-            (get(0) == '"' && get(length - 1) == '"' || get(0) == '\'' && get(length - 1) == '\'')
-        ) {
-            return substring(1, length - 1);
-        }
-
-        return this
-    }
+    fun String.unquote() = removeSurrounding("\"").removeSurrounding("'")
 }

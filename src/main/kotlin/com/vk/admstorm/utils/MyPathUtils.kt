@@ -53,6 +53,7 @@ object MyPathUtils {
         if (path.isEmpty()) {
             return ""
         }
+
         val projectDir = resolveProjectDir(project) ?: return path.normalizeSlashes()
         return File(path).relativeTo(File(projectDir)).path.normalizeSlashes()
     }
