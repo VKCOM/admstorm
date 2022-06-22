@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## 1.3.0 — 22.06.2022
+
 ### Added
 
 - Full support for ktest benchmarks:
@@ -32,7 +34,10 @@
 - Function of determining that this is vkcom project, now it does not consider kphp-polyfills to be the right project to
   enable the plugin
 - Bug when, for third-party projects, when committing, the plugin tried to push changes on the server.
+- OpenSC path, now automatic collection of yubikey will work on Linux.
 - Problems with opening SSH tunnels.
+- Password saving when reset yubikey.
+- Bug, when updating the size in the call, the size in the link wasn't updated.
 
 ## 1.2.0 — 11.05.2022
 
@@ -85,15 +90,15 @@ improvements and fixes.
 ### Other improvements
 
 - Improved file sync dialog;
-    - Files are now displayed sorted (by state);
-    - For files that are only in the local repository, added the ability to delete them;
-    - Now the full path to the file is displayed starting from `~/`;
-    - Now after clicking the button to download a file from the server, it will be started immediately, and not after
-      closing the dialog;
-    - Now if the file is located only locally or only on the server, when viewing its contents, it will be displayed in
-      a simple viewer, and not in a diff viewer with two editors;
-    - Fixed a bug when deleting a file from the list, the focus did not go to the next one, and it was necessary to
-      select the file manually.
+  - Files are now displayed sorted (by state);
+  - For files that are only in the local repository, added the ability to delete them;
+  - Now the full path to the file is displayed starting from `~/`;
+  - Now after clicking the button to download a file from the server, it will be started immediately, and not after
+    closing the dialog;
+  - Now if the file is located only locally or only on the server, when viewing its contents, it will be displayed in
+    a simple viewer, and not in a diff viewer with two editors;
+  - Fixed a bug when deleting a file from the list, the focus did not go to the next one, and it was necessary to
+    select the file manually.
 
 ### Fixed
 
