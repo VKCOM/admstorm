@@ -31,16 +31,12 @@ class SentryService(project: Project) {
         fun getInstance(project: Project) = project.service<SentryService>()
     }
 
-    private val user: GitUtils.User?
+    private val user = GitUtils.localUser(project)
 
     init {
         val config = ConfigService.getInstance(project)
         val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID))
         val application = ApplicationInfo.getInstance()
-
-        user = project.let {
-            GitUtils.localUser(it)
-        }
 
         if (config.sentryDsn.isEmpty()) {
             LOG.info("Sending errors to Sentry is disabled")
