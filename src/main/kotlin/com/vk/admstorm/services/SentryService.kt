@@ -87,10 +87,8 @@ class SentryService(project: Project) {
                 event.throwable = t
                 event.level = level
 
-                if (t == null) {
-                    event.message = Message().also { msg ->
-                        msg.message = message
-                    }
+                event.message = Message().also { msg ->
+                    msg.message = message
                 }
             }
 
