@@ -46,7 +46,6 @@ class SentryService(project: Project) {
             options.dsn = config.sentryDsn
             options.release = plugin?.version ?: "UNKNOWN"
             options.isEnableNdk = false
-            options.isDebug = true
 
             options.setBeforeSend { event, _ ->
                 val os = OperatingSystem().apply {
@@ -78,7 +77,7 @@ class SentryService(project: Project) {
 
     fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name}", withFullLog = true)
+    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user.name}", withFullLog = true)
 
     private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
