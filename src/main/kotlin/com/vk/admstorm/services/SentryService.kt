@@ -80,7 +80,7 @@ class SentryService(project: Project) {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
-            val file = readIDEALogFile()
+            val file = readIdeaLogFile()
             scope.addAttachment(Attachment(file, "idea.log"))
 
             val sentryEvents = SentryEvent().also { event ->
@@ -99,7 +99,7 @@ class SentryService(project: Project) {
         return sentryId
     }
 
-    private fun readIDEALogFile(): ByteArray {
+    private fun readIdeaLogFile(): ByteArray {
         val logFile = File(PathManager.getLogPath(), "idea.log")
         val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
 
