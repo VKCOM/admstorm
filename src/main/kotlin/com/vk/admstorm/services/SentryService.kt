@@ -83,13 +83,13 @@ class SentryService(project: Project) {
             val file = readIDEALogFile()
             scope.addAttachment(Attachment(file, "idea.log"))
 
-            val sentryEvents = SentryEvent().also {
-                it.throwable = t
-                it.level = level
+            val sentryEvents = SentryEvent().also { event ->
+                event.throwable = t
+                event.level = level
 
                 if (t == null) {
-                    it.message = Message().apply {
-                        this.message = message
+                    event.message = Message().also { msg ->
+                        msg.message = message
                     }
                 }
             }
