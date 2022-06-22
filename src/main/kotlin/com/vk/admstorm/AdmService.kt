@@ -4,7 +4,7 @@ import com.intellij.json.psi.JsonStringLiteral
 import com.intellij.json.psi.impl.JsonRecursiveElementVisitor
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.vk.admstorm.utils.MyPathUtils
@@ -13,9 +13,10 @@ import com.vk.admstorm.utils.MyUtils
 @Service
 class AdmService(private var myProject: Project) {
     companion object {
-        fun getInstance(project: Project) = project.service<AdmService>()
+        private val LOG = logger<AdmService>()
+        const val PLUGIN_ID = "com.vk.admstorm"
 
-        private val LOG = Logger.getInstance(AdmService::class.java)
+        fun getInstance(project: Project) = project.service<AdmService>()
     }
 
     /**

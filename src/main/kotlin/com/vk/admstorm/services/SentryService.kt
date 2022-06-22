@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.vk.admstorm.AdmService
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.settings.AdmStormSettingsState
 import io.sentry.Attachment
@@ -27,16 +28,14 @@ import java.nio.charset.StandardCharsets
 class SentryService(project: Project) {
     companion object {
         private val LOG = logger<SentryService>()
-
-        const val PLUGIN_ID = "com.vk.admstorm"
-        const val MAX_READ_LINES = 300
+        const val MAX_READ_LINES = 500
 
         fun getInstance(project: Project) = project.service<SentryService>()
     }
 
     init {
         val config = ConfigService.getInstance(project)
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID))
+        val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID))
         val application = ApplicationInfo.getInstance()
         val user = project.let {
             GitUtils.localUser(it)
@@ -104,10 +103,10 @@ class SentryService(project: Project) {
 
         var lines = ""
         for (i in 0 until MAX_READ_LINES) {
-            val line: String = reader.readLine() ?: break
-            lines += ("$line\n")
+            val line = reader.readLine() ?: break
+            lines += "$line\n"
         }
 
-        return lines.toByteArray(Charsets.UTF_8)
+        return lines.toByteArray(StandardCharsets.UTF_8)
     }
 }
