@@ -1,6 +1,6 @@
 package com.vk.admstorm.actions.git.panels.changes
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FilePath
 import com.intellij.openapi.vcs.changes.ByteBackedContentRevision
@@ -27,7 +27,7 @@ class GitLazyContentRevision(
 ) : ContentRevision, ByteBackedContentRevision {
 
     companion object {
-        private val LOG = Logger.getInstance(GitLazyContentRevision::class.java)
+        private val LOG = logger<GitLazyContentRevision>()
     }
 
     private var myContent = ""

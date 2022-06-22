@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.files
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.utils.ServerNameProvider
@@ -18,7 +18,7 @@ data class RemoteFile(
     val localFile: LocalFile,
 ) {
     companion object {
-        val LOG = Logger.getInstance(RemoteFile::class.java)
+        val LOG = logger<RemoteFile>()
 
         /**
          * data format:

@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.branches
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -14,7 +14,7 @@ import git4idea.repo.GitRepositoryManager
 
 class LocalBranchSwitcher(private val myProject: Project) {
     companion object {
-        private val LOG = Logger.getInstance(LocalBranchSwitcher::class.java)
+        private val LOG = logger<LocalBranchSwitcher>()
     }
 
     fun switch(branchName: String, onReady: Runnable? = null) {

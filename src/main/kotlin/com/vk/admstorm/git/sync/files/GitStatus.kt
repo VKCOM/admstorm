@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.files
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -34,7 +34,7 @@ object GitStatus {
         val isRemoved: Boolean,
     )
 
-    private val LOG = Logger.getInstance(GitStatus::class.java)
+    private val LOG = logger<GitStatus>()
 
     fun GitFileStatus.isDeleted() = workTree == 'D' || index == 'D'
 

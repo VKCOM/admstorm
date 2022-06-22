@@ -4,7 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -36,7 +36,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
     companion object {
         fun getInstance(project: Project) = project.service<SshConnectionService>()
 
-        private val LOG = Logger.getInstance(SshConnectionService::class.java)
+        private val LOG = logger<SshConnectionService>()
     }
 
     private var myConnector: SshConfigConnector? = null

@@ -4,7 +4,7 @@ import com.intellij.execution.Output
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
@@ -27,7 +27,7 @@ class SyncChecker(private var myProject: Project) {
     companion object {
         fun getInstance(project: Project) = project.service<SyncChecker>()
 
-        private val LOG = Logger.getInstance(SyncChecker::class.java)
+        private val LOG = logger<SyncChecker>()
         const val FILE_SEPARATOR = "<<<--->>>"
         const val PART_SEPARATOR = "<--->"
     }

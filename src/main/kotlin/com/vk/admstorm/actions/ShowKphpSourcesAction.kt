@@ -2,7 +2,7 @@ package com.vk.admstorm.actions
 
 import com.intellij.execution.Output
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.impl.text.PsiAwareTextEditorImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
@@ -24,7 +24,7 @@ import git4idea.util.GitUIUtil.code
 
 class ShowKphpSourcesAction : PhpPsiElementAction<PhpPsiElement>(PhpPsiElement::class.java) {
     companion object {
-        private val LOG = Logger.getInstance(ShowKphpSourcesAction::class.java)
+        private val LOG = logger<ShowKphpSourcesAction>()
     }
 
     override val errorHint: String = "Error"
