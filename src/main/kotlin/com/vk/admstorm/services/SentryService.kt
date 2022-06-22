@@ -16,10 +16,7 @@ import io.sentry.Attachment
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
-import io.sentry.protocol.OperatingSystem
-import io.sentry.protocol.SentryId
-import io.sentry.protocol.SentryRuntime
-import io.sentry.protocol.User
+import io.sentry.protocol.*
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -28,16 +25,20 @@ import java.nio.charset.StandardCharsets
 class SentryService(project: Project) {
     companion object {
         private val LOG = logger<SentryService>()
-        const val MAX_READ_LINES = 500
+        const val MAX_FULL_LOG_READ_LINES = 2000
+        const val MAX_LOGGING_READ_LINES = 500
 
         fun getInstance(project: Project) = project.service<SentryService>()
     }
+
+    private val user: GitUtils.User?
 
     init {
         val config = ConfigService.getInstance(project)
         val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID))
         val application = ApplicationInfo.getInstance()
-        val user = project.let {
+
+        user = project.let {
             GitUtils.localUser(it)
         }
 
@@ -48,6 +49,8 @@ class SentryService(project: Project) {
         Sentry.init { options ->
             options.dsn = config.sentryDsn
             options.release = plugin?.version ?: "UNKNOWN"
+            options.isEnableNdk = false
+            options.isDebug = true
 
             options.setBeforeSend { event, _ ->
                 val os = OperatingSystem().apply {
@@ -75,13 +78,13 @@ class SentryService(project: Project) {
         }
     }
 
-    fun sendError(t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, t)
+    fun sendError(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
 
-    fun sendWarn(t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, t)
+    fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
     fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name}", withFullLog = true)
 
-    private fun sendEvent(level: SentryLevel, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
+    private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
@@ -98,6 +101,7 @@ class SentryService(project: Project) {
             }
 
             sentryId = Sentry.captureEvent(sentryEvents)
+            LOG.info("Sentry event sent: $sentryId")
         }
 
         return sentryId
