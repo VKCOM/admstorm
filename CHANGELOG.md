@@ -35,6 +35,8 @@
 - Bug when, for third-party projects, when committing, the plugin tried to push changes on the server.
 - OpenSC path, now automatic collection of yubikey will work on Linux.
 - Problems with opening SSH tunnels.
+- Password saving when reset yubikey.
+- Bug, when updating the size in the call, the size in the link wasn't updated.
 
 ## 1.2.0 — 11.05.2022
 
