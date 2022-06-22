@@ -133,7 +133,7 @@ class AdmStormStartupActivity : StartupActivity {
     }
 
     private fun showWelcomeMessage(project: Project) {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId(SentryService.PLUGIN_ID)) ?: return
+        val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID)) ?: return
         RunOnceUtil.runOnceForApp("com.vk.admstorm.welcome.test.message.${plugin.version}") {
             AdmNotification(
                 """
