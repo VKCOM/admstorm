@@ -109,12 +109,6 @@ object MyPathUtils {
         return "$remoteRoot/$rel"
     }
 
-    fun remotePathByRelativeLocalPath(project: Project, path: String): String {
-        val abs = absoluteLocalPath(project, path)
-        val rel = relativeLocalPath(project, abs)
-        return "$remoteRoot/$rel"
-    }
-
     fun remotePhpFolderRelativePathByLocalPath(project: Project, path: String): String {
         if (Env.data.phpSourceFolder == "") return ""
 
