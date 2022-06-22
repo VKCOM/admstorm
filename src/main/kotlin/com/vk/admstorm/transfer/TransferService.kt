@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -39,7 +39,7 @@ class TransferService(private var myProject: Project) {
     companion object {
         fun getInstance(project: Project) = project.service<TransferService>()
 
-        private val LOG = Logger.getInstance(TransferService::class.java)
+        private val LOG = logger<TransferService>()
         private const val EDITABLE_FILE_SIZE = (2 * 1024 * 1024).toLong()
     }
 

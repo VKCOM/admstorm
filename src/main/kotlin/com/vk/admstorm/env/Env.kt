@@ -1,6 +1,6 @@
 package com.vk.admstorm.env
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.kphp.KphpRunType
@@ -58,7 +58,7 @@ data class EnvConfig(
 )
 
 object Env {
-    private val LOG = Logger.getInstance(Env::class.java)
+    private val LOG = logger<Env>()
 
     private var myIsResolved = false
     var data = EnvConfig()

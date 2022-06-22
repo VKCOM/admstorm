@@ -1,6 +1,6 @@
 package com.vk.admstorm.actions.git
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
@@ -37,7 +37,7 @@ class PushOptionsDialog(
 ) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
 
     companion object {
-        private val LOG = Logger.getInstance(PushOptionsDialog::class.java)
+        private val LOG = logger<PushOptionsDialog>()
 
         private const val CENTER_PANEL_HEIGHT = 450
         private const val CENTER_PANEL_WIDTH = 800

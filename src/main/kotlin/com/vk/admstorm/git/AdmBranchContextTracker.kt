@@ -1,6 +1,6 @@
 package com.vk.admstorm.git
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.BranchChangeListener
 import com.vk.admstorm.AdmStormStartupActivity
@@ -20,7 +20,7 @@ import git4idea.util.GitUIUtil
  */
 class AdmBranchContextTracker(private var myProject: Project) : BranchChangeListener {
     companion object {
-        private val LOG = Logger.getInstance(AdmBranchContextTracker::class.java)
+        private val LOG = logger<AdmBranchContextTracker>()
     }
 
     private var myPreviousBranch = ""

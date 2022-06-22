@@ -3,7 +3,7 @@ package com.vk.admstorm.ssh
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -27,7 +27,7 @@ import java.util.function.Consumer
 
 class RemoteDataProducerWrapper : RemoteDataProducer() {
     companion object {
-        private val LOG = Logger.getInstance(RemoteDataProducerWrapper::class.java)
+        private val LOG = logger<RemoteDataProducerWrapper>()
         private val cls: Class<RemoteDataProducer> = RemoteDataProducer::class.java
     }
 

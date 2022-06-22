@@ -2,7 +2,7 @@ package com.vk.admstorm.ssh
 
 import com.intellij.execution.Output
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageConstants
 import com.intellij.openapi.ui.MessageDialogBuilder
@@ -10,7 +10,7 @@ import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.util.GitUIUtil.code
 
 object LostConnectionHandler {
-    private val LOG = Logger.getInstance(LostConnectionHandler::class.java)
+    private val LOG = logger<LostConnectionHandler>()
     private const val LOST_CONNECTION_MESSAGE = "Permission denied"
 
     fun handle(project: Project, output: Output, action: Runnable): Boolean {

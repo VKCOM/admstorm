@@ -4,7 +4,7 @@ import com.intellij.execution.Output
 import com.intellij.execution.OutputListener
 import com.intellij.execution.process.ColoredProcessHandler
 import com.intellij.execution.process.ProcessListener
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.vk.admstorm.env.Env
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * The main class for running commands both local and on the server.
  */
 object CommandRunner {
-    private val LOG = Logger.getInstance(CommandRunner::class.java)
+    private val LOG = logger<CommandRunner>()
 
     fun runLocally(
         project: Project,

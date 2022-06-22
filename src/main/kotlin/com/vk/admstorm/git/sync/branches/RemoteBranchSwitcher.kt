@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.branches
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsNotifier
 import com.vk.admstorm.CommandRunner
@@ -19,7 +19,7 @@ import git4idea.util.GitUIUtil.code
 
 class RemoteBranchSwitcher(private val myProject: Project, private val myOnGitConflictCanceled: Runnable? = null) {
     companion object {
-        private val LOG = Logger.getInstance(RemoteBranchSwitcher::class.java)
+        private val LOG = logger<RemoteBranchSwitcher>()
     }
 
     private fun command(branchName: String, force: Boolean): String {

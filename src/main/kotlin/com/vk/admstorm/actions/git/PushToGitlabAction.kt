@@ -4,7 +4,7 @@ import com.intellij.execution.Output
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -84,7 +84,7 @@ class PushToGitlabAction : AdmActionBase() {
     }
 
     companion object {
-        private val LOG = Logger.getInstance(PushToGitlabAction::class.java)
+        private val LOG = logger<PushToGitlabAction>()
 
         private fun doPushToGitlabTask(project: Project, options: PushOptions) {
             runBackground(project, "Push from ${ServerNameProvider.name()} to Gitlab") {

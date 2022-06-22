@@ -1,6 +1,6 @@
 package com.vk.admstorm.git.sync.conflicts
 
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.util.ui.JBUI
@@ -20,7 +20,7 @@ class ConflictDialog(
     private val myLowerCaseActionName = myActionName.lowercase()
 
     companion object {
-        private val LOG = Logger.getInstance(ConflictDialog::class.java)
+        private val LOG = logger<ConflictDialog>()
 
         private const val FORCE_EXIT_CODE = NEXT_USER_EXIT_CODE
 
