@@ -127,6 +127,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
         private val conf: RemotePhpUnitConfiguration,
         private val failed: List<PhpUnitTestPattern?>
     ) : MyRunProfile(conf) {
+
         private fun doCheckSync() {
             SyncChecker.getInstance(conf.project).doCheckSyncSilentlyTask({
                 onCanceledSync()
