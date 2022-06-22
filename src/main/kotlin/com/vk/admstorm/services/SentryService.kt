@@ -25,7 +25,8 @@ import java.nio.charset.StandardCharsets
 class SentryService(project: Project) {
     companion object {
         private val LOG = logger<SentryService>()
-        const val MAX_READ_LINES = 500
+        private const val MAX_FULL_LOG_READ_LINES = 2000
+        private const val MAX_LOGGING_READ_LINES = 500
 
         fun getInstance(project: Project) = project.service<SentryService>()
     }
@@ -107,14 +108,16 @@ class SentryService(project: Project) {
 
     private fun readIdeaLogFile(full: Boolean = false): ByteArray {
         val logFile = File(PathManager.getLogPath(), "idea.log")
-        if (full) {
-            return logFile.readBytes()
+        val countNeedLines = if (full) {
+            MAX_FULL_LOG_READ_LINES
+        } else {
+            MAX_LOGGING_READ_LINES
         }
 
         val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
 
         var lines = ""
-        for (i in 0 until MAX_READ_LINES) {
+        for (i in 0 until countNeedLines) {
             val line = reader.readLine() ?: break
             lines += "$line\n"
         }

@@ -11,9 +11,9 @@ class SendLogsToSentryAction : AdmActionBase() {
         val project = e.project ?: return
         val sentryId = SentryService.getInstance(project).sendIdeaLog()
 
-        AdmNotification("Thanks for feedback! Your unique error number: '$sentryId'")
+        AdmNotification("Thanks for feedback! Your unique feedback number: '$sentryId'")
             .withTitle("Logs successfully sent to Sentry")
-            .withActions(AdmNotification.Action("Copy error ID") { _, notification ->
+            .withActions(AdmNotification.Action("Copy feedback ID") { _, notification ->
                 MyUtils.copyToClipboard(sentryId.toString())
                 notification.expire()
             })
