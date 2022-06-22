@@ -25,8 +25,8 @@ import java.nio.charset.StandardCharsets
 class SentryService(project: Project) {
     companion object {
         private val LOG = logger<SentryService>()
-        const val MAX_FULL_LOG_READ_LINES = 2000
-        const val MAX_LOGGING_READ_LINES = 500
+        private const val MAX_FULL_LOG_READ_LINES = 2000
+        private const val MAX_LOGGING_READ_LINES = 500
 
         fun getInstance(project: Project) = project.service<SentryService>()
     }
