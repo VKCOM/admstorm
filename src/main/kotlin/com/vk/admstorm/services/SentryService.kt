@@ -16,10 +16,7 @@ import io.sentry.Attachment
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
-import io.sentry.protocol.OperatingSystem
-import io.sentry.protocol.SentryId
-import io.sentry.protocol.SentryRuntime
-import io.sentry.protocol.User
+import io.sentry.protocol.*
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -75,11 +72,11 @@ class SentryService(project: Project) {
         }
     }
 
-    fun sendError(t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, t)
+    fun sendError(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
 
-    fun sendWarn(t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, t)
+    fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    private fun sendEvent(level: SentryLevel, t: Throwable?): SentryId {
+    private fun sendEvent(level: SentryLevel, message: String, t: Throwable?): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
@@ -89,9 +86,16 @@ class SentryService(project: Project) {
             val sentryEvents = SentryEvent().also {
                 it.throwable = t
                 it.level = level
+
+                if (t == null) {
+                    it.message = Message().apply {
+                        this.message = message
+                    }
+                }
             }
 
             sentryId = Sentry.captureEvent(sentryEvents)
+            LOG.info("Sentry event sent: $sentryId")
         }
 
         return sentryId

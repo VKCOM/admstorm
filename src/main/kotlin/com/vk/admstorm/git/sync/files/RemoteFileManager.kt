@@ -75,7 +75,7 @@ class RemoteFileManager(private val myProject: Project) {
 
             val psiFile = PsiManager.getInstance(myProject).findFile(localFile)
             if (psiFile == null) {
-                LOG.info("Remove file: psi file for '$relativeFilePath' not found")
+                LOG.warn("Remove file: psi file for '$relativeFilePath' not found")
                 return@runWriteAction
             }
 

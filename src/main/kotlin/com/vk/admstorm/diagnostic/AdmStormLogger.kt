@@ -28,11 +28,11 @@ class AdmStormLogger(private val sentry: SentryService, delegateFactory: Factory
 
     override fun warn(message: String, t: Throwable?) {
         delegate.warn(message, t)
-        sentry.sendWarn(t)
+        sentry.sendWarn(message, t)
     }
 
     override fun error(message: String, t: Throwable?, vararg details: String?) {
         delegate.error(message, t, *details)
-        sentry.sendError(t)
+        sentry.sendError(message, t)
     }
 }

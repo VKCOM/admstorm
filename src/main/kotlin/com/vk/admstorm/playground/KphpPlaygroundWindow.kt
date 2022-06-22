@@ -209,7 +209,7 @@ require_once 'vendor/autoload.php';
 
         val tmpVirtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(tempFile.absolutePath)
         if (tmpVirtualFile == null) {
-            LOG.info("kphp_script_dummy.php not found")
+            LOG.warn("kphp_script_dummy.php not found")
             AdmErrorNotification("Try restarting PHPStorm and try again")
                 .withTitle("Problem with temp file for KPHP Playground")
                 .show()

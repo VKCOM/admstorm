@@ -113,13 +113,13 @@ object MyUtils {
 
     fun md5file(file: VirtualFile?): String {
         if (file == null) {
-            LOG.info("Passes null file to md5file()")
+            LOG.warn("Passes null file to md5file()")
             return ""
         }
 
         val ioFile = File(file.path)
         if (!ioFile.exists()) {
-            LOG.info("File ${file.path} doesn't exist")
+            LOG.warn("File ${file.path} doesn't exist")
             return ""
         }
 

@@ -35,7 +35,7 @@ object LostConnectionHandler {
 
             when (dialog.show(project)) {
                 MessageConstants.YES -> {
-                    LOG.info("Trying to auto- eset Yubikey in LostConnectionHandler")
+                    LOG.info("Trying to auto-reset Yubikey in LostConnectionHandler")
                     YubikeyHandler().autoReset(project) {
                         LOG.info("Trying to start again in autoReset ofFail in LostConnectionHandler")
                         action.run()
