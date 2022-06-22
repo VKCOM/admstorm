@@ -6,7 +6,7 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.findParentOfType
 import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
@@ -22,33 +22,43 @@ open class RemotePhpUnitConfigurationProducer :
     override fun getConfigurationFactory() =
         ConfigurationTypeUtil.findConfigurationType(RemotePhpUnitConfigurationType::class.java).configurationFactories[0]
 
-    private fun isApiTest(element: PsiElement): Boolean {
+    private fun isApiTest(element: PsiElement) = isSpecificTest(element, "/tests/api/")
+
+    private fun isPackageTest(element: PsiElement) = isSpecificTest(element, "/packages/")
+
+    private fun isSpecificTest(element: PsiElement, subPath: String): Boolean {
         val file = if (element is PsiDirectory)
             element.virtualFile
         else
             element.containingFile?.virtualFile
 
         if (file == null) return false
-        return file.path.normalizeSlashes().contains("tests/api")
+        return file.path.normalizeSlashes().contains(subPath)
     }
 
-    override fun isConfigurationFromContext(
-        configuration: RemotePhpUnitConfiguration,
-        context: ConfigurationContext
-    ): Boolean {
-        if (!configuration.project.pluginEnabled()) return false
+    override fun isConfigurationFromContext(conf: RemotePhpUnitConfiguration, context: ConfigurationContext): Boolean {
+        if (!conf.project.pluginEnabled()) return false
 
         val el = context.location?.psiElement ?: return false
         if (el is PsiDirectory) {
-            if (!el.virtualFile.path.contains("tests")) {
+            val rawPath = el.virtualFile.path
+            // if run tests for package folder
+            val nextTestsFolder = File(rawPath, "tests")
+            val path = if (nextTestsFolder.exists()) {
+                nextTestsFolder.path
+            } else {
+                rawPath
+            }
+
+            if (!path.contains("tests")) {
                 return false
             }
 
-            if (!configuration.isDirectoryScope) {
+            if (conf.scope != PhpUnitScope.Directory) {
                 return false
             }
 
-            return configuration.directory == el.virtualFile.path
+            return conf.directory == path
         }
 
         if (el is PhpFile) {
@@ -56,30 +66,28 @@ open class RemotePhpUnitConfigurationProducer :
                 return false
             }
 
-            if (configuration.isDirectoryScope || configuration.isMethodScope) {
+            if (conf.scope == PhpUnitScope.Directory || conf.scope == PhpUnitScope.Method) {
                 return false
             }
 
             val klass = PhpUnitUtil.findTestClass(el) ?: return false
 
-            return configuration.className == klass.fqn && configuration.filename == el.virtualFile.path
+            return conf.className == klass.fqn && conf.filename == el.virtualFile.path
         }
 
         if (el.parent is MethodImpl) {
-            if (!configuration.isMethodScope) {
+            if (conf.scope != PhpUnitScope.Method) {
                 return false
             }
 
             val method = el.parent as MethodImpl
-            val klass = PsiTreeUtil.findFirstParent(method) { parent ->
-                parent is PhpClass
-            } as PhpClass? ?: return false
+            val klass = method.findParentOfType<PhpClass>() ?: return false
 
             if (!PhpUnitUtil.isTestClass(klass)) {
                 return false
             }
 
-            return configuration.className == klass.fqn && configuration.method == method.name
+            return conf.className == klass.fqn && conf.methodName == method.name
         }
 
         if (el.parent !is PhpClass) {
@@ -93,43 +101,77 @@ open class RemotePhpUnitConfigurationProducer :
             return false
         }
 
-        return configuration.className == klass.fqn &&
-                configuration.filename == file.virtualFile.path &&
-                configuration.isClassScope
+        return conf.className == klass.fqn &&
+                conf.filename == file.virtualFile.path &&
+                conf.scope == PhpUnitScope.Class
     }
 
     override fun setupConfigurationFromContext(
-        configuration: RemotePhpUnitConfiguration,
+        conf: RemotePhpUnitConfiguration,
         context: ConfigurationContext,
-        sourceElement: Ref<PsiElement>
+        source: Ref<PsiElement>
     ): Boolean {
-        if (!configuration.project.pluginEnabled()) return false
+        val project = conf.project
+        if (!project.pluginEnabled()) return false
 
+        val projectDir = MyPathUtils.resolveProjectDir(project)
         val filepath = context.location?.virtualFile?.path ?: return false
-        val element = sourceElement.get()
+        val element = source.get() ?: return false
 
-        val isApi = isApiTest(element)
-        val suffixName = if (isApi) " API Test" else ""
-        configuration.isApiTest = isApi
+        if (isApiTest(element)) {
+            val suffix = " API Test"
 
-        val configPath = MyPathUtils.resolveProjectDir(configuration.project) + if (isApi)
-            "/tests/api/phpunit.xml"
-        else
-            "/phpunit.xml"
+            conf.isApiTest = true
+            conf.phpUnitExe = "$projectDir/tests/api/phpunit.xml"
+            conf.phpUnitConfig = "$projectDir/vendor/bin/phpunit"
 
-        configuration.configPath = configPath
+            return setupCommonTest(conf, element, filepath, suffix)
+        }
 
+        if (isPackageTest(element)) {
+            val packageRoot = PackagesTestUtils.rootFolder(filepath)
+            val packageName = PackagesTestUtils.packageName(project, packageRoot)
+            val suffix = " '$packageName' Package Test"
+
+            conf.isPackageTest = true
+            conf.phpUnitExe = (packageRoot ?: projectDir) + "/vendor/bin/phpunit"
+            conf.phpUnitConfig = (packageRoot ?: projectDir) + "/phpunit.xml"
+
+            return setupCommonTest(conf, element, filepath, suffix, replaceDirectoryName = true)
+        }
+
+        conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
+        conf.phpUnitConfig = "$projectDir/phpunit.xml"
+
+        return setupCommonTest(conf, element, filepath)
+    }
+
+    private fun setupCommonTest(
+        conf: RemotePhpUnitConfiguration,
+        element: PsiElement,
+        filepath: String,
+        suffixName: String = "",
+        replaceDirectoryName: Boolean = false,
+    ): Boolean {
         if (element is PsiDirectory) {
-            if (!element.virtualFile.path.contains("tests")) {
+            // if run tests for package folder
+            val nextTestsFolder = File(filepath, "tests")
+            val path = if (nextTestsFolder.exists()) {
+                nextTestsFolder.path
+            } else {
+                filepath
+            }
+
+            if (!path.contains("tests")) {
                 return false
             }
 
             val lastDir = File(filepath).name
-            val configName = "Remote '$lastDir'$suffixName"
+            val configName = if (replaceDirectoryName) "Remote$suffixName" else "Remote '$lastDir'$suffixName"
 
-            configuration.name = configName
-            configuration.isDirectoryScope = true
-            configuration.directory = filepath
+            conf.name = configName
+            conf.scope = PhpUnitScope.Directory
+            conf.directory = path
 
             return true
         }
@@ -144,11 +186,10 @@ open class RemotePhpUnitConfigurationProducer :
             val className = klass.name
             val configName = "Remote $className$suffixName"
 
-            configuration.name = configName
-            configuration.className = klass.fqn
-            configuration.filename = filepath
-            configuration.isDirectoryScope = false
-            configuration.isClassScope = true
+            conf.name = configName
+            conf.className = klass.fqn
+            conf.filename = filepath
+            conf.scope = PhpUnitScope.Class
 
             return true
         }
@@ -163,19 +204,17 @@ open class RemotePhpUnitConfigurationProducer :
             val className = klass.name
             val configName = "Remote $className$suffixName"
 
-            configuration.name = configName
-            configuration.className = klass.fqn
-            configuration.filename = filepath
-            configuration.isDirectoryScope = false
-            configuration.isClassScope = true
+            conf.name = configName
+            conf.className = klass.fqn
+            conf.filename = filepath
+            conf.scope = PhpUnitScope.Class
+
             return true
         }
 
         if (element.parent is MethodImpl) {
             val method = element.parent as MethodImpl
-            val klass = PsiTreeUtil.findFirstParent(method) { parent ->
-                parent is PhpClass
-            } as PhpClass? ?: return false
+            val klass = method.findParentOfType<PhpClass>() ?: return false
 
             if (!PhpUnitUtil.isTestClass(klass)) {
                 return false
@@ -184,12 +223,12 @@ open class RemotePhpUnitConfigurationProducer :
             val className = klass.name
             val configName = "Remote $className::${method.name}$suffixName"
 
-            configuration.name = configName
-            configuration.className = klass.fqn
-            configuration.method = method.name
-            configuration.filename = filepath
-            configuration.isDirectoryScope = false
-            configuration.isMethodScope = true
+            conf.name = configName
+            conf.className = klass.fqn
+            conf.methodName = method.name
+            conf.filename = filepath
+            conf.scope = PhpUnitScope.Method
+
             return true
         }
 

@@ -50,6 +50,10 @@ object MyPathUtils {
     }
 
     fun relativeLocalPath(project: Project, path: String): String {
+        if (path.isEmpty()) {
+            return ""
+        }
+
         val projectDir = resolveProjectDir(project) ?: return path.normalizeSlashes()
         return File(path).relativeTo(File(projectDir)).path.normalizeSlashes()
     }
