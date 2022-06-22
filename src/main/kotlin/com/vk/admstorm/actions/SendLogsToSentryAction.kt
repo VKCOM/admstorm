@@ -3,6 +3,7 @@ package com.vk.admstorm.actions
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.services.SentryService
+import com.vk.admstorm.ui.MyIcons
 import com.vk.admstorm.utils.MyUtils
 
 class SendLogsToSentryAction : AdmActionBase() {
@@ -17,5 +18,9 @@ class SendLogsToSentryAction : AdmActionBase() {
                 notification.expire()
             })
             .show(project)
+    }
+
+    override fun beforeUpdate(e: AnActionEvent) {
+        e.presentation.icon = MyIcons.sentry
     }
 }
