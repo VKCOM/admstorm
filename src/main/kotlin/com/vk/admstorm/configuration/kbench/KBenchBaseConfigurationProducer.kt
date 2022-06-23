@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
-import com.vk.admstorm.utils.KBenchUtils
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
 abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KBenchConfiguration>() {

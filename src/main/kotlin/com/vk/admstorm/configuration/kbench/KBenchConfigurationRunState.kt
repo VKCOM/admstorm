@@ -24,13 +24,12 @@ import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLanguage
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
+import com.vk.admstorm.configuration.kphp.KphpUtils
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
-import com.vk.admstorm.utils.KBenchUtils
-import com.vk.admstorm.utils.MyKphpUtils
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MySshUtils
 import java.awt.Dimension
@@ -50,7 +49,7 @@ class KBenchConfigurationRunState(
 
         val includeDirsFlag =
             if (conf.benchType == KBenchType.BenchPhp) ""
-            else "--include-dirs='${MyKphpUtils.includeDirsAsList(env.project).joinToString(",")}'"
+            else "--include-dirs='${KphpUtils.includeDirsAsList(env.project).joinToString(",")}'"
 
         val kphpBinary =
             if (conf.benchType.command == "bench-php") ""

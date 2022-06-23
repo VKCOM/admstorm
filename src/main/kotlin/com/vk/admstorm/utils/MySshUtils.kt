@@ -29,7 +29,7 @@ object MySshUtils {
     private val LOG = logger<MySshUtils>()
 
     /**
-     * getSftpClient gets the [SFTPClient] for the passed [sftpChannel] through reflection hack.
+     * @returns [SFTPClient] for the passed [sftpChannel] through reflection hack.
      */
     fun getSftpClient(sftpChannel: SftpChannel): SFTPClient? {
         try {
@@ -75,9 +75,10 @@ object MySshUtils {
         val builder = SshConnectionService.getInstance(project).sshExecBuilder("cd $workingDirectory && $command")
         if (builder == null) {
             LOG.warn(
-                "SshConnectionService.sshExecBuilder() == null, SshConnectionService.isConnected() == ${
-                    SshConnectionService.getInstance(project).isConnected()
-                }"
+                """
+                    SshConnectionService.sshExecBuilder() == null, 
+                    SshConnectionService.isConnected() == ${SshConnectionService.getInstance(project).isConnected()}
+                """.trimIndent()
             )
             return null
         }
@@ -147,7 +148,7 @@ object MySshUtils {
     }
 
     private fun execSync(builder: ExecBuilder): SshExecProcess {
-        // We start execution in a separate thread in separate cases
+        // Start execution in a separate thread in separate cases
         // when the call builder.execute() gives an exception.
         if (ApplicationManager.getApplication().isDispatchThread ||
             ApplicationManager.getApplication().isWriteThread ||
@@ -169,7 +170,7 @@ object MySshUtils {
                 throw IllegalStateException("processFuture.get is null")
             }
 
-            // was exception
+            // was an exception
             if (res.second != null) {
                 LOG.warn("Re-throw exception from 'builder.execute()'", res.second!!)
                 throw res.second!!

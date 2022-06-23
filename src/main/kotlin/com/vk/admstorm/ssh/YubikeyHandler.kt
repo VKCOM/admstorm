@@ -26,8 +26,7 @@ class YubikeyHandler {
         LOG.info("Try auto reset Yubikey")
         val resetScript = createScriptIfNotExists(project) ?: return false
 
-        val credentialAttributes =
-            CredentialAttributes(generateServiceName("admstorm", "yubikey-pass"))
+        val credentialAttributes = CredentialAttributes(generateServiceName("admstorm", "yubikey-pass"))
 
         val needAskPassword = AdmStormSettingsState.getInstance().askYubikeyPassword ||
                 PasswordSafe.instance.getPassword(credentialAttributes) == null

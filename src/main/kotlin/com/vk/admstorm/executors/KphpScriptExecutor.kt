@@ -7,13 +7,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.kphp.KphpConfiguration
+import com.vk.admstorm.configuration.kphp.KphpUtils
 import com.vk.admstorm.console.Console
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.tabs.ConsoleTab
 import com.vk.admstorm.executors.tabs.DiffTab
 import com.vk.admstorm.parsers.KphpScriptOutputParser
 import com.vk.admstorm.ui.MyIcons
-import com.vk.admstorm.utils.MyKphpUtils
 import com.vk.admstorm.utils.MySshUtils
 import java.util.function.BiConsumer
 import javax.swing.Icon
@@ -102,7 +102,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
     }
 
     private fun executeKphpScriptBinary() {
-        val scriptOutput = MyKphpUtils.scriptBinaryPath(project)
+        val scriptOutput = KphpUtils.scriptBinaryPath(project)
         val command = "$scriptOutput --Xkphp-options --disable-sql"
         val handler = MySshUtils.exec(project, command, "$scriptOutput\n") ?: return
 

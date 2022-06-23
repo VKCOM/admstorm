@@ -16,8 +16,8 @@ import com.jetbrains.php.lang.documentation.phpdoc.psi.PhpDocComment
 import com.jetbrains.php.lang.documentation.phpdoc.psi.PhpDocRef
 import com.jetbrains.php.lang.documentation.phpdoc.psi.tags.PhpDocTag
 import com.jetbrains.php.lang.lexer.PhpTokenTypes
-import com.vk.admstorm.AdmService
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class JiraReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
@@ -52,7 +52,7 @@ class JiraReferenceContributor : PsiReferenceContributor() {
 class JiraMultilineJsCommentReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(docComment: PsiElement, context: ProcessingContext): Array<PsiReference> {
         // In registerReferenceProviders we can't get a project, so we need to check it here.
-        if (!AdmService.getInstance(docComment.project).needBeEnabled() || docComment !is JSDocComment) {
+        if (!docComment.project.pluginEnabled() || docComment !is JSDocComment) {
             return PsiReference.EMPTY_ARRAY
         }
 
@@ -110,7 +110,7 @@ class JiraCommonReferenceProvider : PsiReferenceProvider() {
 
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
         // In registerReferenceProviders we can't get a project, so we need to check it here.
-        if (!AdmService.getInstance(element.project).needBeEnabled()) return PsiReference.EMPTY_ARRAY
+        if (!element.project.pluginEnabled()) return PsiReference.EMPTY_ARRAY
 
         val value = if (
             element is PhpDocRef ||

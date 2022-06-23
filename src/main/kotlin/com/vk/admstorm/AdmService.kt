@@ -29,6 +29,8 @@ class AdmService(private var myProject: Project) {
     /**
      * Checks if the current project is vkcom to determine
      * if plugin functionality needs to be enabled.
+     *
+     * Use [Project.pluginEnabled()].
      */
     fun needBeEnabled(): Boolean {
         if (myNeedBeEnabled != null) {

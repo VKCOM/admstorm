@@ -11,7 +11,6 @@ import com.intellij.psi.util.elementType
 import com.jetbrains.php.lang.lexer.PhpTokenTypes
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.impl.PhpClassImpl
-import com.vk.admstorm.utils.KBenchUtils
 import javax.swing.Icon
 
 class KBenchConfigurationLineMarkerProvider : RunLineMarkerContributor() {

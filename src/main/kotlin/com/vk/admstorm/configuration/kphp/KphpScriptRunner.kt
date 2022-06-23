@@ -5,7 +5,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.KphpScriptExecutor
-import com.vk.admstorm.utils.MyKphpUtils
 import com.vk.admstorm.utils.MyPathUtils
 
 class KphpScriptRunner(
@@ -17,8 +16,8 @@ class KphpScriptRunner(
             val wwwBasedScriptPath = "${Env.data.phpSourceFolder}/$scriptPath"
             val absoluteScriptPath = MyPathUtils.absoluteDataBasedRemotePath(project, wwwBasedScriptPath)
             val remoteRoot = MyPathUtils.resolveRemoteRoot(project)
-            val scriptOutput = MyKphpUtils.scriptBinaryPath(project)
-            val includeDirsFlag = MyKphpUtils.includeDirsAsFlags(project)
+            val scriptOutput = KphpUtils.scriptBinaryPath(project)
+            val includeDirsFlag = KphpUtils.includeDirsAsFlags(project)
 
             return Env.data.kphp2cpp +
                     " $includeDirsFlag" +
@@ -62,7 +61,7 @@ class KphpScriptRunner(
         executor.withKphpOutputHandler { output, console ->
             console.clear()
 
-            console.printlnSystem(MyKphpUtils.scriptBinaryPath(project))
+            console.printlnSystem(KphpUtils.scriptBinaryPath(project))
             console.println()
 
             console.println(output.stdout.ifEmpty { "<no output>" })
