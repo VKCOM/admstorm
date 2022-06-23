@@ -11,7 +11,6 @@ import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.openapi.wm.impl.status.TextPanel
 import com.intellij.ui.AnimatedIcon
@@ -41,20 +40,20 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
     override fun getWidgetState(file: VirtualFile?): WidgetState {
         return when (YarnWatchService.getInstance(project).state()) {
             YarnWatchService.State.RUNNING -> {
-                MyWidgetState("Yarn watch works", "yarn watch", MyIcons.yarnWatchWorking)
+                YarnWidgetState("Yarn watch works", "yarn watch", MyIcons.yarnWatchWorking)
             }
             YarnWatchService.State.STOPPED -> {
-                MyWidgetState("Yawn watch is stopped", "yarn watch", MyIcons.yarnWatchStopped)
+                YarnWidgetState("Yawn watch is stopped", "yarn watch", MyIcons.yarnWatchStopped)
             }
             YarnWatchService.State.WITH_ERRORS -> {
-                MyWidgetState("Yarn watch works, but found errors", "yarn watch", animatedErrorIcon)
+                YarnWidgetState("Yarn watch works, but found errors", "yarn watch", animatedErrorIcon)
             }
         }
     }
 
     override fun createPopup(context: DataContext): ListPopup? {
         val state = getWidgetState(null)
-        if (state !is MyWidgetState || editor == null) {
+        if (state !is YarnWidgetState || editor == null) {
             return null
         }
 
@@ -115,15 +114,11 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
         }
     }
 
-    override fun createInstance(project: Project): StatusBarWidget {
-        return YarnWatchStatusBarWidget(project)
-    }
+    override fun createInstance(project: Project) = YarnWatchStatusBarWidget(project)
 
-    override fun ID(): String {
-        return WIDGET_ID
-    }
+    override fun ID() = WIDGET_ID
 
-    private class MyWidgetState(toolTip: String, text: String, icon: Icon) : WidgetState(toolTip, text, true) {
+    private class YarnWidgetState(toolTip: String, text: String, icon: Icon) : WidgetState(toolTip, text, true) {
         init {
             this.icon = icon
         }
