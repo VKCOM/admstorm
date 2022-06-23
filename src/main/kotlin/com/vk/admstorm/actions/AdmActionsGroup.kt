@@ -7,8 +7,7 @@ import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class AdmActionsGroup : DefaultActionGroup() {
     override fun update(event: AnActionEvent) {
-        val serverName = ServerNameProvider.uppercase()
-        event.presentation.text = serverName.replaceFirstChar { it.uppercaseChar() }
+        event.presentation.text = ServerNameProvider.uppercase()
         event.presentation.isEnabledAndVisible =
             event.project != null && event.project!!.pluginEnabled()
     }
