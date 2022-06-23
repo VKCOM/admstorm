@@ -122,8 +122,8 @@ open class RemotePhpUnitConfigurationProducer :
             val suffix = " API Test"
 
             conf.isApiTest = true
-            conf.phpUnitExe = "$projectDir/tests/api/phpunit.xml"
-            conf.phpUnitConfig = "$projectDir/vendor/bin/phpunit"
+            conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
+            conf.phpUnitConfig = "$projectDir/tests/api/phpunit.xml"
 
             return setupCommonTest(conf, element, filepath, suffix)
         }
