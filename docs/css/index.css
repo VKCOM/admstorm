@@ -18,6 +18,23 @@ a:hover {
   color: #167DFF;
 }
 
+.blockquote {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  grid-column-gap: 15px;
+  box-sizing: border-box;
+  margin: 20px 0 30px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: #def2e0;
+  color: rgba(0, 0, 0, 0.54);
+}
+.blockquote .prompt__icon {
+  width: 24px;
+  height: 24px;
+  fill: #4dbb5f;
+}
+
 header {
   min-height: 56px;
   border-bottom: 1px solid #cccbcb;
@@ -422,6 +439,10 @@ footer .footer__end-line .footer__code img {
   .chapter .chapter__text {
     margin-bottom: 0;
   }
+}
+.chapter .chapter__filename {
+  font-family: monospace;
+  font-weight: 600;
 }
 .chapter .chapter__code-block {
   background-color: #f5f5f5;
