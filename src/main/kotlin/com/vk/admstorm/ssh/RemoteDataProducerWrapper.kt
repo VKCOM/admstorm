@@ -8,7 +8,6 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.ui.popup.ListPopupStep
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import com.intellij.openapi.wm.WindowManager
@@ -28,16 +27,10 @@ import java.util.function.Consumer
 class RemoteDataProducerWrapper : RemoteDataProducer() {
     companion object {
         private val LOG = logger<RemoteDataProducerWrapper>()
-        private val cls: Class<RemoteDataProducer> = RemoteDataProducer::class.java
+        private val cls = RemoteDataProducer::class.java
     }
 
     private var project: Project? = null
-
-    override fun withProject(project: Project): RemoteDataProducerWrapper {
-        this.project = project
-        super.withProject(project)
-        return this
-    }
 
     private lateinit var getProjectForServersSearchMethod: Method
     private lateinit var getEmptyConnectorsMessageMethod: Method
@@ -53,24 +46,30 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
         }
     }
 
+    override fun withProject(project: Project): RemoteDataProducerWrapper {
+        this.project = project
+        super.withProject(project)
+        return this
+    }
+
     private fun getEmptyConnectorsMessageProxy(): String? = getEmptyConnectorsMessageMethod.invoke(this) as String?
 
     private fun getSuperProject(): Project? {
-        val myProject = cls.getDeclaredField("myProject")
-        myProject.isAccessible = true
-        return myProject.get(this) as Project?
+        val project = cls.getDeclaredField("myProject")
+        project.isAccessible = true
+        return project.get(this) as Project?
     }
 
     private fun getSuperComponentOwner(): Component? {
-        val myComponentOwner = cls.getDeclaredField("myComponentOwner")
-        myComponentOwner.isAccessible = true
-        return myComponentOwner.get(this) as Component?
+        val componentOwner = cls.getDeclaredField("myComponentOwner")
+        componentOwner.isAccessible = true
+        return componentOwner.get(this) as Component?
     }
 
     private fun getSuperActionEvent(): AnActionEvent? {
-        val myActionEvent = cls.getDeclaredField("myActionEvent")
-        myActionEvent.isAccessible = true
-        return myActionEvent.get(this) as AnActionEvent?
+        val actionEvent = cls.getDeclaredField("myActionEvent")
+        actionEvent.isAccessible = true
+        return actionEvent.get(this) as AnActionEvent?
     }
 
     fun produceRemoteDataWithFirstConnector(
@@ -88,7 +87,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
     }
 
     /**
-     * [SshConfigConnector]
+     * See [SshConfigConnector].
      */
     fun produceRemoteDataWithConnector(
         id: String? = null,
@@ -128,7 +127,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                 (NO_HOST_TO_CONNECT_SUPPLIER.get() as String)
             )
         } else if (connectors.size == 1 && connectors[0] === RemoteConnectionSettingsForm.NONE_CONNECTOR) {
-            this.openSSHConfigurationsSettings()
+            openSshConfigurationsSettings()
         } else {
             connectors.sortWith { c1: RemoteConnector, c2: RemoteConnector ->
                 when {
@@ -146,7 +145,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
         connectors: List<RemoteConnector>,
         consumer: Consumer<in RemoteConnector>
     ) {
-        val sdkHomesStep: ListPopupStep<*> = object : BaseListPopupStep<RemoteConnector>(
+        val hostsStep = object : BaseListPopupStep<RemoteConnector>(
             RemoteSdkBundle.message("popup.title.select.host.to.connect"),
             connectors
         ) {
@@ -164,37 +163,41 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                         consumer.accept(selected)
                     }
                 } else {
-                    this@RemoteDataProducerWrapper.openSSHConfigurationsSettings()
+                    this@RemoteDataProducerWrapper.openSshConfigurationsSettings()
                 }
                 return FINAL_CHOICE
             }
         }
 
-        val popup = JBPopupFactory.getInstance().createListPopup(sdkHomesStep)
-        val myComponentOwner = getSuperComponentOwner()
-        val myProject = getSuperProject()
-        val myActionEvent = getSuperActionEvent()
+        val popup = JBPopupFactory.getInstance().createListPopup(hostsStep)
+        val componentOwner = getSuperComponentOwner()
+        val project = getSuperProject()
+        val actionEvent = getSuperActionEvent()
 
-        if (myComponentOwner != null) {
-            popup.showInCenterOf(myComponentOwner)
-        } else if (myProject != null) {
-            if (myActionEvent != null && myActionEvent.inputEvent is KeyEvent) {
-                popup.showInFocusCenter()
-            } else {
-                popup.showInScreenCoordinates(
-                    WindowManager.getInstance().getIdeFrame(myProject)!!.component,
-                    MouseInfo.getPointerInfo().location
-                )
-            }
-        } else {
-            popup.showInFocusCenter()
+        if (componentOwner != null) {
+            popup.showInCenterOf(componentOwner)
+            return
         }
+
+        if (project == null) {
+            popup.showInFocusCenter()
+            return
+        }
+
+        if (actionEvent != null && actionEvent.inputEvent is KeyEvent) {
+            popup.showInFocusCenter()
+            return
+        }
+
+        popup.showInScreenCoordinates(
+            WindowManager.getInstance().getIdeFrame(project)!!.component,
+            MouseInfo.getPointerInfo().location
+        )
     }
 
-    private fun openSSHConfigurationsSettings() {
+    private fun openSshConfigurationsSettings() {
         invokeLater {
-            ShowSettingsUtil.getInstance()
-                .showSettingsDialog(this@RemoteDataProducerWrapper.project, "SSH Configurations")
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, "SSH Configurations")
         }
     }
 }
