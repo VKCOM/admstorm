@@ -12,7 +12,6 @@ import com.intellij.ui.layout.and
 import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLanguage
 import com.jetbrains.php.lang.psi.elements.PhpClass
-import com.vk.admstorm.utils.KBenchUtils
 import com.vk.admstorm.utils.MyUiUtils.bindText
 import com.vk.admstorm.utils.MyUiUtils.selectedValueMatches
 import javax.swing.JComponent

@@ -1,4 +1,4 @@
-package com.vk.admstorm.utils
+package com.vk.admstorm.configuration.php
 
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
@@ -11,9 +11,13 @@ import com.jetbrains.php.debug.listener.PhpDebugExternalConnectionsAccepter
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
+import com.vk.admstorm.utils.MySshUtils
 
 object PhpDebugUtils {
     private val LOG = logger<PhpDebugUtils>()
+
+    private const val MAX_OPEN_ATTEMPTS = 10
+    private var countOpeningAttempts = 0
 
     fun enablePhpDebug(project: Project) {
         val accepter = PhpDebugExternalConnectionsAccepter.getInstance(project)
@@ -21,9 +25,6 @@ object PhpDebugUtils {
             PhpDebugExternalConnectionsAccepter.getInstance(project).doSwitch()
         }
     }
-
-    private const val MAX_OPEN_ATTEMPTS = 10
-    private var countOpeningAttempts = 0
 
     fun checkSshTunnel(project: Project, onStart: Runnable): Boolean {
         if (countOpeningAttempts > MAX_OPEN_ATTEMPTS) {

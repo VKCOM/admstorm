@@ -10,9 +10,7 @@ import java.io.File
 object MyPathUtils {
     private var remoteRoot = ""
 
-    fun resolveProjectDir(project: Project): String? {
-        return project.guessProjectDir()?.path ?: return null
-    }
+    fun Project.resolveProjectDir() = guessProjectDir()?.path
 
     fun foldUserHome(path: String): String {
         val userHome = System.getProperty("user.home")
@@ -54,13 +52,13 @@ object MyPathUtils {
             return ""
         }
 
-        val projectDir = resolveProjectDir(project) ?: return path.normalizeSlashes()
+        val projectDir = project.resolveProjectDir() ?: return path.normalizeSlashes()
         return File(path).relativeTo(File(projectDir)).path.normalizeSlashes()
     }
 
     fun absoluteLocalPath(project: Project, path: String): String {
         if (File(path).isAbsolute) return path
-        val projectDir = resolveProjectDir(project) ?: return path
+        val projectDir = project.resolveProjectDir() ?: return path
         return "$projectDir/$path"
     }
 
@@ -100,7 +98,7 @@ object MyPathUtils {
         }
 
         val relativeRemotePathFile = remoteFile.relativeTo(remoteRootFile)
-        val projectDir = resolveProjectDir(project) ?: return null
+        val projectDir = project.resolveProjectDir() ?: return null
 
         return "${projectDir.normalizeSlashes()}/$relativeRemotePathFile"
     }

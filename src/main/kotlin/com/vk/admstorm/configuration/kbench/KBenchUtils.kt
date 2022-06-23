@@ -1,4 +1,4 @@
-package com.vk.admstorm.utils
+package com.vk.admstorm.configuration.kbench
 
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder

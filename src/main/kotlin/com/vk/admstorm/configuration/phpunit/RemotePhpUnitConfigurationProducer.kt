@@ -11,7 +11,7 @@ import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
 import com.jetbrains.php.phpunit.PhpUnitUtil
-import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyPathUtils.resolveProjectDir
 import com.vk.admstorm.utils.extensions.normalizeSlashes
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.io.File
@@ -114,7 +114,7 @@ open class RemotePhpUnitConfigurationProducer :
         val project = conf.project
         if (!project.pluginEnabled()) return false
 
-        val projectDir = MyPathUtils.resolveProjectDir(project)
+        val projectDir = project.resolveProjectDir()
         val filepath = context.location?.virtualFile?.path ?: return false
         val element = source.get() ?: return false
 

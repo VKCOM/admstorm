@@ -23,7 +23,3 @@ data class TransferFileModel(
     override fun toString() = "Type: ${type.name}, Source: $source, Target: " +
             "$target, Size: $size, Transferred: $transferred, Result: $result, Exception: $exception"
 }
-
-interface OnTransferResult {
-    fun onResult(result: TransferFileModel)
-}

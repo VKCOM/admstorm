@@ -1,12 +1,13 @@
-package com.vk.admstorm.utils
+package com.vk.admstorm.configuration.kphp
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.utils.MyPathUtils
 import java.util.stream.Collectors
 
-object MyKphpUtils {
-    private val LOG = logger<MyKphpUtils>()
+object KphpUtils {
+    private val LOG = logger<KphpUtils>()
     private var defaultIncludeDirsFlag = ""
 
     fun includeDirsAsFlags(project: Project): String {

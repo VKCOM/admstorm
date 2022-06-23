@@ -4,7 +4,6 @@ import com.intellij.codeInsight.daemon.ImplicitUsageProvider
 import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.PhpClassMember
-import com.vk.admstorm.utils.KBenchUtils
 
 class KBenchImplicitTypeProvider : ImplicitUsageProvider {
     override fun isImplicitUsage(element: PsiElement): Boolean {
