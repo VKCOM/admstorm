@@ -127,7 +127,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                 (NO_HOST_TO_CONNECT_SUPPLIER.get() as String)
             )
         } else if (connectors.size == 1 && connectors[0] === RemoteConnectionSettingsForm.NONE_CONNECTOR) {
-            this.openSSHConfigurationsSettings()
+            openSshConfigurationsSettings()
         } else {
             connectors.sortWith { c1: RemoteConnector, c2: RemoteConnector ->
                 when {
@@ -163,7 +163,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                         consumer.accept(selected)
                     }
                 } else {
-                    this@RemoteDataProducerWrapper.openSSHConfigurationsSettings()
+                    this@RemoteDataProducerWrapper.openSshConfigurationsSettings()
                 }
                 return FINAL_CHOICE
             }
@@ -195,10 +195,9 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
         )
     }
 
-    private fun openSSHConfigurationsSettings() {
+    private fun openSshConfigurationsSettings() {
         invokeLater {
-            ShowSettingsUtil.getInstance()
-                .showSettingsDialog(this@RemoteDataProducerWrapper.project, "SSH Configurations")
+            ShowSettingsUtil.getInstance().showSettingsDialog(project, "SSH Configurations")
         }
     }
 }
