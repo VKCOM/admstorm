@@ -12,7 +12,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class YarnWatchCommandExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "yarn watch", layoutName = "Yarn watch", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "watch", layoutName = "Yarn watch", command = command), project) {
 
     companion object {
         private val LOG = logger<YarnWatchCommandExecutor>()

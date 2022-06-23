@@ -15,7 +15,7 @@ import javax.swing.Icon
 
 class PushToRemoteExecutor(project: Project, command: String) :
     BaseRunnableExecutor(
-        Config(name = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
+        Config(tabName = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
         project
     ) {
 

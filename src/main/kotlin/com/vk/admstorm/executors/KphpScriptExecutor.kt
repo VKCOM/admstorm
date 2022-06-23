@@ -19,7 +19,7 @@ import java.util.function.BiConsumer
 import javax.swing.Icon
 
 class KphpScriptExecutor(project: Project, command: String, private val myRunConfiguration: KphpConfiguration) :
-    BaseRunnableExecutor(Config(name = "KPHP Script", command = command, workingDir = "~/"), project) {
+    BaseRunnableExecutor(Config(tabName = "KPHP Script", command = command, workingDir = "~/"), project) {
 
     private val myKphpOutputTab = ConsoleTab(project, "KPHP Output")
     private val myPhpOutputTab = ConsoleTab(project, "PHP Output")

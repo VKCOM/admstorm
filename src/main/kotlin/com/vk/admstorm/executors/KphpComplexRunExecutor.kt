@@ -6,7 +6,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class KphpComplexRunExecutor(project: Project, type: KphpRunType, command: String) :
-    BaseRunnableExecutor(Config(name = "KPHP ${type.command}", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "KPHP ${type.command}", command = command), project) {
 
     override fun onReady() {}
 

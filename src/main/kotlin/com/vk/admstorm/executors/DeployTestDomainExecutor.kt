@@ -6,7 +6,7 @@ import javax.swing.Icon
 
 class DeployTestDomainExecutor(project: Project, command: String) :
     BaseRunnableExecutor(
-        Config(name = "Deploy test domain", layoutName = "Deploy test domain", command = command),
+        Config(tabName = "Deploy test domain", layoutName = "Deploy test domain", command = command),
         project
     ) {
 

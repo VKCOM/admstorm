@@ -9,7 +9,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class PhpLinterExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "PHP Linter", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "PHP Linter", command = command), project) {
 
     private val myProblemsTab = ProblemsTab()
 

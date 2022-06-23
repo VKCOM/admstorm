@@ -40,15 +40,15 @@ abstract class BaseRunnableExecutor(
     protected var myConfig: Config,
     protected var myProject: Project,
     private val needActivateToolWindow: Boolean = true,
-) : ActionToolbarPanel(myProject, myConfig.name) {
+) : ActionToolbarPanel(myProject, myConfig.tabName) {
 
     companion object {
         private val LOG = logger<BaseRunnableExecutor>()
     }
 
     data class Config(
-        var name: String = "Tool Tab",
-        var layoutName: String = name,
+        var tabName: String = "Tool Tab",
+        var layoutName: String = tabName,
         var command: String = "",
         var workingDir: String? = null
     )
@@ -60,7 +60,7 @@ abstract class BaseRunnableExecutor(
     private val myTabs = mutableListOf<Tab>()
 
     private val myRestartAction = object : ActionToolbarFastEnableAction(
-        "Rerun " + myConfig.name, "",
+        "Rerun " + myConfig.tabName, "",
         AllIcons.Actions.Restart,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
@@ -82,7 +82,7 @@ abstract class BaseRunnableExecutor(
     }
 
     private val myStopAction = object : ActionToolbarFastEnableAction(
-        "Stop " + myConfig.name, "",
+        "Stop " + myConfig.tabName, "",
         AllIcons.Actions.Suspend
     ) {
         override fun actionPerformed(e: AnActionEvent) {
@@ -210,7 +210,7 @@ abstract class BaseRunnableExecutor(
 
         val runProfile = object : RunProfile {
             override fun getState(e: Executor, ee: ExecutionEnvironment) = null
-            override fun getName(): String = myConfig.name
+            override fun getName(): String = myConfig.tabName
             override fun getIcon(): Icon = icon()
         }
 

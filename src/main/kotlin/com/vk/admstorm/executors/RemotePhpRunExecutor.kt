@@ -5,7 +5,7 @@ import icons.PhpIcons
 import javax.swing.Icon
 
 class RemotePhpRunExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "Remote PHP", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "Remote PHP", command = command), project) {
 
     override fun onReady() {}
 
