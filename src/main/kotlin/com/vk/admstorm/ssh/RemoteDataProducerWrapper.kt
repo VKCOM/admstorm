@@ -179,20 +179,20 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
             return
         }
 
-        if (project != null) {
-            if (actionEvent != null && actionEvent.inputEvent is KeyEvent) {
-                popup.showInFocusCenter()
-            } else {
-                popup.showInScreenCoordinates(
-                    WindowManager.getInstance().getIdeFrame(project)!!.component,
-                    MouseInfo.getPointerInfo().location
-                )
-            }
-
+        if (project == null) {
+            popup.showInFocusCenter()
             return
         }
 
-        popup.showInFocusCenter()
+        if (actionEvent != null && actionEvent.inputEvent is KeyEvent) {
+            popup.showInFocusCenter()
+            return
+        }
+
+        popup.showInScreenCoordinates(
+            WindowManager.getInstance().getIdeFrame(project)!!.component,
+            MouseInfo.getPointerInfo().location
+        )
     }
 
     private fun openSSHConfigurationsSettings() {
