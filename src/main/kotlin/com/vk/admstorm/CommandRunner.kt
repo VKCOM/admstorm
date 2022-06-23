@@ -92,6 +92,10 @@ object CommandRunner {
         val elapsedTime = System.currentTimeMillis() - startTime
         LOG.info("Elapsed time for local command: ${elapsedTime}ms")
 
+        if (result.exitCode != 0) {
+            LOG.warn("Local command execution failed (command: '${commands.joinToString(" ")}'), exit code: ${result.exitCode}, output: ${result.stdout}, error: ${result.stderr}")
+        }
+
         return result
     }
 
@@ -147,6 +151,10 @@ object CommandRunner {
 
         val elapsedTime = System.currentTimeMillis() - startTime
         LOG.info("Elapsed time for synchronous SSH command: ${elapsedTime}ms")
+
+        if (result.exitCode != 0) {
+            LOG.warn("Remote command execution failed (command: '$command'), exit code: ${result.exitCode}, output: ${result.stdout}, error: ${result.stderr}")
+        }
 
         return result
     }

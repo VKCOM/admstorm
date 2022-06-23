@@ -153,7 +153,11 @@ object GitUtils {
      * Returns the latest commit on the development server.
      */
     fun localLastCommit(project: Project): Commit {
-        val hash = CommandRunner.runLocally(project, lastCommitCommand).stdout.trim()
+        val output = CommandRunner.runLocally(project, lastCommitCommand)
+        val hash = output.stdout.trim()
+        if (hash.isEmpty()) {
+            LOG.warn("Empty local commit hash, command output stderr: ${output.stderr}")
+        }
 
         val command = listOf(
             "git", "log", "-1",
