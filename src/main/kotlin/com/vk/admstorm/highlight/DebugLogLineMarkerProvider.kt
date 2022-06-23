@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
+import com.jetbrains.php.lang.lexer.PhpTokenTypes
 import com.jetbrains.php.lang.parser.PhpElementTypes
 import com.jetbrains.php.lang.psi.elements.ConcatenationExpression
 import com.jetbrains.php.lang.psi.elements.Function
@@ -20,12 +21,14 @@ import com.vk.admstorm.utils.MyUtils
 
 class DebugLogLineMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun collectNavigationMarkers(
-        call: PsiElement,
+        ident: PsiElement,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>?>
     ) {
-        if (call !is FunctionReference) {
+        if (ident.elementType != PhpTokenTypes.IDENTIFIER) {
             return
         }
+
+        val call = ident.parent as? FunctionReference ?: return
 
         val func = call.resolve() as? Function ?: return
         val fqn = func.fqn.replace(".", "::")
