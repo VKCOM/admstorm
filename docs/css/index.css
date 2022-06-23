@@ -444,6 +444,10 @@ footer .footer__end-line .footer__code img {
   font-family: monospace;
   font-weight: 600;
 }
+.chapter .chapter__menupath {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-weight: 600;
+}
 .chapter .chapter__code-block {
   background-color: #f5f5f5;
   padding: 24px;
