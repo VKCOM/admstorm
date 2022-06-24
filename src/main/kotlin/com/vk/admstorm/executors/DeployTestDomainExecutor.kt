@@ -5,14 +5,11 @@ import com.intellij.openapi.project.Project
 import javax.swing.Icon
 
 class DeployTestDomainExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(
-        Config(name = "Deploy test domain", layoutName = "Deploy test domain", command = command),
-        project
-    ) {
+    BaseRunnableExecutor(Config(tabName = "Deploy test domain", layoutName = "Deploy test domain", command), project) {
 
     private var onReadyCallback = {}
 
-    override fun onReady() {
+    override fun onFinish() {
         onReadyCallback()
     }
 

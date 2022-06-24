@@ -15,7 +15,7 @@ import javax.swing.Icon
 
 class PushToRemoteExecutor(project: Project, command: String) :
     BaseRunnableExecutor(
-        Config(name = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
+        Config(tabName = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
         project
     ) {
 
@@ -25,34 +25,34 @@ class PushToRemoteExecutor(project: Project, command: String) :
         myOutputHandler = handler
     }
 
-    override fun onReady() {
-        val output = myOutputListener.output
+    override fun onFinish() {
+        val output = outputListener.output
 
         invokeLater {
-            myOutputHandler.accept(output, Console(myProject))
+            myOutputHandler.accept(output, Console(project))
         }
 
         invokeLater {
             if (output.exitCode != 0) {
                 val problems = when {
                     output.stderr.contains("<critical>") -> {
-                        PhpLinterWarningsParser.parse(myProject, output.stderr)
+                        PhpLinterWarningsParser.parse(project, output.stderr)
                     }
                     output.stdout.contains("Compilation error") -> {
-                        KphpErrorsParser.parse(myProject, output.stdout)
+                        KphpErrorsParser.parse(project, output.stdout)
                     }
                     else -> emptyList()
                 }
 
                 if (problems.isNotEmpty()) {
                     val problemsTab = ProblemsTab()
-                    problemsTab.addAsContentTo(myLayout)
+                    problemsTab.addAsContentTo(layout)
 
                     invokeLater {
-                        myLayout.selectAndFocus(problemsTab.content, true, true)
+                        layout.selectAndFocus(problemsTab.content, true, true)
                     }
 
-                    val panel = ProblemsPanel(myProject, problems)
+                    val panel = ProblemsPanel(project, problems)
                     problemsTab.panel.addToCenter(panel)
                 }
             }

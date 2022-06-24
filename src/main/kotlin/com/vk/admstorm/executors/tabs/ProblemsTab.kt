@@ -13,4 +13,8 @@ class ProblemsTab(name: String = "Problems") : BaseTab(name) {
     override fun componentToFocus() = panel
 
     override fun icon() = MyUiUtils.createLayeredIcon(AllIcons.Toolwindows.ToolWindowProblemsEmpty, verticalShift = 1)
+
+    override fun clear() {
+        panel = JBUI.Panels.simplePanel()
+    }
 }

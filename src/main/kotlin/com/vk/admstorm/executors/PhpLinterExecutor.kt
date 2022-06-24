@@ -9,7 +9,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class PhpLinterExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "PHP Linter", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "PHP Linter", command = command), project) {
 
     private val myProblemsTab = ProblemsTab()
 
@@ -17,14 +17,14 @@ class PhpLinterExecutor(project: Project, command: String) :
         withTab(myProblemsTab)
     }
 
-    override fun onReady() {
+    override fun onFinish() {
         invokeLater {
-            myLayout.selectAndFocus(myProblemsTab.content, true, true)
+            layout.selectAndFocus(myProblemsTab.content, true, true)
         }
 
         invokeLater {
-            val problems = PhpLinterWarningsParser.parse(myProject, myOutputListener.output.stderr)
-            val panel = ProblemsPanel(myProject, problems)
+            val problems = PhpLinterWarningsParser.parse(project, outputListener.output.stderr)
+            val panel = ProblemsPanel(project, problems)
             myProblemsTab.panel.addToCenter(panel)
         }
     }

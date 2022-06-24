@@ -19,7 +19,7 @@ import java.util.function.BiConsumer
 import javax.swing.Icon
 
 class KphpScriptExecutor(project: Project, command: String, private val myRunConfiguration: KphpConfiguration) :
-    BaseRunnableExecutor(Config(name = "KPHP Script", command = command, workingDir = "~/"), project) {
+    BaseRunnableExecutor(Config(tabName = "KPHP Script", command = command, workingDir = "~/"), project) {
 
     private val myKphpOutputTab = ConsoleTab(project, "KPHP Output")
     private val myPhpOutputTab = ConsoleTab(project, "PHP Output")
@@ -45,8 +45,8 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
         myKphpOutputHandler = handler
     }
 
-    override fun onReady() {
-        val output = myOutputListener.output
+    override fun onFinish() {
+        val output = outputListener.output
 
         myKphpOutputTab.console.clear()
 
@@ -57,7 +57,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
                 myKphpOutputTab.console.view().scrollTo(0)
             }
 
-            myLayout.selectAndFocus(myKphpOutputTab.content, true, true)
+            layout.selectAndFocus(myKphpOutputTab.content, true, true)
         }
 
         ApplicationManager.getApplication().executeOnPooledThread {

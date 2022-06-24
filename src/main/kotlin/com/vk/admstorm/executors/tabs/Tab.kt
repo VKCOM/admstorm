@@ -13,4 +13,9 @@ interface Tab {
      * @param layout UI to add the tab to
      */
     fun addAsContentTo(layout: RunnerLayoutUi)
+
+    /**
+     * Clears the tab's content.
+     */
+    fun clear()
 }

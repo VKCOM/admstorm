@@ -10,7 +10,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
-    BaseRunnableExecutor(Config(name = "KPHP ${type.command}", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "KPHP ${type.command}", command = command), project) {
 
     private val myCompilationErrorsTab = ProblemsTab("Compilation errors")
 
@@ -18,14 +18,14 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
         withTab(myCompilationErrorsTab)
     }
 
-    override fun onReady() {
+    override fun onFinish() {
         invokeLater {
-            myLayout.selectAndFocus(myCompilationErrorsTab.content, true, true)
+            layout.selectAndFocus(myCompilationErrorsTab.content, true, true)
         }
 
         invokeLater {
-            val problems = KphpErrorsParser.parse(myProject, myOutputListener.output.stdout)
-            val panel = ProblemsPanel(myProject, problems)
+            val problems = KphpErrorsParser.parse(project, outputListener.output.stdout)
+            val panel = ProblemsPanel(project, problems)
             myCompilationErrorsTab.panel.addToCenter(panel)
         }
     }

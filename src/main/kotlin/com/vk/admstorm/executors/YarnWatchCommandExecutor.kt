@@ -12,7 +12,7 @@ import com.vk.admstorm.ui.MyIcons
 import javax.swing.Icon
 
 class YarnWatchCommandExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "yarn watch", layoutName = "Yarn watch", command = command), project) {
+    BaseRunnableExecutor(Config(tabName = "yarn watch", layoutName = "Yarn watch", command = command), project) {
 
     companion object {
         private val LOG = logger<YarnWatchCommandExecutor>()
@@ -21,7 +21,7 @@ class YarnWatchCommandExecutor(project: Project, command: String) :
     private val service
         get() = YarnWatchService.getInstance(project)
 
-    override fun onReady() {
+    override fun onFinish() {
         service.setWorking(false)
     }
 
@@ -75,7 +75,7 @@ class YarnWatchCommandExecutor(project: Project, command: String) :
     override fun icon(): Icon = MyIcons.yarn
 
     override fun executorInstance() = YarnWatchExecutor.getRunExecutorInstance()
-    override fun executorToolWindowId() = YarnWatchExecutor.TOOL_WINDOW_ID
+    override fun toolWindowId() = YarnWatchExecutor.TOOL_WINDOW_ID
     override fun runnerTitle() = "Yarn Watch"
     override fun runnerId() = "YarnWatch"
 }

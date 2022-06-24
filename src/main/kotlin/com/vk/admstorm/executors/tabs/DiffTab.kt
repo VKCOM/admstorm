@@ -13,4 +13,6 @@ class DiffTab(project: Project, name: String) : BaseTab(name) {
     override fun componentToFocus() = viewer.component
 
     override fun afterAdd() = viewer.rediff()
+
+    override fun clear() {}
 }
