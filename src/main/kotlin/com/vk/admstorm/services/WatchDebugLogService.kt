@@ -6,6 +6,7 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.WatchDebugLogCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
 import java.beans.PropertyChangeSupport
@@ -22,7 +23,7 @@ class WatchDebugLogService(private val project: Project) : Disposable {
         STOPPED,
     }
 
-    private val executor = WatchDebugLogCommandExecutor(project, "yarn watch") // TODO
+    private val executor = lazy { WatchDebugLogCommandExecutor(project, "${Env.data.vkCommand} debug") }
     val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
@@ -41,20 +42,20 @@ class WatchDebugLogService(private val project: Project) : Disposable {
         }
 
         invokeLater {
-            executor.run()
+            executor.value.run()
             setWorking(true)
         }
     }
 
     fun stop() {
         if (isRunning()) {
-            executor.stop()
+            executor.value.stop()
         }
         setWorking(false)
     }
 
     fun showConsole() {
-        executor.showToolWindow()
+        executor.value.showToolWindow()
     }
 
     fun state() = State.valueOf(PropertiesComponent.getInstance(project).getValue(PROPERTY_ID, State.STOPPED.name))
@@ -75,6 +76,6 @@ class WatchDebugLogService(private val project: Project) : Disposable {
     private fun isConnected() = SshConnectionService.getInstance(project).isConnectedOrWarning()
 
     override fun dispose() {
-        executor.dispose()
+        executor.value.dispose()
     }
 }
