@@ -54,9 +54,9 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     private val tabs = mutableListOf<Tab>()
     private val console = Console(project)
 
-    protected lateinit var layout: RunnerLayoutUi
-    protected lateinit var processHandler: ColoredRemoteProcessHandler<SshExecProcess>
-    protected lateinit var outputListener: OutputListener
+    private lateinit var layout: RunnerLayoutUi
+    private lateinit var processHandler: ColoredRemoteProcessHandler<SshExecProcess>
+    private lateinit var outputListener: OutputListener
 
     private val restartAction = object : ActionToolbarFastEnableAction(
         "Rerun ${config.tabName}", AllIcons.Actions.Restart,
@@ -157,10 +157,24 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     }
 
     /**
-     * Adds a new tab to the tool window.
+     * Adds a new tab to the tool window before creation.
      */
     fun withTab(tab: Tab) {
         tabs.add(tab)
+    }
+
+    /**
+     * Adds a new tab to the tool window after creation.
+     */
+    fun addTab(tab: Tab) {
+        tab.addAsContentTo(layout)
+    }
+
+    /**
+     * Selects and focus passed tab.
+     */
+    fun selectTab(tab: Tab) {
+        layout.selectAndFocus(tab.content, true, true)
     }
 
     /**

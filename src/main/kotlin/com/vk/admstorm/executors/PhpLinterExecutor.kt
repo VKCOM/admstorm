@@ -19,11 +19,11 @@ class PhpLinterExecutor(project: Project, command: String) :
 
     override fun onFinish() {
         invokeLater {
-            layout.selectAndFocus(myProblemsTab.content, true, true)
+            selectTab(myProblemsTab)
         }
 
         invokeLater {
-            val problems = PhpLinterWarningsParser.parse(project, outputListener.output.stderr)
+            val problems = PhpLinterWarningsParser.parse(project, output().stderr)
             val panel = ProblemsPanel(project, problems)
             myProblemsTab.panel.addToCenter(panel)
         }

@@ -46,7 +46,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
     }
 
     override fun onFinish() {
-        val output = outputListener.output
+        val output = output()
 
         myKphpOutputTab.console.clear()
 
@@ -57,7 +57,7 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
                 myKphpOutputTab.console.view().scrollTo(0)
             }
 
-            layout.selectAndFocus(myKphpOutputTab.content, true, true)
+            selectTab(myKphpOutputTab)
         }
 
         ApplicationManager.getApplication().executeOnPooledThread {

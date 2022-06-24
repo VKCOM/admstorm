@@ -20,11 +20,11 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
 
     override fun onFinish() {
         invokeLater {
-            layout.selectAndFocus(myCompilationErrorsTab.content, true, true)
+            selectTab(myCompilationErrorsTab)
         }
 
         invokeLater {
-            val problems = KphpErrorsParser.parse(project, outputListener.output.stdout)
+            val problems = KphpErrorsParser.parse(project, output().stdout)
             val panel = ProblemsPanel(project, problems)
             myCompilationErrorsTab.panel.addToCenter(panel)
         }
