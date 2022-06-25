@@ -120,7 +120,7 @@ class KBenchConfigurationRunState(
         val methodFilter = if (conf.scope == KBenchScope.Method) {
             val className = conf.className.split('\\').lastOrNull() ?: ""
             val methodName = KBenchUtils.benchmarkName(conf.methodName)
-            "--run '$className::$methodName'"
+            "--run '$className::$methodName$'"
         } else {
             "--run '.*'"
         }
