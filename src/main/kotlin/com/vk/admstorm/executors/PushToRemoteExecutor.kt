@@ -11,19 +11,23 @@ import com.vk.admstorm.parsers.KphpErrorsParser
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
 import com.vk.admstorm.utils.ServerNameProvider
 import java.util.function.BiConsumer
-import javax.swing.Icon
 
-class PushToRemoteExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(
-        Config(tabName = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
-        project
-    ) {
+class PushToRemoteExecutor(project: Project, private val command: String) :
+    BaseRemoteExecutor(project, "Push from ${ServerNameProvider.name()} to Gitlab") {
 
     private var myOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
 
     fun withOutputHandler(handler: BiConsumer<Output, Console>) {
         myOutputHandler = handler
     }
+
+    override fun layoutName() = "Push from ${ServerNameProvider.name()} to Gitlab"
+
+    override fun tabName() = "Push from ${ServerNameProvider.name()} to Gitlab"
+
+    override fun command() = command
+
+    override fun icon() = AllIcons.Vcs.Push
 
     override fun onFinish() {
         val output = output()
@@ -58,6 +62,4 @@ class PushToRemoteExecutor(project: Project, command: String) :
             }
         }
     }
-
-    override fun icon(): Icon = AllIcons.Vcs.Push
 }

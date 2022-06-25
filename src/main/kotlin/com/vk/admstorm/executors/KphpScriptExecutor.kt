@@ -16,48 +16,52 @@ import com.vk.admstorm.parsers.KphpScriptOutputParser
 import com.vk.admstorm.ui.MyIcons
 import com.vk.admstorm.utils.MySshUtils
 import java.util.function.BiConsumer
-import javax.swing.Icon
 
-class KphpScriptExecutor(project: Project, command: String, private val myRunConfiguration: KphpConfiguration) :
-    BaseRunnableExecutor(Config(tabName = "KPHP Script", command = command, workingDir = "~/"), project) {
+class KphpScriptExecutor(
+    project: Project,
+    private val command: String,
+    private val conf: KphpConfiguration
+) : BaseRemoteExecutor(project, "KPHP Script") {
 
-    private val myKphpOutputTab = ConsoleTab(project, "KPHP Output")
-    private val myPhpOutputTab = ConsoleTab(project, "PHP Output")
-    private val myDiffTab = DiffTab(project, "Output Diff")
+    private val kphpOutputTab = ConsoleTab(project, "KPHP Output")
+    private val phpOutputTab = ConsoleTab(project, "PHP Output")
+    private val diffTab = DiffTab(project, "Output Diff")
 
-    private var myPhpOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
-    private var myKphpOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
+    private var phpOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
+    private var kphpOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
 
     init {
-        withTab(myKphpOutputTab)
+        withTab(kphpOutputTab)
 
-        if (myRunConfiguration.runScriptWithPhp) {
-            withTab(myPhpOutputTab)
-            withTab(myDiffTab)
+        if (conf.runScriptWithPhp) {
+            withTab(phpOutputTab)
+            withTab(diffTab)
         }
     }
 
-    fun withPhpOutputHandler(handler: BiConsumer<Output, Console>) {
-        myPhpOutputHandler = handler
-    }
+    override fun layoutName() = "KPHP Script"
 
-    fun withKphpOutputHandler(handler: BiConsumer<Output, Console>) {
-        myKphpOutputHandler = handler
-    }
+    override fun tabName() = "KPHP Script"
+
+    override fun command() = command
+
+    override fun workingDir() = "~/"
+
+    override fun icon() = MyIcons.kphp
 
     override fun onFinish() {
         val output = output()
 
-        myKphpOutputTab.console.clear()
+        kphpOutputTab.console.clear()
 
         invokeLater {
             if (output.exitCode != 0) {
-                myKphpOutputTab.content?.displayName = "Compilation Errors"
-                myKphpOutputTab.console.println(KphpScriptOutputParser.parse(output))
-                myKphpOutputTab.console.view().scrollTo(0)
+                kphpOutputTab.content?.displayName = "Compilation Errors"
+                kphpOutputTab.console.println(KphpScriptOutputParser.parse(output))
+                kphpOutputTab.console.view().scrollTo(0)
             }
 
-            selectTab(myKphpOutputTab)
+            selectTab(kphpOutputTab)
         }
 
         ApplicationManager.getApplication().executeOnPooledThread {
@@ -71,30 +75,36 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
         }
     }
 
-    override fun icon(): Icon = MyIcons.kphp
+    fun withPhpOutputHandler(handler: BiConsumer<Output, Console>) {
+        phpOutputHandler = handler
+    }
+
+    fun withKphpOutputHandler(handler: BiConsumer<Output, Console>) {
+        kphpOutputHandler = handler
+    }
 
     private fun executePhpScript() {
-        if (!myRunConfiguration.runScriptWithPhp) {
+        if (!conf.runScriptWithPhp) {
             return
         }
 
-        val command = "php ${Env.data.projectRoot}/${Env.data.phpSourceFolder}/${myRunConfiguration.parameters}"
+        val command = "php ${Env.data.projectRoot}/${Env.data.phpSourceFolder}/${conf.parameters}"
         val handler = MySshUtils.exec(
             project, command,
-            "php ${Env.data.projectRoot}/${Env.data.phpSourceFolder}/${myRunConfiguration.parameters}\n"
+            "php ${Env.data.projectRoot}/${Env.data.phpSourceFolder}/${conf.parameters}\n"
         ) ?: return
 
-        myPhpOutputTab.console.view().attachToProcess(handler)
-        myPhpOutputTab.console.clear()
+        phpOutputTab.console.view().attachToProcess(handler)
+        phpOutputTab.console.clear()
 
         handler.addProcessListener(object : OutputListener() {
             override fun processTerminated(event: ProcessEvent) {
                 super.processTerminated(event)
-                myDiffTab.viewer.withPhpOutput(output.stdout.ifEmpty { "<no output>" })
+                diffTab.viewer.withPhpOutput(output.stdout.ifEmpty { "<no output>" })
 
-                myPhpOutputHandler.accept(output, myPhpOutputTab.console)
+                phpOutputHandler.accept(output, phpOutputTab.console)
 
-                myPhpOutputTab.console.view().scrollTo(0)
+                phpOutputTab.console.view().scrollTo(0)
             }
         })
 
@@ -106,17 +116,17 @@ class KphpScriptExecutor(project: Project, command: String, private val myRunCon
         val command = "$scriptOutput --Xkphp-options --disable-sql"
         val handler = MySshUtils.exec(project, command, "$scriptOutput\n") ?: return
 
-        myKphpOutputTab.console.view().attachToProcess(handler)
-        myKphpOutputTab.console.clear()
+        kphpOutputTab.console.view().attachToProcess(handler)
+        kphpOutputTab.console.clear()
 
         handler.addProcessListener(object : OutputListener() {
             override fun processTerminated(event: ProcessEvent) {
                 super.processTerminated(event)
-                myDiffTab.viewer.withKphpOutput(output.stdout.ifEmpty { "<no output>" })
+                diffTab.viewer.withKphpOutput(output.stdout.ifEmpty { "<no output>" })
 
-                myKphpOutputHandler.accept(output, myKphpOutputTab.console)
+                kphpOutputHandler.accept(output, kphpOutputTab.console)
 
-                myKphpOutputTab.console.view().scrollTo(0)
+                kphpOutputTab.console.view().scrollTo(0)
             }
         })
 

@@ -6,16 +6,21 @@ import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
 import com.vk.admstorm.ui.MyIcons
-import javax.swing.Icon
 
-class PhpLinterExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(tabName = "PHP Linter", command = command), project) {
-
+class PhpLinterExecutor(project: Project, private val command: String) : BaseRemoteExecutor(project, "PHP Linter") {
     private val myProblemsTab = ProblemsTab()
 
     init {
         withTab(myProblemsTab)
     }
+
+    override fun layoutName() = "PHP Linter"
+
+    override fun tabName() = "PHP Linter"
+
+    override fun command() = command
+
+    override fun icon() = MyIcons.phpLinter
 
     override fun onFinish() {
         invokeLater {
@@ -28,6 +33,4 @@ class PhpLinterExecutor(project: Project, command: String) :
             myProblemsTab.panel.addToCenter(panel)
         }
     }
-
-    override fun icon(): Icon = MyIcons.phpLinter
 }

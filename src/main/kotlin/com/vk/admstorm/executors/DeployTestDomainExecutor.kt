@@ -2,23 +2,30 @@ package com.vk.admstorm.executors
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
-import javax.swing.Icon
 
-class DeployTestDomainExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(tabName = "Deploy test domain", layoutName = "Deploy test domain", command), project) {
+class DeployTestDomainExecutor(project: Project, private val command: String) :
+    BaseRemoteExecutor(project, "Deploy test domain") {
 
-    private var onReadyCallback = {}
+    private var onReady = {}
 
     override fun onFinish() {
-        onReadyCallback()
+        onReady()
     }
 
-    fun withOnReadyCallback(callback: () -> Unit): DeployTestDomainExecutor {
-        onReadyCallback = callback
+    fun onReady(callback: () -> Unit): DeployTestDomainExecutor {
+        onReady = callback
         return this
     }
 
-    override fun icon(): Icon = AllIcons.Nodes.Deploy
+    override fun layoutName() = "Deploy test domain"
+
+    override fun tabName() = "Deploy test domain"
+
+    override fun command() = command
+
+    override fun icon() = AllIcons.Nodes.Deploy
+
     override fun runnerTitle() = "Deploy test domain"
+
     override fun runnerId() = "DeployTestDomain"
 }

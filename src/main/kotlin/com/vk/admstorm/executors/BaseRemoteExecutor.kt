@@ -38,17 +38,13 @@ import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.Icon
 import javax.swing.JComponent
 
-abstract class BaseRunnableExecutor(protected val config: Config, protected val project: Project) : Disposable {
+/**
+ * Base for all long-running commands executed on the remote server.
+ */
+abstract class BaseRemoteExecutor(protected val project: Project, protected val toolName: String) : Disposable {
     companion object {
-        private val LOG = logger<BaseRunnableExecutor>()
+        private val LOG = logger<BaseRemoteExecutor>()
     }
-
-    data class Config(
-        val tabName: String = "Tool Tab",
-        val layoutName: String = tabName,
-        val command: String = "",
-        val workingDir: String? = null
-    )
 
     private val actionGroup = DefaultActionGroup()
     private val tabs = mutableListOf<Tab>()
@@ -59,7 +55,7 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     private lateinit var outputListener: OutputListener
 
     private val restartAction = object : ActionToolbarFastEnableAction(
-        "Rerun ${config.tabName}", AllIcons.Actions.Restart,
+        "Rerun $toolName", AllIcons.Actions.Restart,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             if (!processHandler.isProcessTerminated) {
@@ -81,7 +77,7 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     }
 
     private val stopAction = object : ActionToolbarFastEnableAction(
-        "Stop ${config.tabName}", AllIcons.Actions.Suspend
+        "Stop $toolName", AllIcons.Actions.Suspend
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             stop()
@@ -237,6 +233,26 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     open fun onToolWindowShow() {}
 
     /**
+     * @return command to execute.
+     */
+    abstract fun command(): String
+
+    /**
+     * @return a working dir for run [command].
+     */
+    open fun workingDir(): String? = null
+
+    /**
+     * @return name of tab in a tool window.
+     */
+    open fun tabName(): String = "Tool Tab"
+
+    /**
+     * @return name of tool window tabs.
+     */
+    open fun layoutName(): String = ""
+
+    /**
      * @return icon for this executor.
      */
     abstract fun icon(): Icon
@@ -268,7 +284,7 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
     private fun runImpl() {
         clearTabs()
 
-        processHandler = MySshUtils.exec(project, config.command, config.command, config.workingDir) ?: return
+        processHandler = MySshUtils.exec(project, command(), command(), workingDir()) ?: return
         console.view().attachToProcess(processHandler)
         console.clear()
 
@@ -315,13 +331,13 @@ abstract class BaseRunnableExecutor(protected val config: Config, protected val 
         stopAction.setEnabled(true)
 
         layout = RunnerLayoutUi.Factory.getInstance(project)
-            .create(runnerId(), runnerTitle(), config.layoutName, this)
+            .create(runnerId(), runnerTitle(), layoutName(), this)
 
         val executor = executorInstance()
 
         val runProfile = object : RunProfile {
             override fun getState(e: Executor, ee: ExecutionEnvironment) = null
-            override fun getName(): String = config.tabName
+            override fun getName(): String = tabName()
             override fun getIcon(): Icon = icon()
         }
 
