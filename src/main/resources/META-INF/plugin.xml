@@ -89,6 +89,7 @@
     <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
                               implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
     <implicitUsageProvider implementation="com.vk.admstorm.configuration.kbench.KBenchImplicitUsageProvider"/>
+    <programRunner implementation="com.vk.admstorm.configuration.kbench.KBenchConfigurationRunner"/>
 
     <!-- KPHP Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.kphp.KphpConfigurationType"/>
