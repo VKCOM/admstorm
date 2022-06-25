@@ -13,7 +13,6 @@ import com.intellij.execution.ui.layout.PlaceInGrid
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.application.ApplicationManager
@@ -26,7 +25,7 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.process.SshExecProcess
-import com.vk.admstorm.actions.ActionToolbarFastEnableAction
+import com.vk.admstorm.actions.SimpleToolbarAction
 import com.vk.admstorm.console.Console
 import com.vk.admstorm.executors.tabs.Tab
 import com.vk.admstorm.notifications.AdmNotification
@@ -41,7 +40,7 @@ import javax.swing.JComponent
 /**
  * Base for all long-running commands executed on the remote server.
  */
-abstract class BaseRemoteExecutor(protected val project: Project, protected val toolName: String) : Disposable {
+abstract class BaseRemoteExecutor(protected val project: Project, toolName: String) : Disposable {
     companion object {
         private val LOG = logger<BaseRemoteExecutor>()
     }
@@ -54,68 +53,48 @@ abstract class BaseRemoteExecutor(protected val project: Project, protected val 
     private lateinit var processHandler: ColoredRemoteProcessHandler<SshExecProcess>
     private lateinit var outputListener: OutputListener
 
-    private val restartAction = object : ActionToolbarFastEnableAction(
-        "Rerun $toolName", AllIcons.Actions.Restart,
-    ) {
-        override fun actionPerformed(e: AnActionEvent) {
-            if (!processHandler.isProcessTerminated) {
-                onStopBeforeRerun()
-                stop()
-                invokeAfter(1_000) {
-                    run()
-                    onRerun()
-                    stopAction.setEnabled(true)
-                }
-                return
-            }
-
-            run()
-            onRerun()
-
-            stopAction.setEnabled(true)
-        }
-    }
-
-    private val stopAction = object : ActionToolbarFastEnableAction(
-        "Stop $toolName", AllIcons.Actions.Suspend
-    ) {
-        override fun actionPerformed(e: AnActionEvent) {
+    private val restartAction = SimpleToolbarAction("Rerun $toolName", AllIcons.Actions.Restart) {
+        if (!processHandler.isProcessTerminated) {
+            onStopBeforeRerun()
             stop()
-            onStop()
-        }
-    }
-
-    private val clearOutputsAction = object : ActionToolbarFastEnableAction(
-        "Clear outputs", AllIcons.Actions.GC
-    ) {
-        override fun actionPerformed(e: AnActionEvent) {
-            console.clear()
-            clearTabs()
-        }
-    }
-
-    private val copyOutputAction = object : ActionToolbarFastEnableAction(
-        "Copy launch output", AllIcons.Actions.Copy
-    ) {
-        override fun actionPerformed(e: AnActionEvent) {
-            val output = outputListener.output.stdout + outputListener.output.stderr
-            copyToClipboard(output)
-        }
-    }
-
-    private val hasteOutputAction = object : ActionToolbarFastEnableAction(
-        "Haste launch output", AllIcons.Actions.MoveTo2
-    ) {
-        override fun actionPerformed(e: AnActionEvent) {
-            ApplicationManager.getApplication().executeOnPooledThread {
-                val output = outputListener.output.stdout + outputListener.output.stderr
-                val link = createHaste(e.project!!, output)
-                copyToClipboard(link)
-
-                AdmNotification()
-                    .withTitle("Link to hastebin copied to clipboard")
-                    .show()
+            invokeAfter(1_000) {
+                run()
+                onRerun()
+                stopAction.setEnabled(true)
             }
+            return@SimpleToolbarAction
+        }
+
+        run()
+        onRerun()
+
+        stopAction.setEnabled(true)
+    }
+
+    private val stopAction = SimpleToolbarAction("Stop $toolName", AllIcons.Actions.Suspend) {
+        stop()
+        onStop()
+    }
+
+    private val clearOutputsAction = SimpleToolbarAction("Clear outputs", AllIcons.Actions.GC) {
+        console.clear()
+        clearTabs()
+    }
+
+    private val copyOutputAction = SimpleToolbarAction("Copy launch output", AllIcons.Actions.Copy) {
+        val output = outputListener.output.stdout + outputListener.output.stderr
+        copyToClipboard(output)
+    }
+
+    private val hasteOutputAction = SimpleToolbarAction("Haste launch output", AllIcons.Actions.MoveTo2) { e ->
+        ApplicationManager.getApplication().executeOnPooledThread {
+            val output = outputListener.output.stdout + outputListener.output.stderr
+            val link = createHaste(e.project!!, output)
+            copyToClipboard(link)
+
+            AdmNotification()
+                .withTitle("Link to hastebin copied to clipboard")
+                .show()
         }
     }
 
