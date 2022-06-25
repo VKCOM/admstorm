@@ -6,8 +6,8 @@ import javax.swing.Icon
 
 abstract class ActionToolbarFastEnableAction(
     text: String,
-    description: String,
-    private var icon: Icon,
+    private val icon: Icon,
+    description: String = "",
 ) : DumbAwareAction(text, description, icon) {
 
     private var enabled = true

@@ -2,12 +2,17 @@ package com.vk.admstorm.executors
 
 import com.intellij.openapi.project.Project
 import icons.PhpIcons
-import javax.swing.Icon
 
-class RemotePhpRunExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(tabName = "Remote PHP", command = command), project) {
+class RemotePhpRunExecutor(project: Project, private val command: String) :
+    BaseRemoteExecutor(project, "Remote PHP") {
 
-    override fun onReady() {}
+    override fun layoutName() = "Remote PHP"
 
-    override fun icon(): Icon = PhpIcons.PhpRemote
+    override fun tabName() = "Remote PHP"
+
+    override fun command() = command
+
+    override fun icon() = PhpIcons.PhpRemote
+
+    override fun onFinish() {}
 }

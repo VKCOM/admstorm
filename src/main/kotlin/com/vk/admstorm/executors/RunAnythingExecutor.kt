@@ -3,12 +3,17 @@ package com.vk.admstorm.executors
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.utils.ServerNameProvider
-import javax.swing.Icon
 
-class RunAnythingExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(tabName = "Run '$command' on ${ServerNameProvider.name()}", command = command), project) {
+class RunAnythingExecutor(project: Project, private val command: String) :
+    BaseRemoteExecutor(project, "Run '$command' on ${ServerNameProvider.name()}") {
 
-    override fun onReady() {}
+    override fun layoutName() = "Run '$command' on ${ServerNameProvider.name()}"
 
-    override fun icon(): Icon = AllIcons.RunConfigurations.Compound
+    override fun tabName() = "Run '$command' on ${ServerNameProvider.name()}"
+
+    override fun command() = command
+
+    override fun icon() = AllIcons.RunConfigurations.Compound
+
+    override fun onFinish() {}
 }

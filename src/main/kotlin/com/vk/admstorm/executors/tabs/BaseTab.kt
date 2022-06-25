@@ -5,9 +5,13 @@ import com.intellij.execution.ui.RunnerLayoutUi
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.ui.ComponentWithActions
 import com.intellij.ui.content.Content
+import com.vk.admstorm.executors.BaseRemoteExecutor
 import javax.swing.Icon
 import javax.swing.JComponent
 
+/**
+ * Base implementation of a [Tab] for the [BaseRemoteExecutor].
+ */
 abstract class BaseTab(private var myName: String) : Tab {
     private var myContent: Content? = null
 

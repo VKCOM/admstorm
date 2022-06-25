@@ -10,7 +10,6 @@ import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import java.beans.PropertyChangeSupport
-import java.time.LocalTime
 
 @Service
 class YarnWatchService(private val myProject: Project) : Disposable {
@@ -25,8 +24,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         WITH_ERRORS
     }
 
-    private var setErrorsStateTime: LocalTime? = null
-    private val executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
+    private lateinit var executor: YarnWatchCommandExecutor
     val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
@@ -45,6 +43,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         }
 
         invokeLater {
+            executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
             executor.run()
             setWorking(true)
         }
@@ -74,7 +73,6 @@ class YarnWatchService(private val myProject: Project) : Disposable {
             }
         }
         setState(State.WITH_ERRORS)
-        setErrorsStateTime = LocalTime.now()
     }
 
     fun clearErrorsState() {

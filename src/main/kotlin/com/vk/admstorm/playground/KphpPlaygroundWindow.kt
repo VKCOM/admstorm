@@ -102,8 +102,7 @@ require_once 'vendor/autoload.php';
     private lateinit var myProcessHandler: ColoredRemoteProcessHandler<SshExecProcess>
 
     private val myRunCompilationAction = object : ActionToolbarFastEnableAction(
-        "Run", "",
-        AllIcons.Actions.Execute,
+        "Run", AllIcons.Actions.Execute,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             runCompilationAction()
@@ -111,8 +110,7 @@ require_once 'vendor/autoload.php';
     }
 
     private val myStopCompilationAction = object : ActionToolbarFastEnableAction(
-        "Stop", "",
-        AllIcons.Actions.Suspend,
+        "Stop", AllIcons.Actions.Suspend,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             myProcessHandler.destroyProcess()
@@ -121,8 +119,7 @@ require_once 'vendor/autoload.php';
     }
 
     private val myShareAction = object : ActionToolbarFastEnableAction(
-        "Share Hastebin link to code", "",
-        AllIcons.CodeWithMe.CwmShared,
+        "Share Hastebin link to code", AllIcons.CodeWithMe.CwmShared,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             val content = myEditor.document.text
@@ -143,8 +140,7 @@ require_once 'vendor/autoload.php';
     }
 
     private val mySharePasteAction = object : ActionToolbarFastEnableAction(
-        "Paste code from Hastebin link", "",
-        AllIcons.Actions.MenuPaste,
+        "Paste code from Hastebin link", AllIcons.Actions.MenuPaste,
     ) {
         override fun actionPerformed(e: AnActionEvent) {
             val link = MyUtils.getClipboardContents() ?: return

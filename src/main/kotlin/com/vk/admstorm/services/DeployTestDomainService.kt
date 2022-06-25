@@ -35,7 +35,7 @@ class DeployTestDomainService(private val project: Project) {
         val command = "$deployCommand $domain ${options.branch}"
         val executor = DeployTestDomainExecutor(project, command)
 
-        executor.withOnReadyCallback {
+        executor.onReady {
             val output = executor.output()
 
             val deployedDomain = if (domain == "auto") {
@@ -47,13 +47,13 @@ class DeployTestDomainService(private val project: Project) {
                 LOG.warn("Can't parse domain name from command output")
                 val wasDeployed = output.exitCode == 0
                 onReady(null, wasDeployed)
-                return@withOnReadyCallback
+                return@onReady
             }
 
             if (output.exitCode != 0) {
                 LOG.warn("Problem with deploy test domain: ${output.stderr}")
                 onReady(deployedDomain, false)
-                return@withOnReadyCallback
+                return@onReady
             }
 
             setLastUsedDomain(deployedDomain)

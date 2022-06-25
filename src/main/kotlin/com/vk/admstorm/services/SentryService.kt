@@ -31,7 +31,7 @@ class SentryService(project: Project) {
         fun getInstance(project: Project) = project.service<SentryService>()
     }
 
-    private val user = GitUtils.localUser(project)
+    private val user = GitUtils.currentUser(project)
 
     init {
         val config = ConfigService.getInstance(project)
@@ -60,10 +60,11 @@ class SentryService(project: Project) {
                 }
                 event.contexts.setRuntime(runtime)
 
+                val systemUserName = AdmStormSettingsState.getInstance().userNameForSentry
                 event.user = User().apply {
-                    id = AdmStormSettingsState.getInstance().userNameForSentry
-                    email = user.email
-                    username = user.name
+                    id = systemUserName
+                    email = user?.email
+                    username = user?.name ?: systemUserName
                 }
 
                 event.serverName = null
@@ -77,7 +78,7 @@ class SentryService(project: Project) {
 
     fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user.name}", withFullLog = true)
+    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name ?: "User"}", withFullLog = true)
 
     private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID

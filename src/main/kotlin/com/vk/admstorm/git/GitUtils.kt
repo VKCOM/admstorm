@@ -567,19 +567,40 @@ object GitUtils {
     }
 
     /**
-     * Base command for [localUser]
+     * Base command for [currentUser]
      */
-    private const val getUserNameCommand = "git -c core.quotepath=false config --local --null --get user.name"
-    private const val getUserEmailCommand = "git -c core.quotepath=false config --local --null --get user.email"
+    private const val getUserNameCommand = "git -c core.quotepath=false config --null --get user.name"
+    private const val getUserEmailCommand = "git -c core.quotepath=false config --null --get user.email"
 
     data class User(val name: String?, val email: String?)
 
     /**
-     * Returns the current local git user.
+     * Returns the current git user.
+     *
+     * @return if a local git [User] isn't set, returns the global git [User], if it isn't set returns null.
      */
-    fun localUser(project: Project): User {
-        val outputName = CommandRunner.runLocally(project, getUserNameCommand).stdout
-        val outputEmail = CommandRunner.runLocally(project, getUserEmailCommand).stdout
+    fun currentUser(project: Project): User? {
+        val localUser = getUser(project, local = true)
+        if (localUser != null) {
+            return localUser
+        }
+
+        val globalUser = getUser(project, local = false)
+        if (globalUser != null) {
+            return globalUser
+        }
+
+        return null
+    }
+
+    private fun getUser(project: Project, local: Boolean): User? {
+        val flag = if (local) "--local" else ""
+        val outputName = CommandRunner.runLocally(project, getUserNameCommand.withParam(flag)).stdout
+        if (outputName.isEmpty()) {
+            return null
+        }
+
+        val outputEmail = CommandRunner.runLocally(project, getUserEmailCommand.withParam(flag)).stdout
 
         return User(outputName, outputEmail)
     }

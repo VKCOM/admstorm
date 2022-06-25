@@ -11,13 +11,9 @@ import com.vk.admstorm.parsers.KphpErrorsParser
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
 import com.vk.admstorm.utils.ServerNameProvider
 import java.util.function.BiConsumer
-import javax.swing.Icon
 
-class PushToRemoteExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(
-        Config(tabName = "Push from ${ServerNameProvider.name()} to Gitlab", command = command),
-        project
-    ) {
+class PushToRemoteExecutor(project: Project, private val command: String) :
+    BaseRemoteExecutor(project, "Push from ${ServerNameProvider.name()} to Gitlab") {
 
     private var myOutputHandler: BiConsumer<Output, Console> = BiConsumer { _, _ -> }
 
@@ -25,39 +21,45 @@ class PushToRemoteExecutor(project: Project, command: String) :
         myOutputHandler = handler
     }
 
-    override fun onReady() {
-        val output = myOutputListener.output
+    override fun layoutName() = "Push from ${ServerNameProvider.name()} to Gitlab"
+
+    override fun tabName() = "Push from ${ServerNameProvider.name()} to Gitlab"
+
+    override fun command() = command
+
+    override fun icon() = AllIcons.Vcs.Push
+
+    override fun onFinish() {
+        val output = output()
 
         invokeLater {
-            myOutputHandler.accept(output, Console(myProject))
+            myOutputHandler.accept(output, Console(project))
         }
 
         invokeLater {
             if (output.exitCode != 0) {
                 val problems = when {
                     output.stderr.contains("<critical>") -> {
-                        PhpLinterWarningsParser.parse(myProject, output.stderr)
+                        PhpLinterWarningsParser.parse(project, output.stderr)
                     }
                     output.stdout.contains("Compilation error") -> {
-                        KphpErrorsParser.parse(myProject, output.stdout)
+                        KphpErrorsParser.parse(project, output.stdout)
                     }
                     else -> emptyList()
                 }
 
                 if (problems.isNotEmpty()) {
                     val problemsTab = ProblemsTab()
-                    problemsTab.addAsContentTo(myLayout)
+                    addTab(problemsTab)
 
                     invokeLater {
-                        myLayout.selectAndFocus(problemsTab.content, true, true)
+                        selectTab(problemsTab)
                     }
 
-                    val panel = ProblemsPanel(myProject, problems)
+                    val panel = ProblemsPanel(project, problems)
                     problemsTab.panel.addToCenter(panel)
                 }
             }
         }
     }
-
-    override fun icon(): Icon = AllIcons.Vcs.Push
 }
