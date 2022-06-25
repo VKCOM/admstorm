@@ -46,6 +46,103 @@
         <div class="chapter__block">
             <div class="chapter__version-block">
                 <h2 class="chapter__big-title chapter__big-title--bold">
+                    Версия v1.3.1
+                </h2>
+
+                <time datetime="2022-06-30">30 июня 2022</time>
+
+                <p class="chapter__text chapter__version-text">
+                    Консоль для просмотра debug логов прямо в IDE, небольшие улучшения, а также большое количество исправлений.
+                </p>
+
+                <div class="chapter__version-block-new chapter__version-block-new-features">
+
+                    <div class="chapter__version-block-new-feature">
+                        <h2 class="chapter__version-block-new-feature__title">
+                            Консоль для просмотра debug логов прямо в IDE
+                        </h2>
+
+                        <div class="chapter__version-block-new-feature__inner
+                                    chapter__version-block-new-feature__inner--two-column">
+                            <p class="chapter__text">
+                                В прошлом обновлении мы добавили поддержку
+                                <code class="chapter__code-block__inline">yarn watch</code>
+                                в виде виджета на панели снизу.
+                                Теперь рядом с ним добавился виджет для просмотра debug логов.
+
+                                <br>
+                                <br>
+
+                                Больше не нужно заходить отдельно на сервер, чтобы посмотреть логи, они будут
+                                отображаться прямо в IDE.
+                            </p>
+
+
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Другие улучшения
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Теперь тесты PHPUnit можно запускать из контекстного меню файла.
+                                </li>
+                                <li>
+                                    Теперь ktest бенчмарки можно запускать из контекстного меню файла.
+                                </li>
+                                <li>
+                                    На странице установки уточнён момент про открытие проекта.
+                                </li>
+                                <li>
+                                    На странице установки обновлён пункт про Yubikey, а также добавлено уточнение про
+                                    страницу настроек.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="chapter__version-block-new-feature">
+                        <div class="chapter__version-block-new-feature__inner">
+                            <h2 class="chapter__version-block-new-feature__title">
+                                Исправлено
+                            </h2>
+
+                            <ul>
+                                <li>
+                                    Исправлено зависание во время запуска PHPUnit теста или ktest бенчмарка.
+                                </li>
+                                <li>
+                                    Исправлен запуск отдельного метода бенчмарка, теперь если запускается метод с именем,
+                                    которое является также префиксом для имени других методов, то другие методы
+                                    не будут запущены.
+                                </li>
+                                <li>
+                                    Исправлено исключение, когда плагин автоматически открывает новый SSH туннель.
+                                </li>
+                                <li>
+                                    Исправлено предупреждение о производительности для line marker для ktest.
+                                </li>
+                                <li>
+                                    <code class="chapter__code-block__inline">yarn watch</code> теперь не появляется
+                                    в не vkcom проектах.
+                                </li>
+                                <li>
+                                    Исправлен порядок следования аргументов для новых api тестов.
+                                </li>
+                                <li>
+                                    Исправлено название сервера на странице настройки плагина на верный вариант Dev-server.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chapter__version-block">
+                <h2 class="chapter__big-title chapter__big-title--bold">
                     Версия v1.3.0
                 </h2>
 
