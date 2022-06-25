@@ -37,13 +37,13 @@ abstract class WithSshConfigurationRunner(
     }
 
     private fun runWithSyncCheck(environment: ExecutionEnvironment) {
-        SyncChecker.getInstance(environment.project).doCheckSyncSilentlyTask({ onCanceledSync(environment) }) {
-            if (inEDT) {
-                invokeLater {
-                    run(environment)
-                }
-            } else {
-                ApplicationManager.getApplication().executeOnPooledThread {
+        ApplicationManager.getApplication().executeOnPooledThread {
+            SyncChecker.getInstance(environment.project).doCheckSyncSilentlyTask({ onCanceledSync(environment) }) {
+                if (inEDT) {
+                    invokeLater {
+                        run(environment)
+                    }
+                } else {
                     run(environment)
                 }
             }

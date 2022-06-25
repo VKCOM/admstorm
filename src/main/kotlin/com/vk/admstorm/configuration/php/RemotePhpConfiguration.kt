@@ -6,13 +6,12 @@ import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.configuration.WithSshConfiguration
 import com.vk.admstorm.utils.extensions.readString
 import com.vk.admstorm.utils.extensions.writeString
 import org.jdom.Element
 
 open class RemotePhpConfiguration(project: Project, factory: ConfigurationFactory?, name: String?) :
-    RunConfigurationBase<RemotePhpConfigurationOptions?>(project, factory, name), WithSshConfiguration {
+    RunConfigurationBase<RemotePhpConfigurationOptions?>(project, factory, name) {
 
     override fun getOptions() = super.getOptions() as RemotePhpConfigurationOptions
 
