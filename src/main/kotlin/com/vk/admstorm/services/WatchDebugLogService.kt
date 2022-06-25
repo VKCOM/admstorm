@@ -23,7 +23,7 @@ class WatchDebugLogService(private val project: Project) : Disposable {
         STOPPED,
     }
 
-    private val executor = lazy { WatchDebugLogCommandExecutor(project, "${Env.data.vkCommand} debug") }
+    private lateinit var executor: WatchDebugLogCommandExecutor
     val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
@@ -42,20 +42,21 @@ class WatchDebugLogService(private val project: Project) : Disposable {
         }
 
         invokeLater {
-            executor.value.run()
+            executor = WatchDebugLogCommandExecutor(project, "${Env.data.vkCommand} debug")
+            executor.run()
             setWorking(true)
         }
     }
 
     fun stop() {
         if (isRunning()) {
-            executor.value.stop()
+            executor.stop()
         }
         setWorking(false)
     }
 
     fun showConsole() {
-        executor.value.showToolWindow()
+        executor.showToolWindow()
     }
 
     fun state() = State.valueOf(PropertiesComponent.getInstance(project).getValue(PROPERTY_ID, State.STOPPED.name))
@@ -76,6 +77,6 @@ class WatchDebugLogService(private val project: Project) : Disposable {
     private fun isConnected() = SshConnectionService.getInstance(project).isConnectedOrWarning()
 
     override fun dispose() {
-        executor.value.dispose()
+        executor.dispose()
     }
 }
