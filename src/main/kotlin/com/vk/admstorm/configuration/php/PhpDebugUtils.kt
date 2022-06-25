@@ -3,6 +3,7 @@ package com.vk.admstorm.configuration.php
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -72,8 +73,6 @@ object PhpDebugUtils {
                                 )
                                     .withTitle("Unable to open SSH tunnel on port ${ports.first()}")
                                     .show()
-
-                                countOpeningAttempts++
                             }
                         }
 
@@ -84,9 +83,12 @@ object PhpDebugUtils {
                                     .withTitle("SSH tunnel on port ${ports.first()} successfully opened")
                                     .show()
 
-                                onStart.run()
+                                invokeLater {
+                                    onStart.run()
+                                }
 
                                 myWasRestarted = true
+                                countOpeningAttempts++
                             }
                         }
                     })
