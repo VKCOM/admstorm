@@ -12,4 +12,6 @@ class ConsoleTab(project: Project, name: String) : BaseTab(name) {
         SimpleComponentWithActions(console.view() as JComponent?, console.component())
 
     override fun componentToFocus() = console.component()
+
+    override fun clear() = console.clear()
 }

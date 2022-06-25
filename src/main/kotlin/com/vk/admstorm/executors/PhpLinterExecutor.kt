@@ -6,28 +6,31 @@ import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
 import com.vk.admstorm.ui.MyIcons
-import javax.swing.Icon
 
-class PhpLinterExecutor(project: Project, command: String) :
-    BaseRunnableExecutor(Config(name = "PHP Linter", command = command), project) {
-
+class PhpLinterExecutor(project: Project, private val command: String) : BaseRemoteExecutor(project, "PHP Linter") {
     private val myProblemsTab = ProblemsTab()
 
     init {
         withTab(myProblemsTab)
     }
 
-    override fun onReady() {
+    override fun layoutName() = "PHP Linter"
+
+    override fun tabName() = "PHP Linter"
+
+    override fun command() = command
+
+    override fun icon() = MyIcons.phpLinter
+
+    override fun onFinish() {
         invokeLater {
-            myLayout.selectAndFocus(myProblemsTab.content, true, true)
+            selectTab(myProblemsTab)
         }
 
         invokeLater {
-            val problems = PhpLinterWarningsParser.parse(myProject, myOutputListener.output.stderr)
-            val panel = ProblemsPanel(myProject, problems)
+            val problems = PhpLinterWarningsParser.parse(project, output().stderr)
+            val panel = ProblemsPanel(project, problems)
             myProblemsTab.panel.addToCenter(panel)
         }
     }
-
-    override fun icon(): Icon = MyIcons.phpLinter
 }

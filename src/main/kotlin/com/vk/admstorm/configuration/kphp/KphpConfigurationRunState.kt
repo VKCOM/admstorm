@@ -8,7 +8,7 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.vk.admstorm.env.Env
-import com.vk.admstorm.executors.BaseRunnableExecutor
+import com.vk.admstorm.executors.BaseRemoteExecutor
 import com.vk.admstorm.executors.KphpComplexRunExecutor
 import com.vk.admstorm.executors.KphpRunExecutor
 import com.vk.admstorm.git.sync.SyncChecker
@@ -21,7 +21,7 @@ class KphpConfigurationRunState(
     private val myEnv: ExecutionEnvironment,
     private val myRunConfiguration: KphpConfiguration
 ) : RunProfileState {
-    private val myExecutor: BaseRunnableExecutor
+    private val myExecutor: BaseRemoteExecutor
 
     init {
         val command = buildCommand()

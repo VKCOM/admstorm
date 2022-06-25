@@ -7,10 +7,12 @@ import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.KphpErrorsParser
 import com.vk.admstorm.ui.MyIcons
-import javax.swing.Icon
 
-class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
-    BaseRunnableExecutor(Config(name = "KPHP ${type.command}", command = command), project) {
+class KphpRunExecutor(
+    project: Project,
+    private val type: KphpRunType,
+    private val command: String
+) : BaseRemoteExecutor(project, "KPHP ${type.command}") {
 
     private val myCompilationErrorsTab = ProblemsTab("Compilation errors")
 
@@ -18,17 +20,23 @@ class KphpRunExecutor(project: Project, type: KphpRunType, command: String) :
         withTab(myCompilationErrorsTab)
     }
 
-    override fun onReady() {
+    override fun layoutName() = "KPHP ${type.command}"
+
+    override fun tabName() = "KPHP ${type.command}"
+
+    override fun command() = command
+
+    override fun icon() = MyIcons.kphp
+
+    override fun onFinish() {
         invokeLater {
-            myLayout.selectAndFocus(myCompilationErrorsTab.content, true, true)
+            selectTab(myCompilationErrorsTab)
         }
 
         invokeLater {
-            val problems = KphpErrorsParser.parse(myProject, myOutputListener.output.stdout)
-            val panel = ProblemsPanel(myProject, problems)
+            val problems = KphpErrorsParser.parse(project, output().stdout)
+            val panel = ProblemsPanel(project, problems)
             myCompilationErrorsTab.panel.addToCenter(panel)
         }
     }
-
-    override fun icon(): Icon = MyIcons.kphp
 }
