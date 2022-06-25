@@ -90,10 +90,10 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
 
             val klass = KBenchUtils.findBenchmarkClass(element) ?: return false
 
-            val fullName = klass.fqn
-            val name = KBenchUtils.className(fullName)
+            val fqn = klass.fqn
+            val name = klass.name
 
-            configuration.className = fullName
+            configuration.className = fqn
             configuration.name = "${namePrefix()} $name"
 
             return true
@@ -105,10 +105,10 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
                     return false
                 }
 
-                val fullName = parent.fqn
-                val name = KBenchUtils.className(fullName)
+                val fqn = parent.fqn
+                val name = parent.name
 
-                configuration.className = fullName
+                configuration.className = fqn
                 configuration.name = "${namePrefix()} $name"
             }
             is Method -> {
@@ -118,11 +118,11 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
 
                 val className = parent.containingClass?.fqn ?: return false
                 val methodName = parent.name
-                val fullName = KBenchUtils.className(className) + "::" + KBenchUtils.benchmarkName(methodName)
+                val fqn = KBenchUtils.className(className) + "::" + KBenchUtils.benchmarkName(methodName)
 
                 configuration.className = className
                 configuration.methodName = methodName
-                configuration.name = "${namePrefix()} $fullName"
+                configuration.name = "${namePrefix()} $fqn"
                 configuration.scope = KBenchScope.Method
             }
             else -> return false
