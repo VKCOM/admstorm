@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.PhpClassMember
 
-class KBenchImplicitTypeProvider : ImplicitUsageProvider {
+class KBenchImplicitUsageProvider : ImplicitUsageProvider {
     override fun isImplicitUsage(element: PsiElement): Boolean {
         if (element is PhpClass && KBenchUtils.isBenchmarkClass(element)) {
             return true

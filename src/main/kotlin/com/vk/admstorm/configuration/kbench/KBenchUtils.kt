@@ -4,15 +4,25 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiFile
 import com.intellij.util.TextFieldCompletionProvider
 import com.intellij.util.textCompletion.TextFieldWithCompletion
 import com.jetbrains.php.PhpClassHierarchyUtils
 import com.jetbrains.php.PhpIcons
 import com.jetbrains.php.PhpIndex
+import com.jetbrains.php.lang.psi.PhpFile
+import com.jetbrains.php.lang.psi.PhpPsiUtil
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 
 object KBenchUtils {
+    fun isBenchmarkFile(file: PsiFile): Boolean {
+        val phpFile = file as? PhpFile ?: return false
+        findBenchmarkClass(phpFile) ?: return false
+        return true
+    }
+
+    fun findBenchmarkClass(file: PhpFile) = PhpPsiUtil.findClass(file) { isBenchmarkClass(it) }
     fun isBenchmarkClass(klass: PhpClass) = isBenchmarkClass(klass.name)
     fun isBenchmarkClass(name: String) = name.startsWith("Benchmark")
     fun isBenchmarkMethod(method: Method) = method.name.startsWith("benchmark")
