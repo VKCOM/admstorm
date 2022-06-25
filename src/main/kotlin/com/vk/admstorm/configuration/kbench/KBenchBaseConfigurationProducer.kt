@@ -1,11 +1,13 @@
 package com.vk.admstorm.configuration.kbench
 
 import com.intellij.execution.actions.ConfigurationContext
+import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
+import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -36,23 +38,31 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
             return false
         }
 
-        val source = context.location?.psiElement ?: return false
-        val element = source.parent ?: return false
+        val element = context.location?.psiElement ?: return false
+        val parent = element.parent ?: return false
         val filename = context.location?.virtualFile?.path ?: return false
 
         if (configuration.benchType != benchType()) return false
 
-        return when (element) {
+        if (element is PhpFile) {
+            val klass = KBenchUtils.findBenchmarkClass(element) ?: return false
+
+            return configuration.filename == filename &&
+                    configuration.className == klass.fqn &&
+                    configuration.scope == KBenchScope.Class
+        }
+
+        return when (parent) {
             is PhpClass -> {
                 configuration.filename == filename &&
-                        configuration.className == element.fqn &&
+                        configuration.className == parent.fqn &&
                         configuration.scope == KBenchScope.Class
             }
             is Method -> {
-                val className = element.containingClass?.fqn ?: return false
+                val className = parent.containingClass?.fqn ?: return false
                 configuration.filename == filename &&
                         configuration.className == className &&
-                        configuration.methodName == element.name &&
+                        configuration.methodName == parent.name &&
                         configuration.scope == KBenchScope.Method
             }
             else -> false
@@ -66,37 +76,53 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
     ): Boolean {
         if (!configuration.project.pluginEnabled()) return false
 
-        val source = sourceElement.get()
-        val element = source.parent ?: return false
+        val element = sourceElement.get()
+        val parent = element.parent ?: return false
 
         val filename = context.location?.virtualFile?.path ?: return false
         configuration.filename = filename
         configuration.benchType = benchType()
 
-        when (element) {
+        if (element is PhpFile) {
+            if (!KBenchUtils.isBenchmarkFile(element)) {
+                return false
+            }
+
+            val klass = KBenchUtils.findBenchmarkClass(element) ?: return false
+
+            val fqn = klass.fqn
+            val name = klass.name
+
+            configuration.className = fqn
+            configuration.name = "${namePrefix()} $name"
+
+            return true
+        }
+
+        when (parent) {
             is PhpClass -> {
-                if (!KBenchUtils.isBenchmarkClass(element)) {
+                if (!KBenchUtils.isBenchmarkClass(parent)) {
                     return false
                 }
 
-                val fullName = element.fqn
-                val name = KBenchUtils.className(fullName)
+                val fqn = parent.fqn
+                val name = parent.name
 
-                configuration.className = fullName
+                configuration.className = fqn
                 configuration.name = "${namePrefix()} $name"
             }
             is Method -> {
-                if (!KBenchUtils.isBenchmarkMethod(element)) {
+                if (!KBenchUtils.isBenchmarkMethod(parent)) {
                     return false
                 }
 
-                val className = element.containingClass?.fqn ?: return false
-                val methodName = element.name
-                val fullName = KBenchUtils.className(className) + "::" + KBenchUtils.benchmarkName(methodName)
+                val className = parent.containingClass?.fqn ?: return false
+                val methodName = parent.name
+                val fqn = KBenchUtils.className(className) + "::" + KBenchUtils.benchmarkName(methodName)
 
                 configuration.className = className
                 configuration.methodName = methodName
-                configuration.name = "${namePrefix()} $fullName"
+                configuration.name = "${namePrefix()} $fqn"
                 configuration.scope = KBenchScope.Method
             }
             else -> return false
@@ -104,4 +130,7 @@ abstract class KBenchBaseConfigurationProducer : LazyRunConfigurationProducer<KB
 
         return true
     }
+
+    override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext) =
+        other.configuration !is KBenchConfiguration
 }
