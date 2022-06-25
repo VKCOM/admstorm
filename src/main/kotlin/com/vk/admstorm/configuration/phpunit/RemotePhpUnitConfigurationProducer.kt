@@ -1,6 +1,7 @@
 package com.vk.admstorm.configuration.phpunit
 
 import com.intellij.execution.actions.ConfigurationContext
+import com.intellij.execution.actions.ConfigurationFromContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.openapi.util.Ref
@@ -10,15 +11,14 @@ import com.intellij.psi.util.findParentOfType
 import com.jetbrains.php.lang.psi.PhpFile
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl
+import com.jetbrains.php.phpunit.PhpUnitLocalRunConfiguration
 import com.jetbrains.php.phpunit.PhpUnitUtil
 import com.vk.admstorm.utils.MyPathUtils.resolveProjectDir
 import com.vk.admstorm.utils.extensions.normalizeSlashes
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.io.File
 
-open class RemotePhpUnitConfigurationProducer :
-    LazyRunConfigurationProducer<RemotePhpUnitConfiguration>() {
-
+open class RemotePhpUnitConfigurationProducer : LazyRunConfigurationProducer<RemotePhpUnitConfiguration>() {
     override fun getConfigurationFactory() =
         ConfigurationTypeUtil.findConfigurationType(RemotePhpUnitConfigurationType::class.java).configurationFactories[0]
 
@@ -125,7 +125,7 @@ open class RemotePhpUnitConfigurationProducer :
             conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
             conf.phpUnitConfig = "$projectDir/tests/api/phpunit.xml"
 
-            return setupCommonTest(conf, element, filepath, suffix)
+            return setupCommonTest(conf, element, filepath, source, suffix)
         }
 
         if (isPackageTest(element)) {
@@ -137,19 +137,20 @@ open class RemotePhpUnitConfigurationProducer :
             conf.phpUnitExe = (packageRoot ?: projectDir) + "/vendor/bin/phpunit"
             conf.phpUnitConfig = (packageRoot ?: projectDir) + "/phpunit.xml"
 
-            return setupCommonTest(conf, element, filepath, suffix, replaceDirectoryName = true)
+            return setupCommonTest(conf, element, filepath, source, suffix, replaceDirectoryName = true)
         }
 
         conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
         conf.phpUnitConfig = "$projectDir/phpunit.xml"
 
-        return setupCommonTest(conf, element, filepath)
+        return setupCommonTest(conf, element, filepath, source)
     }
 
     private fun setupCommonTest(
         conf: RemotePhpUnitConfiguration,
         element: PsiElement,
         filepath: String,
+        source: Ref<PsiElement>,
         suffixName: String = "",
         replaceDirectoryName: Boolean = false,
     ): Boolean {
@@ -170,8 +171,8 @@ open class RemotePhpUnitConfigurationProducer :
             val configName = if (replaceDirectoryName) "Remote$suffixName" else "Remote '$lastDir'$suffixName"
 
             conf.name = configName
-            conf.scope = PhpUnitScope.Directory
             conf.directory = path
+            conf.scope = PhpUnitScope.Directory
 
             return true
         }
@@ -190,6 +191,8 @@ open class RemotePhpUnitConfigurationProducer :
             conf.className = klass.fqn
             conf.filename = filepath
             conf.scope = PhpUnitScope.Class
+
+            source.set(klass)
 
             return true
         }
@@ -234,4 +237,10 @@ open class RemotePhpUnitConfigurationProducer :
 
         return false
     }
+
+    override fun isPreferredConfiguration(self: ConfigurationFromContext, other: ConfigurationFromContext) =
+        other.configuration is PhpUnitLocalRunConfiguration
+
+    override fun shouldReplace(self: ConfigurationFromContext, other: ConfigurationFromContext) =
+        other.configuration is PhpUnitLocalRunConfiguration
 }
