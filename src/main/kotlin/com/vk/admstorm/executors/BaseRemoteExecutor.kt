@@ -149,6 +149,10 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
      * Selects and focus passed tab.
      */
     fun selectTab(tab: Tab) {
+        if (tab.content == null) {
+            return
+        }
+
         layout.selectAndFocus(tab.content, true, true)
     }
 
