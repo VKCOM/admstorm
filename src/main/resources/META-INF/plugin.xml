@@ -47,9 +47,9 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <applicationService serviceImplementation="com.vk.admstorm.settings.AdmStormSettingsState"/>
-    <applicationConfigurable parentId="tools" instance="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
-                             id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
-                             displayName="AdmStorm"/>
+    <projectConfigurable parentId="tools" instance="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                         id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                         displayName="AdmStorm"/>
 
     <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.DebugLogLineMarkerProvider" language="PHP"
                                     implementationClass="com.vk.admstorm.highlight.DebugLogLineMarkerProvider"/>
