@@ -38,7 +38,7 @@ class RemotePhpUnitConfigurationRunState(
             }
 
             val workingDir =
-                if (!runConfig.isApiTest) null
+                if (!runConfig.isApiTest) "${Env.data.projectRoot}/tests/api"
                 else "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
 
             val consoleProperties = RemotePhpUnitConsoleProperties(runConfig, exec)
@@ -48,7 +48,7 @@ class RemotePhpUnitConfigurationRunState(
                     consoleProperties
                 ) as SMTRunnerConsoleView
 
-            val fullCommand = if (workingDir != null) "cd $workingDir && $command" else command
+            val fullCommand = "cd $workingDir && $command"
             val handler = MySshUtils.exec(env.project, fullCommand) ?: return null
 
             console.attachToProcess(handler)

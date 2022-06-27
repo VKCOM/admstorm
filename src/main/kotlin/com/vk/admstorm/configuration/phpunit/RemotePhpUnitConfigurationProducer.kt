@@ -123,7 +123,7 @@ open class RemotePhpUnitConfigurationProducer : LazyRunConfigurationProducer<Rem
 
             conf.isApiTest = true
             conf.phpUnitExe = "$projectDir/vendor/bin/phpunit"
-            conf.phpUnitConfig = "$projectDir/tests/api/phpunit.xml"
+            conf.phpUnitConfig = "$projectDir/phpunit.xml"
 
             return setupCommonTest(conf, element, filepath, source, suffix)
         }
