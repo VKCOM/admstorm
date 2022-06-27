@@ -1,7 +1,6 @@
 package com.vk.admstorm.configuration.kbench
 
 import com.intellij.execution.DefaultExecutionResult
-import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -10,7 +9,6 @@ import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.runner.SMTestProxy
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.*
@@ -26,9 +24,6 @@ import com.jetbrains.php.lang.psi.elements.Method
 import com.jetbrains.php.lang.psi.elements.PhpClass
 import com.vk.admstorm.configuration.kphp.KphpUtils
 import com.vk.admstorm.env.Env
-import com.vk.admstorm.git.sync.SyncChecker
-import com.vk.admstorm.notifications.AdmNotification
-import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MySshUtils
@@ -120,7 +115,7 @@ class KBenchConfigurationRunState(
         val methodFilter = if (conf.scope == KBenchScope.Method) {
             val className = conf.className.split('\\').lastOrNull() ?: ""
             val methodName = KBenchUtils.benchmarkName(conf.methodName)
-            "--run '$className::$methodName'"
+            "--run '$className::$methodName$'"
         } else {
             "--run '.*'"
         }
@@ -136,13 +131,7 @@ class KBenchConfigurationRunState(
                 " $filename"
     }
 
-    override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
-        ApplicationManager.getApplication().invokeAndWait {
-            doCheckSync()
-        }
-
-        return doBench()
-    }
+    override fun execute(executor: Executor?, runner: ProgramRunner<*>) = doBench()
 
     private fun doBench(): DefaultExecutionResult? {
         if (!SshConnectionService.getInstance(env.project).isConnectedOrWarning()) {
@@ -166,24 +155,6 @@ class KBenchConfigurationRunState(
         smTestProxy.setSuiteStarted()
 
         return DefaultExecutionResult(console, handler)
-    }
-
-    private fun doCheckSync() {
-        SyncChecker.getInstance(env.project).doCheckSyncSilentlyTask({
-            onCanceledSync()
-        }) {}
-    }
-
-    private fun onCanceledSync() {
-        AdmWarningNotification("Current launch may not be correct due to out of sync")
-            .withTitle("Launch on out of sync")
-            .withActions(
-                AdmNotification.Action("Synchronize...") { _, notification ->
-                    notification.expire()
-                    SyncChecker.getInstance(env.project).doCheckSyncSilentlyTask({}, {})
-                }
-            )
-            .show()
     }
 
     class SelectClassDialog(

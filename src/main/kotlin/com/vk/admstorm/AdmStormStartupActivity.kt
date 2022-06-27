@@ -125,6 +125,8 @@ class AdmStormStartupActivity : StartupActivity {
                     showWelcomeMessage(project)
 
                     onReady?.run()
+
+                    LOG.warn("Project '${project.name}' is ready")
                 } catch (e: SshException) {
                     LOG.warn("Unexpected exception while afterConnectionTasks", e)
                 }
