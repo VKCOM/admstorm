@@ -1,19 +1,19 @@
 package com.vk.admstorm.settings
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.dsl.builder.BottomGap
-import com.intellij.ui.dsl.builder.bind
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.bindSelected
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.vk.admstorm.git.GitConflictResolutionStrategy
+import com.vk.admstorm.ui.StatusBarUtils
+import com.vk.admstorm.ui.WatchDebugLogStatusBarWidget
+import com.vk.admstorm.ui.YarnWatchStatusBarWidget
 import com.vk.admstorm.utils.ServerNameProvider
 
 /**
  * Provides controller functionality for application settings.
  */
-class AdmStormSettingsConfigurable : Configurable {
+class AdmStormSettingsConfigurable(private val project: Project) : Configurable {
     data class Model(
         var connectWhenProjectStarts: Boolean,
         var checkSyncOnFocus: Boolean,
@@ -22,6 +22,8 @@ class AdmStormSettingsConfigurable : Configurable {
         var pushToServerAfterCommit: Boolean,
         var runPhpLinterAsInTeamcity: Boolean,
         var askYubikeyPassword: Boolean,
+        var showYarnWatchWidget: Boolean,
+        var showWatchDebugLogWidget: Boolean,
         var userNameForSentry: String,
     )
 
@@ -34,6 +36,8 @@ class AdmStormSettingsConfigurable : Configurable {
         pushToServerAfterCommit = false,
         runPhpLinterAsInTeamcity = false,
         askYubikeyPassword = false,
+        showYarnWatchWidget = true,
+        showWatchDebugLogWidget = true,
         userNameForSentry = "",
     )
 
@@ -82,6 +86,19 @@ class AdmStormSettingsConfigurable : Configurable {
                 }
             }
 
+            group("Status Bar Tools") {
+                row {
+                    checkBox("Enable yarn watch widget")
+                        .comment("Shows the yarn watch status bar widget.")
+                        .bindSelected(model::showYarnWatchWidget)
+                }
+                row {
+                    checkBox("Enable watch debug log widget")
+                        .comment("Shows the watch debug log status bar widget.")
+                        .bindSelected(model::showWatchDebugLogWidget)
+                }
+            }
+
             group("Additional") {
                 row {
                     checkBox("Ask password for Yubikey when it is automatically reset")
@@ -114,6 +131,8 @@ class AdmStormSettingsConfigurable : Configurable {
                 model.runPhpLinterAsInTeamcity != settings.runPhpLinterAsInTeamcityWhenPushToGitlab ||
                 model.pushToServerAfterCommit != settings.pushToServerAfterCommit ||
                 model.askYubikeyPassword != settings.askYubikeyPassword ||
+                model.showYarnWatchWidget != settings.showYarnWatchWidget ||
+                model.showWatchDebugLogWidget != settings.showWatchDebugLogWidget ||
                 model.userNameForSentry != settings.userNameForSentry
     }
 
@@ -121,7 +140,7 @@ class AdmStormSettingsConfigurable : Configurable {
         mainPanel.apply()
 
         val settings = AdmStormSettingsState.getInstance()
-        settings.apply {
+        with(settings) {
             needSyncBranchCheckout = model.syncBranchCheckout
             checkoutConflictResolutionStrategy = model.checkoutConflictResolutionStrategy
             checkSyncOnFocus = model.checkSyncOnFocus
@@ -129,13 +148,30 @@ class AdmStormSettingsConfigurable : Configurable {
             runPhpLinterAsInTeamcityWhenPushToGitlab = model.runPhpLinterAsInTeamcity
             pushToServerAfterCommit = model.pushToServerAfterCommit
             askYubikeyPassword = model.askYubikeyPassword
+            showYarnWatchWidget = model.showYarnWatchWidget
+            showWatchDebugLogWidget = model.showWatchDebugLogWidget
             userNameForSentry = model.userNameForSentry
         }
+
+        StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidget.WIDGET_ID, model.showYarnWatchWidget)
+        StatusBarUtils.setEnabled(project, WatchDebugLogStatusBarWidget.WIDGET_ID, model.showWatchDebugLogWidget)
     }
 
     override fun reset() {
         val settings = AdmStormSettingsState.getInstance()
-        model.apply {
+
+        // Users can change settings in a context menu of the status bar, so need check.
+        val actualYarnWatchVisibility = StatusBarUtils.getEnabled(project, YarnWatchStatusBarWidget.WIDGET_ID)
+        val actualWatchDebugLogVisibility = StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidget.WIDGET_ID)
+
+        if (settings.showYarnWatchWidget != actualYarnWatchVisibility) {
+            settings.showYarnWatchWidget = actualYarnWatchVisibility
+        }
+        if (settings.showWatchDebugLogWidget != actualWatchDebugLogVisibility) {
+            settings.showWatchDebugLogWidget = actualWatchDebugLogVisibility
+        }
+
+        with(model) {
             syncBranchCheckout = settings.needSyncBranchCheckout
             checkoutConflictResolutionStrategy = settings.checkoutConflictResolutionStrategy
             checkSyncOnFocus = settings.checkSyncOnFocus
@@ -143,6 +179,8 @@ class AdmStormSettingsConfigurable : Configurable {
             runPhpLinterAsInTeamcity = settings.runPhpLinterAsInTeamcityWhenPushToGitlab
             pushToServerAfterCommit = settings.pushToServerAfterCommit
             askYubikeyPassword = settings.askYubikeyPassword
+            showYarnWatchWidget = settings.showYarnWatchWidget
+            showWatchDebugLogWidget = settings.showWatchDebugLogWidget
             userNameForSentry = settings.userNameForSentry
         }
 

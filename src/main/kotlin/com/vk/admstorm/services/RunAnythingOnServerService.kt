@@ -1,7 +1,6 @@
 package com.vk.admstorm.services
 
 import com.intellij.execution.RunManager
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -10,6 +9,7 @@ import com.vk.admstorm.configuration.runanything.RunAnythingConfiguration
 import com.vk.admstorm.configuration.runanything.RunAnythingConfigurationFactory
 import com.vk.admstorm.configuration.runanything.RunAnythingConfigurationType
 import com.vk.admstorm.executors.RunAnythingExecutor
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.ServerNameProvider
 
 @Service
@@ -34,7 +34,7 @@ class RunAnythingOnServerService(private val project: Project) {
 
         invokeLater {
             val executor = RunAnythingExecutor(project, command)
-            ApplicationManager.getApplication().executeOnPooledThread {
+            executeOnPooledThread {
                 executor.run()
             }
         }

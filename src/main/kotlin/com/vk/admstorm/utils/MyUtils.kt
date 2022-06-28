@@ -198,6 +198,10 @@ object MyUtils {
         return result!!
     }
 
+    inline fun executeOnPooledThread(crossinline block: () -> Unit) {
+        ApplicationManager.getApplication().executeOnPooledThread { block() }
+    }
+
     inline fun invokeAfter(delay: Long, crossinline block: () -> Unit) {
         Timer().schedule(object : TimerTask() {
             override fun run() {
@@ -205,6 +209,4 @@ object MyUtils {
             }
         }, delay)
     }
-
-    fun String.unquote() = removeSurrounding("\"").removeSurrounding("'")
 }

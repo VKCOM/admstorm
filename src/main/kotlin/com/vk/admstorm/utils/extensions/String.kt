@@ -55,3 +55,5 @@ fun String.fixIndent(): String {
 
     return this
 }
+
+fun String.unquote() = removeSurrounding("\"").removeSurrounding("'")

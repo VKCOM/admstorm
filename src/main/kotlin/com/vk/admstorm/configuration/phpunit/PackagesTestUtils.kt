@@ -4,7 +4,7 @@ import com.intellij.json.JsonUtil
 import com.intellij.json.psi.JsonFile
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.utils.MyUtils
-import com.vk.admstorm.utils.MyUtils.unquote
+import com.vk.admstorm.utils.extensions.unquote
 import java.io.File
 
 object PackagesTestUtils {

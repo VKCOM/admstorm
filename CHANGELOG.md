@@ -5,6 +5,7 @@
 ### Added
 
 - Action on the Help menu to send logs to Sentry.
+- Debug log console like yarn watch
 
 ### Other improvements
 

@@ -47,9 +47,9 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <applicationService serviceImplementation="com.vk.admstorm.settings.AdmStormSettingsState"/>
-    <applicationConfigurable parentId="tools" instance="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
-                             id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
-                             displayName="AdmStorm"/>
+    <projectConfigurable parentId="tools" instance="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                         id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
+                         displayName="AdmStorm"/>
 
     <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.DebugLogLineMarkerProvider" language="PHP"
                                     implementationClass="com.vk.admstorm.highlight.DebugLogLineMarkerProvider"/>
@@ -58,12 +58,17 @@
                             implementation="com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory"
                             order="before gitWidget"/>
 
+    <statusBarWidgetFactory id="com.vk.admstorm.ui.status.bar.watch.debug.log"
+                            implementation="com.vk.admstorm.ui.WatchDebugLogStatusBarWidgetFactory"
+                            order="before com.vk.admstorm.ui.status.bar.yarn.watch"/>
+
     <projectService serviceImplementation="com.vk.admstorm.AdmService"/>
     <projectService serviceImplementation="com.vk.admstorm.ssh.SshConnectionService"/>
     <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
     <projectService serviceImplementation="com.vk.admstorm.AdmStormStartupActivity"/>
     <projectService serviceImplementation="com.vk.admstorm.services.YarnWatchService"/>
+    <projectService serviceImplementation="com.vk.admstorm.services.WatchDebugLogService"/>
     <projectService serviceImplementation="com.vk.admstorm.services.RunAnythingOnServerService"/>
 
     <!-- Run Anything Configuration -->
@@ -118,6 +123,7 @@
 
     <executor implementation="com.vk.admstorm.executors.AdmToolsExecutor" id="AdmTools"/>
     <executor implementation="com.vk.admstorm.executors.YarnWatchExecutor" id="YarnWatch"/>
+    <executor implementation="com.vk.admstorm.executors.WatchDebugLogExecutor" id="WatchDebugLog"/>
 
     <vcs.changes.localCommitExecutor
             implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
@@ -208,6 +214,12 @@
     <action id="com.vk.admstorm.yarn.watch"
             class="com.vk.admstorm.actions.YarnWatchAction"
             text="Yarn Watch">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </action>
+
+    <action id="com.vk.admstorm.watch.logs"
+            class="com.vk.admstorm.actions.WatchDebugLogAction"
+            text="Watch Debug Logs">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
     </action>
 

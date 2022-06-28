@@ -28,6 +28,8 @@ class AdmStormSettingsState : PersistentStateComponent<AdmStormSettingsState?> {
     var runPhpLinterAsInTeamcityWhenPushToGitlab = false
     var pushToServerAfterCommit = true
     var askYubikeyPassword = true
+    var showYarnWatchWidget = true
+    var showWatchDebugLogWidget = true
     var userNameForSentry = ""
 
     override fun getState() = this
