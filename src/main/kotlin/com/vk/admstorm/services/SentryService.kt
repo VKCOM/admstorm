@@ -6,7 +6,6 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.vk.admstorm.AdmService
@@ -35,7 +34,7 @@ class SentryService(project: Project) {
 
     init {
         val config = ConfigService.getInstance(project)
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID))
+        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)
         val application = ApplicationInfo.getInstance()
 
         if (config.sentryDsn.isEmpty()) {
