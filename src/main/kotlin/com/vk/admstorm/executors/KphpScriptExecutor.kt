@@ -3,7 +3,6 @@ package com.vk.admstorm.executors
 import com.intellij.execution.Output
 import com.intellij.execution.OutputListener
 import com.intellij.execution.process.ProcessEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.kphp.KphpConfiguration
@@ -15,6 +14,7 @@ import com.vk.admstorm.executors.tabs.DiffTab
 import com.vk.admstorm.parsers.KphpScriptOutputParser
 import com.vk.admstorm.ui.MyIcons
 import com.vk.admstorm.utils.MySshUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import java.util.function.BiConsumer
 
 class KphpScriptExecutor(
@@ -64,13 +64,13 @@ class KphpScriptExecutor(
             selectTab(kphpOutputTab)
         }
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             if (output.exitCode == 0) {
                 executeKphpScriptBinary()
             }
         }
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             executePhpScript()
         }
     }

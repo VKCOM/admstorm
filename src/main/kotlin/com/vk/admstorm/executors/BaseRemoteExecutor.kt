@@ -32,6 +32,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils.copyToClipboard
 import com.vk.admstorm.utils.MyUtils.createHaste
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import com.vk.admstorm.utils.ServerNameProvider
 import javax.swing.Icon
@@ -87,7 +88,7 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
     }
 
     private val hasteOutputAction = SimpleToolbarAction("Haste launch output", AllIcons.Actions.MoveTo2) { e ->
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             val output = outputListener.output.stdout + outputListener.output.stderr
             val link = createHaste(e.project!!, output)
             copyToClipboard(link)
@@ -115,6 +116,8 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
      * Since the plugin sends an SSH command to start execution, it's
      * advisable to execute this method in a separate thread
      * so that there is no UI freeze.
+     *
+     * @return true, if plugin successfully started the execution, false otherwise.
      */
     fun run() = runImpl()
 
@@ -264,10 +267,10 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
         clearOutputsAction
     )
 
-    private fun runImpl() {
+    private fun runImpl(): Boolean {
         clearTabs()
 
-        processHandler = MySshUtils.exec(project, command(), command(), workingDir()) ?: return
+        processHandler = MySshUtils.exec(project, command(), command(), workingDir()) ?: return false
         console.view().attachToProcess(processHandler)
         console.clear()
 
@@ -278,6 +281,8 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
         }
 
         processHandler.startNotify()
+
+        return true
     }
 
     private fun setupListeners() {

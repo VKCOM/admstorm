@@ -1,11 +1,11 @@
 package com.vk.admstorm.configuration.kphp
 
 import com.intellij.execution.ExecutionResult
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.KphpScriptExecutor
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 
 class KphpScriptRunner(
     private val project: Project,
@@ -73,7 +73,7 @@ class KphpScriptRunner(
             }
         }
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             executor.run()
         }
         return null

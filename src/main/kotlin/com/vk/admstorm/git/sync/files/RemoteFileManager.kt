@@ -18,6 +18,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.MyUtils.runConditionalModal
 import com.vk.admstorm.utils.MyUtils.virtualFileByRelativePath
@@ -149,7 +150,7 @@ class RemoteFileManager(private val myProject: Project) {
     }
 
     fun rewriteRemoteFileWithLocalContent(localFile: VirtualFile, onReady: Runnable? = null) {
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             val remotePath = MyPathUtils.remotePathByLocalPath(myProject, localFile.path)
             val perm = GitUtils.remoteGetPermission(myProject, remotePath)
             LOG.info("File '$remotePath' permissions is $perm")
