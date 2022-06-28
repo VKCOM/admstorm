@@ -5,13 +5,13 @@ import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.application.ApplicationManager
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.PhpLinterExecutor
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.ServerNameProvider
 
 class PhpLinterConfigurationRunState(
@@ -46,7 +46,7 @@ class PhpLinterConfigurationRunState(
     }
 
     private fun doLint() {
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             myExecutor.run()
         }
     }

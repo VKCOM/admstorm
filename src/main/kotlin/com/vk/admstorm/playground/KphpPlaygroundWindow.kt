@@ -48,6 +48,7 @@ import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import com.vk.admstorm.utils.extensions.fixIndent
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -124,7 +125,7 @@ require_once 'vendor/autoload.php';
         override fun actionPerformed(e: AnActionEvent) {
             val content = myEditor.document.text
 
-            ApplicationManager.getApplication().executeOnPooledThread {
+            executeOnPooledThread {
                 val link = MyUtils.createHaste(myProject, content)
                 MyUtils.copyToClipboard(link)
 
@@ -150,7 +151,7 @@ require_once 'vendor/autoload.php';
             }
             val rawLink = link.replace(".com/", ".com/raw/")
 
-            ApplicationManager.getApplication().executeOnPooledThread {
+            executeOnPooledThread {
                 val data = MyUtils.readFromWeb(rawLink)
                 if (data == null) {
                     showShareLabel("Unable get code from link", isError = true)

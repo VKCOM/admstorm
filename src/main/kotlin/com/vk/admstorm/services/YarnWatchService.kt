@@ -2,12 +2,12 @@ package com.vk.admstorm.services
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import java.beans.PropertyChangeSupport
 
@@ -24,7 +24,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         WITH_ERRORS
     }
 
-    private var executor: YarnWatchCommandExecutor? = null
+    private lateinit var executor: YarnWatchCommandExecutor
     val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
@@ -42,22 +42,24 @@ class YarnWatchService(private val myProject: Project) : Disposable {
             return
         }
 
-        invokeLater {
-            executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
-            executor?.run()
-            setWorking(true)
+        executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
+
+        executeOnPooledThread {
+            if (executor.run()) {
+                setWorking(true)
+            }
         }
     }
 
     fun stop() {
         if (isRunning()) {
-            executor?.stop()
+            executor.stop()
         }
         setWorking(false)
     }
 
     fun showConsole() {
-        executor?.showToolWindow()
+        executor.showToolWindow()
         clearErrorsState()
     }
 
@@ -67,7 +69,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         // Если окно не открыто, то бесконечно показываем
         // анимацию ошибки, если же открыто, то только 5
         // секунд.
-        if (executor!!.isToolWindowVisible()) {
+        if (executor.isToolWindowVisible()) {
             invokeAfter(5000) {
                 clearErrorsState()
             }
@@ -97,6 +99,6 @@ class YarnWatchService(private val myProject: Project) : Disposable {
     private fun isConnected() = SshConnectionService.getInstance(myProject).isConnectedOrWarning()
 
     override fun dispose() {
-        executor?.dispose()
+        executor.dispose()
     }
 }
