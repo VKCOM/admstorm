@@ -25,13 +25,7 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
     private var panel: ToolsStatusBarPanel? = null
     private val service = YarnWatchService.getInstance(project)
 
-    private val animatedErrorIcon = AnimatedIcon(object : AnimatedIcon.Frame {
-        override fun getIcon(): Icon = MyIcons.toolError
-        override fun getDelay(): Int = 600
-    }, object : AnimatedIcon.Frame {
-        override fun getIcon(): Icon = MyIcons.toolStopped
-        override fun getDelay(): Int = 600
-    })
+    private val animatedErrorIcon = AnimatedIcon(600, MyIcons.toolError, MyIcons.toolStopped)
 
     override fun getWidgetState(file: VirtualFile?): WidgetState {
         return when (YarnWatchService.getInstance(project).state()) {
@@ -49,7 +43,7 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
 
     override fun createPopup(context: DataContext): ListPopup? {
         val state = getWidgetState(null)
-        if (state !is YarnWidgetState || editor == null) {
+        if (state !is YarnWidgetState) {
             return null
         }
 

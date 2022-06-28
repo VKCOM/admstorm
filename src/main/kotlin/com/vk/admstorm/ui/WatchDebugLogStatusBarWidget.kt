@@ -37,7 +37,7 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
 
     override fun createPopup(context: DataContext): ListPopup? {
         val state = getWidgetState(null)
-        if (state !is DebugLogWidgetState || editor == null) {
+        if (state !is DebugLogWidgetState) {
             return null
         }
 
