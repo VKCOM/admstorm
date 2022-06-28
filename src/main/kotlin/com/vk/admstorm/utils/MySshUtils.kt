@@ -17,6 +17,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.ssh.YubikeyHandler
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.lang.reflect.Field
@@ -56,7 +57,7 @@ object MySshUtils {
 
         val command = "ssh -vCNR $port:localhost:$port -N ${credentials.userName}@${credentials.host}"
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             runLocally(project, command, true, processListener)
         }
     }

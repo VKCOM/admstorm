@@ -1,6 +1,5 @@
 package com.vk.admstorm.transfer
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
@@ -20,6 +19,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyPathUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.ServerNameProvider
 import net.schmizz.sshj.common.StreamCopier
 import net.schmizz.sshj.sftp.SFTPFileTransfer
@@ -86,7 +86,7 @@ class TransferService(private var myProject: Project) {
         val remoteFile = sftpChannel.file(remoteAbsPath)
         val localIOFile = File(localFile.path)
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             transfer(localIOFile, remoteFile, TransferType.UPLOAD) { res ->
                 when (res.result) {
                     TransferResult.SUCCESS -> {
@@ -181,7 +181,7 @@ class TransferService(private var myProject: Project) {
                 val remoteFileName = remoteFile.name()
                 val localFile = File.createTempFile("adm-", remoteFileName)
 
-                ApplicationManager.getApplication().executeOnPooledThread {
+                executeOnPooledThread {
                     transfer(localFile, remoteFile, TransferType.DOWNLOAD) { result ->
                         if (result.result == TransferResult.SUCCESS) {
                             myRemoteEditingFiles[remoteFile] = localFile.absolutePath

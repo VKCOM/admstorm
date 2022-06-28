@@ -2,12 +2,12 @@ package com.vk.admstorm.services
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import java.beans.PropertyChangeSupport
 
@@ -42,10 +42,12 @@ class YarnWatchService(private val myProject: Project) : Disposable {
             return
         }
 
-        invokeLater {
-            executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
-            executor.run()
-            setWorking(true)
+        executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
+
+        executeOnPooledThread {
+            if (executor.run()) {
+                setWorking(true)
+            }
         }
     }
 
