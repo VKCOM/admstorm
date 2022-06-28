@@ -1,18 +1,21 @@
 package com.vk.admstorm
 
+import com.intellij.ide.BrowserUtil
+import com.intellij.ide.plugins.InstalledPluginsState
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.util.RunOnceUtil
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.fileTypes.impl.AbstractFileType
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
@@ -135,7 +138,7 @@ class AdmStormStartupActivity : StartupActivity {
     }
 
     private fun showWelcomeMessage(project: Project) {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId(AdmService.PLUGIN_ID)) ?: return
+        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID) ?: return
         RunOnceUtil.runOnceForApp("com.vk.admstorm.welcome.test.message.${plugin.version}") {
             AdmNotification(
                 """
@@ -246,10 +249,35 @@ class AdmStormStartupActivity : StartupActivity {
             }
         }
 
+        checkUpdates(project)
+
         // Это необходимо чтобы для бенчмарков показывались все пункты в списке
         // который открывается при клике на иконку рядом с классом или методом.
         val key = Registry.get("suggest.all.run.configurations.from.context")
         key.setValue(true)
+    }
+
+    private fun checkUpdates(project: Project) {
+        val hasNewerVersion = InstalledPluginsState.getInstance().hasNewerVersion(AdmService.PLUGIN_ID)
+        if (!hasNewerVersion) {
+            return
+        }
+
+        AdmNotification("New version of the plugin is available")
+            .withActions(
+                AdmNotification.Action("Update") { _, _ ->
+                    invokeLater {
+                        ShowSettingsUtil.getInstance().showSettingsDialog(project, "Plugins")
+                    }
+                }
+            )
+            .withActions(
+                AdmNotification.Action("What's new") { _, _ ->
+                    val url = "https://vkcom.github.io/admstorm/whatsnew.html?server_name=${ServerNameProvider.name()}"
+                    BrowserUtil.browse(url)
+                }
+            )
+            .show(project)
     }
 
     private fun setupLogger(project: Project) {
