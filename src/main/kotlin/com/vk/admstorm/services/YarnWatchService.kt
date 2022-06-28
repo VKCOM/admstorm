@@ -24,7 +24,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         WITH_ERRORS
     }
 
-    private lateinit var executor: YarnWatchCommandExecutor
+    private var executor: YarnWatchCommandExecutor? = null
     val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
@@ -45,7 +45,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         executor = YarnWatchCommandExecutor(myProject, "FORCE_COLOR=true yarn watch")
 
         executeOnPooledThread {
-            if (executor.run()) {
+            if (executor!!.run()) {
                 setWorking(true)
             }
         }
@@ -53,13 +53,13 @@ class YarnWatchService(private val myProject: Project) : Disposable {
 
     fun stop() {
         if (isRunning()) {
-            executor.stop()
+            executor?.stop()
         }
         setWorking(false)
     }
 
     fun showConsole() {
-        executor.showToolWindow()
+        executor?.showToolWindow()
         clearErrorsState()
     }
 
@@ -69,7 +69,7 @@ class YarnWatchService(private val myProject: Project) : Disposable {
         // Если окно не открыто, то бесконечно показываем
         // анимацию ошибки, если же открыто, то только 5
         // секунд.
-        if (executor.isToolWindowVisible()) {
+        if (executor!!.isToolWindowVisible()) {
             invokeAfter(5000) {
                 clearErrorsState()
             }
@@ -99,6 +99,6 @@ class YarnWatchService(private val myProject: Project) : Disposable {
     private fun isConnected() = SshConnectionService.getInstance(myProject).isConnectedOrWarning()
 
     override fun dispose() {
-        executor.dispose()
+        executor?.dispose()
     }
 }

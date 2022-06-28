@@ -2,13 +2,13 @@ package com.vk.admstorm.services
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.WatchDebugLogCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import java.beans.PropertyChangeSupport
 
 @Service
@@ -41,10 +41,12 @@ class WatchDebugLogService(private val project: Project) : Disposable {
             return
         }
 
-        invokeLater {
-            executor = WatchDebugLogCommandExecutor(project, "${Env.data.vkCommand} debug")
-            executor?.run()
-            setWorking(true)
+        executor = WatchDebugLogCommandExecutor(project, "${Env.data.vkCommand} debug")
+
+        executeOnPooledThread {
+            if (executor!!.run()) {
+                setWorking(true)
+            }
         }
     }
 
