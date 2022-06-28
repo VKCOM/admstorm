@@ -1,7 +1,6 @@
 package com.vk.admstorm.ssh
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -23,6 +22,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MySshUtils
+import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.io.IOException
@@ -121,7 +121,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
         // Disconnect the current connection, if it exists.
         disconnect()
 
-        ApplicationManager.getApplication().executeOnPooledThread {
+        executeOnPooledThread {
             // See also [com.jetbrains.plugins.remotesdk.tools.RemoteTool.startRemoteProcess]
             @Suppress("UnstableApiUsage")
             myConnectionBuilder = myCredentials!!.connectionBuilder(
