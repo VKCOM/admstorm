@@ -1,11 +1,34 @@
 # AdmStorm Changelog
 
-## [Unreleased]
+## 1.3.1 — 29.06.2022
 
 ### Added
 
 - Action on the Help menu to send logs to Sentry.
 - Debug log console like yarn watch
+
+### Other improvements
+
+- Users can now run PHPUnit tests from the context menu of a file.
+- Users can now run ktest benchmarks from the context menu of a file.
+- On the installation page, the point about opening the project has been clarified.
+- On the installation page, the section about Yubikey has been updated, 
+- Added a clarification about the settings page.
+- Added settings to enable/disable widgets.
+- Updated api tests.
+- Added checking of the new plugin version available.
+
+### Fixed
+
+- Freeze when running a PHPUnit test, or a ktest benchmark.
+- Freeze when connection is lost for yarn watch.
+- Launch of a separate benchmark method, now if a method with a name that's a prefix for the name of other methods is launched, then other methods won't be launched.
+- Exception when the plugin automatically opens a new SSH tunnel.
+- Performance warning for line marker for ktest.
+- Yarn watch no longer appears in non-vkcom projects.
+- Order of arguments for new api tests.
+- Server name on the plugin settings page to the correct one Dev-server.
+- Bug when mark yarn watch as running when connection is lost.
 
 ## 1.3.0 — 22.06.2022
 
