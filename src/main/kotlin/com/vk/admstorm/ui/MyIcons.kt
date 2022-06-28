@@ -9,8 +9,9 @@ object MyIcons {
     val kphpBench = icon("/icons/kphp-bench.svg")
     val phpLinter = icon("/icons/php-linter.svg")
     val yarn = icon("/icons/yarn")
-    val yarnWatchWorking = icon("/icons/yarn-working")
-    val yarnWatchError = icon("/icons/yarn-error")
-    val yarnWatchStopped = icon("/icons/yarn-disabled")
+    val toolWorking = icon("/icons/tool-working")
+    val toolError = icon("/icons/tool-error")
+    val toolStopped = icon("/icons/tool-stopped")
     val sentry = icon("/icons/sentry")
+    val logs = icon("/icons/show-logs")
 }

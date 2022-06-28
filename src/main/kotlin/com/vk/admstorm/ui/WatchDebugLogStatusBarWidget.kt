@@ -11,39 +11,33 @@ import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
-import com.intellij.ui.AnimatedIcon
-import com.vk.admstorm.services.YarnWatchService
+import com.vk.admstorm.services.WatchDebugLogService
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import javax.swing.Icon
 import javax.swing.JPanel
 
-class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, true) {
+class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, true) {
     companion object {
-        val WIDGET_ID: String = YarnWatchStatusBarWidget::class.java.name
+        val WIDGET_ID: String = WatchDebugLogStatusBarWidget::class.java.name
     }
 
     private var panel: ToolsStatusBarPanel? = null
-    private val service = YarnWatchService.getInstance(project)
-
-    private val animatedErrorIcon = AnimatedIcon(600, MyIcons.toolError, MyIcons.toolStopped)
+    private val service = WatchDebugLogService.getInstance(project)
 
     override fun getWidgetState(file: VirtualFile?): WidgetState {
-        return when (YarnWatchService.getInstance(project).state()) {
-            YarnWatchService.State.RUNNING -> {
-                YarnWidgetState("Yarn watch works", "yarn watch", MyIcons.toolWorking)
+        return when (WatchDebugLogService.getInstance(project).state()) {
+            WatchDebugLogService.State.RUNNING -> {
+                DebugLogWidgetState("Watch debug log works", "watch debug log", MyIcons.toolWorking)
             }
-            YarnWatchService.State.STOPPED -> {
-                YarnWidgetState("Yawn watch is stopped", "yarn watch", MyIcons.toolStopped)
-            }
-            YarnWatchService.State.WITH_ERRORS -> {
-                YarnWidgetState("Yarn watch works, but found errors", "yarn watch", animatedErrorIcon)
+            WatchDebugLogService.State.STOPPED -> {
+                DebugLogWidgetState("Watch debug log is stopped", "watch debug log", MyIcons.toolStopped)
             }
         }
     }
 
     override fun createPopup(context: DataContext): ListPopup? {
         val state = getWidgetState(null)
-        if (state !is YarnWidgetState) {
+        if (state !is DebugLogWidgetState) {
             return null
         }
 
@@ -52,19 +46,19 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
         }
 
         return JBPopupFactory.getInstance().createActionGroupPopup(
-            "Yarn Watch", actionGroup, context,
+            "Watch Debug Log", actionGroup, context,
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false
         )
     }
 
     private fun actions(): Array<AnAction> {
-        val stopAction = object : AnAction("Stop", "Stop yarn watch", AllIcons.Actions.Suspend) {
+        val stopAction = object : AnAction("Stop", "Stop watch debug log", AllIcons.Actions.Suspend) {
             override fun actionPerformed(e: AnActionEvent) {
                 service.stop()
             }
         }
         return when (service.state()) {
-            YarnWatchService.State.RUNNING -> {
+            WatchDebugLogService.State.RUNNING -> {
                 arrayOf(
                     stopAction,
                     object : AnAction("Open Console", "Open console", AllIcons.Debugger.Console) {
@@ -74,19 +68,9 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
                     },
                 )
             }
-            YarnWatchService.State.WITH_ERRORS -> {
+            WatchDebugLogService.State.STOPPED -> {
                 arrayOf(
-                    stopAction,
-                    object : AnAction("Show Errors", "Show errors", AllIcons.Ide.FatalError) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            service.showConsole()
-                        }
-                    },
-                )
-            }
-            YarnWatchService.State.STOPPED -> {
-                arrayOf(
-                    object : AnAction("Start", "Start yarn watch", AllIcons.Actions.Execute) {
+                    object : AnAction("Start", "Start watch debug log", AllIcons.Actions.Execute) {
                         override fun actionPerformed(e: AnActionEvent) {
                             service.start()
                         }
@@ -98,17 +82,17 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
 
     override fun registerCustomListeners() {
         service.changes.addPropertyChangeListener { evt ->
-            if (evt.propertyName == YarnWatchService.PROPERTY_ID) {
+            if (evt.propertyName == WatchDebugLogService.PROPERTY_ID) {
                 update()
             }
         }
     }
 
-    override fun createInstance(project: Project) = YarnWatchStatusBarWidget(project)
+    override fun createInstance(project: Project) = WatchDebugLogStatusBarWidget(project)
 
     override fun ID() = WIDGET_ID
 
-    private class YarnWidgetState(toolTip: String, text: String, icon: Icon) : WidgetState(toolTip, text, true) {
+    private class DebugLogWidgetState(toolTip: String, text: String, icon: Icon) : WidgetState(toolTip, text, true) {
         init {
             this.icon = icon
         }

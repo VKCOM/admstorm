@@ -7,14 +7,14 @@ import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
-class YarnWatchStatusBarWidgetFactory : StatusBarWidgetFactory {
-    override fun getId() = YarnWatchStatusBarWidget.WIDGET_ID
+class WatchDebugLogStatusBarWidgetFactory : StatusBarWidgetFactory {
+    override fun getId() = WatchDebugLogStatusBarWidget.WIDGET_ID
 
-    override fun getDisplayName() = "Yarn Watch"
+    override fun getDisplayName() = "Watch Debug Log"
 
     override fun isAvailable(project: Project) = project.pluginEnabled()
 
-    override fun createWidget(project: Project) = YarnWatchStatusBarWidget(project)
+    override fun createWidget(project: Project) = WatchDebugLogStatusBarWidget(project)
 
     override fun canBeEnabledOn(statusBar: StatusBar) = true
 

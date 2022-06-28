@@ -1,21 +1,21 @@
 package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.vk.admstorm.services.YarnWatchService
+import com.vk.admstorm.services.WatchDebugLogService
 
-class YarnWatchAction : AdmActionBase() {
+class WatchDebugLogAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
-        YarnWatchService.getInstance(e.project!!).toggle()
+        WatchDebugLogService.getInstance(e.project!!).toggle()
     }
 
     override fun beforeUpdate(e: AnActionEvent) {
         val project = e.project ?: return
-        val working = YarnWatchService.getInstance(project).isRunning()
+        val working = WatchDebugLogService.getInstance(project).isRunning()
 
         e.presentation.text = if (working) {
-            "Stop Yarn Watch"
+            "Stop Watch Log"
         } else {
-            "Start Yarn Watch"
+            "Start Watch Log"
         }
     }
 }

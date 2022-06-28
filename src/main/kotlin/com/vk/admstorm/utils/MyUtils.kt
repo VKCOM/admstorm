@@ -1,7 +1,6 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.PerformInBackgroundOption
@@ -13,8 +12,6 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetSettings
-import com.intellij.openapi.wm.impl.status.widget.StatusBarWidgetsManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.vk.admstorm.CommandRunner
@@ -211,14 +208,5 @@ object MyUtils {
                 block()
             }
         }, delay)
-    }
-
-    fun setStatusBarWidgetEnabled(project: Project, id: String, value: Boolean) {
-        val statusBarWidgetManager = project.service<StatusBarWidgetsManager>()
-        val factory = statusBarWidgetManager.widgetFactories
-            .find { it.id == id } ?: return
-        ApplicationManager.getApplication().getService(StatusBarWidgetSettings::class.java)
-            .setEnabled(factory, value)
-        statusBarWidgetManager.updateWidget(factory)
     }
 }
