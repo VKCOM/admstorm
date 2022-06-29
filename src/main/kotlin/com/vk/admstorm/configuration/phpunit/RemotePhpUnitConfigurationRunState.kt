@@ -38,7 +38,7 @@ class RemotePhpUnitConfigurationRunState(
             }
 
             val workingDir =
-                if (!runConfig.isApiTest) "${Env.data.projectRoot}/tests/api"
+                if (runConfig.isApiTest) "${Env.data.projectRoot}/tests/api"
                 else "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
 
             val consoleProperties = RemotePhpUnitConsoleProperties(runConfig, exec)
