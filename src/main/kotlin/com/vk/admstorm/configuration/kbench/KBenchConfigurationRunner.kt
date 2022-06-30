@@ -11,6 +11,7 @@ import org.jetbrains.concurrency.resolvedPromise
 
 class KBenchConfigurationRunner : WithSshConfigurationRunner(
     withDebug = false,
+    withCoverage = false,
     inEDT = true,
     KBenchConfiguration::class
 ) {

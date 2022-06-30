@@ -11,6 +11,7 @@ import org.jetbrains.concurrency.resolvedPromise
 
 class RemotePhpUnitConfigurationRunner : WithSshConfigurationRunner(
     withDebug = true,
+    withCoverage = true,
     inEDT = true,
     RemotePhpUnitConfiguration::class
 ) {

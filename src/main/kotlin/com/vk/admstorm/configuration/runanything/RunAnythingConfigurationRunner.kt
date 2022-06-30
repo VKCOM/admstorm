@@ -4,6 +4,7 @@ import com.vk.admstorm.configuration.WithSshConfigurationRunner
 
 class RunAnythingConfigurationRunner : WithSshConfigurationRunner(
     withDebug = false,
+    withCoverage = false,
     inEDT = false,
     RunAnythingConfiguration::class
 ) {

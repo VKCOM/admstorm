@@ -15,6 +15,7 @@ import kotlin.reflect.KClass
 
 abstract class WithSshConfigurationRunner(
     private val withDebug: Boolean = false,
+    private val withCoverage: Boolean = false,
     private val inEDT: Boolean = false,
     private val configurationClass: KClass<*>,
 ) : ProgramRunner<RunnerSettings?> {
@@ -24,6 +25,7 @@ abstract class WithSshConfigurationRunner(
             !runProfile.javaClass.isAssignableFrom(configurationClass.java) -> false
             s == "Run" -> true
             withDebug && s == "Debug" -> true
+            withCoverage && s == "Coverage" -> true
             else -> false
         }
     }

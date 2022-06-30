@@ -166,7 +166,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
             val filterArgument = createFilterArgument(env.project, failed)
             val filter = "--filter '/$filterArgument$/'"
 
-            return RemotePhpUnitConfigurationRunState.buildCommand(env, conf, filter)
+            return RemotePhpUnitConfigurationRunState.buildCommand(env, conf, withCoverage = false, filter)
         }
 
         private fun createFilterArgument(project: Project, patterns: List<PhpUnitTestPattern?>): String {
