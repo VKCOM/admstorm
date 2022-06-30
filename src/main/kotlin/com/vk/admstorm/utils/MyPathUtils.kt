@@ -29,6 +29,11 @@ object MyPathUtils {
         }
     }
 
+    fun remoteUserRoot(): String {
+        val remoteRoot = resolveRemoteRoot() ?: return ""
+        return remoteRoot.substringBeforeLast("/")
+    }
+
     fun remoteFileExists(project: Project, path: String): Boolean {
         return CommandRunner.runRemotely(project, "ls $path").exitCode == 0
     }

@@ -17,18 +17,20 @@ import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.execution.testframework.sm.runner.SMTestProxy
 import com.intellij.execution.testframework.sm.runner.ui.SMTRunnerConsoleView
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.jetbrains.php.phpunit.coverage.PhpUnitCoverageRunner
-import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.php.PhpDebugUtils
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
+import com.vk.admstorm.utils.MyPathUtils.remoteUserRoot
 import com.vk.admstorm.utils.MyPathUtils.resolveProjectDir
 import com.vk.admstorm.utils.MySshUtils
-import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import java.io.File
 
 class RemotePhpUnitConfigurationRunState(
@@ -37,7 +39,8 @@ class RemotePhpUnitConfigurationRunState(
 ) : RunProfileState {
 
     companion object {
-        private const val COVERAGE_FILE_NAME = "coverage.xml"
+        private val LOG = logger<RemotePhpUnitConfigurationRunState>()
+        private const val COVERAGE_FILE_NAME = ".admstorm.phpunit.coverage.xml"
 
         fun executeRemotePhpUnitCommand(
             exec: Executor?,
@@ -105,7 +108,8 @@ class RemotePhpUnitConfigurationRunState(
 
             val additional = conf.additionalParameters
             val coverageEnv = if (withCoverage) "XDEBUG_MODE=coverage " else ""
-            val coverageFlag = if (withCoverage) " --coverage-clover $COVERAGE_FILE_NAME" else ""
+            val coverageFile = "${remoteUserRoot()}/$COVERAGE_FILE_NAME"
+            val coverageFlag = if (withCoverage) " --coverage-clover $coverageFile" else ""
 
             val base = "$coverageEnv$phpUnitExe$coverageFlag --teamcity --configuration $phpUnitXml $additional $filter"
 
@@ -140,38 +144,32 @@ class RemotePhpUnitConfigurationRunState(
             return runPhpUnitDebug(exec)
         }
         if (exec is CoverageExecutor) {
-            return runPhpUnit(exec, withCoverage = true, object : ProcessListener {
-                override fun processTerminated(event: ProcessEvent) {
-                    showCoverage()
-                }
-                override fun startNotified(event: ProcessEvent) {}
-                override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {}
-            })
+            return runPhpUnit(exec, withCoverage = true) { showCoverage() }
         }
 
         return runPhpUnit(exec)
     }
 
     private fun showCoverage() {
-        executeOnPooledThread {
-            val text = CommandRunner.runRemotely(
-                env.project,
-                "cd ${MyPathUtils.resolveRemoteRoot()}/${Env.data.phpSourceFolder} && cat $COVERAGE_FILE_NAME"
-            ).stdout
+        val coverageRemoteFile = "${remoteUserRoot()}/$COVERAGE_FILE_NAME"
 
-            val projectDir = env.project.resolveProjectDir() ?: return@executeOnPooledThread
+        TransferService.getInstance(env.project).downloadFile(coverageRemoteFile) { file ->
+            val text = file.readText()
+
+            val projectDir = env.project.resolveProjectDir() ?: return@downloadFile
             val path = Env.data.kphpRelatedPathBegin + "/" + MyPathUtils.remoteUserName() + "/data/"
             val fixedText = text.replace(path, "$projectDir/")
 
-            val file = File(projectDir, COVERAGE_FILE_NAME)
-            if (!file.exists()) {
-                file.createNewFile()
-            }
-
             file.writeText(fixedText)
 
-            val virtualFile =
-                LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file) ?: return@executeOnPooledThread
+            val virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file)
+            if (virtualFile == null) {
+                LOG.warn("Can't find coverage file $file")
+                AdmWarningNotification(file.path)
+                    .withTitle("Can't find coverage file")
+                    .show(env.project)
+                return@downloadFile
+            }
 
             invokeLater {
                 val manager = CoverageDataManager.getInstance(env.project)
@@ -202,11 +200,23 @@ class RemotePhpUnitConfigurationRunState(
         return executeRemotePhpUnitCommand(exec, fullCommand, env, conf)
     }
 
-    private fun runPhpUnit(
+    private inline fun runPhpUnit(
         exec: Executor?,
         withCoverage: Boolean = false,
-        listener: ProcessListener? = null
+        crossinline onReady: () -> Unit = {}
     ): ExecutionResult? {
-        return executeRemotePhpUnitCommand(exec, buildCommand(env, conf, withCoverage), env, conf, listener)
+        return executeRemotePhpUnitCommand(
+            exec,
+            buildCommand(env, conf, withCoverage),
+            env,
+            conf,
+            object : ProcessListener {
+                override fun processTerminated(event: ProcessEvent) {
+                    onReady()
+                }
+
+                override fun startNotified(event: ProcessEvent) {}
+                override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {}
+            })
     }
 }
