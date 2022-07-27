@@ -70,7 +70,7 @@ class SyncChecker(private var myProject: Project) {
         val command = "${Env.data.syncScriptCommand} $myLocalBranch ${localLastCommit.hash} '$statusFilesJson'"
 
         val output = CommandRunner.runRemotely(myProject, command)
-        if (output.exitCode == 2) {
+        if (output.exitCode == CommandRunner.FAILED_CODE) {
             return State.Unknown
         }
 

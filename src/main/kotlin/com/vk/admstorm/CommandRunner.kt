@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit
  */
 object CommandRunner {
     private val LOG = logger<CommandRunner>()
+    const val FAILED_CODE = -512
 
     fun runLocally(
         project: Project,
@@ -135,7 +136,7 @@ object CommandRunner {
         LOG.info("Start a synchronous SSH command execution (command: '$command', workingDir: '${Env.data.projectRoot}')")
         val startTime = System.currentTimeMillis()
 
-        val handler = MySshUtils.exec(project, command, firstLine, workingDir) ?: return Output("", "", 2)
+        val handler = MySshUtils.exec(project, command, firstLine, workingDir) ?: return Output("", "", FAILED_CODE)
 
         LOG.info("Waiting for the end of command execution")
 
