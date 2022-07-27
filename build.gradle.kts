@@ -13,7 +13,7 @@ plugins {
     // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
     id("org.jetbrains.changelog") version "2.0.0"
     // kotlinx serialization - read more: https://github.com/Kotlin/kotlinx.serialization
-    kotlin("plugin.serialization") version "1.5.31"
+    kotlin("plugin.serialization") version "1.6.21"
     // detekt linter - read more: https://github.com/detekt/detekt
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
     // diktat linter - read more: https://github.com/saveourtool/diktat

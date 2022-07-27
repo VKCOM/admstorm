@@ -49,8 +49,8 @@
                          id="com.vk.admstorm.settings.AdmStormSettingsConfigurable"
                          displayName="AdmStorm"/>
 
-    <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.DebugLogLineMarkerProvider" language="PHP"
-                                    implementationClass="com.vk.admstorm.highlight.DebugLogLineMarkerProvider"/>
+    <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.markers.AdmStormMarkerLineMarkerProvider" language="PHP"
+                                    implementationClass="com.vk.admstorm.highlight.markers.AdmStormMarkerLineMarkerProvider"/>
 
     <statusBarWidgetFactory id="com.vk.admstorm.ui.status.bar.yarn.watch"
                             implementation="com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory"
@@ -76,7 +76,7 @@
     <!-- Remote PHP Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationType"/>
     <runConfigurationProducer
-            implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationProducer"/>
+      implementation="com.vk.admstorm.configuration.php.RemotePhpConfigurationProducer"/>
     <programRunner implementation="com.vk.admstorm.configuration.php.RemotePhpRunner"/>
 
     <!-- KPHP Benchmarks Configuration -->
@@ -87,7 +87,7 @@
     <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchKphpConfigurationProducer"/>
     <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchPhpConfigurationProducer"/>
     <runConfigurationProducer
-            implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationProducer"/>
+      implementation="com.vk.admstorm.configuration.kbench.KBenchKphpVsPhpConfigurationProducer"/>
     <runConfigurationProducer implementation="com.vk.admstorm.configuration.kbench.KBenchKphpAbConfigurationProducer"/>
     <runLineMarkerContributor id="KBenchConfigurationLineMarkerProvider" language="PHP"
                               implementationClass="com.vk.admstorm.configuration.kbench.KBenchConfigurationLineMarkerProvider"/>
@@ -106,13 +106,13 @@
     <!-- Remote PHPUnit Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationType"/>
     <runConfigurationProducer
-            implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
+      implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationProducer"/>
     <programRunner implementation="com.vk.admstorm.configuration.phpunit.RemotePhpUnitConfigurationRunner"/>
 
     <!-- Builders Configuration -->
     <configurationType implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationType"/>
     <runConfigurationProducer
-            implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationProducer"/>
+      implementation="com.vk.admstorm.configuration.builders.BuildersConfigurationProducer"/>
 
     <!-- Yarn Watch -->
     <configurationType implementation="com.vk.admstorm.configuration.yarnwatch.YarnWatchConfigurationType"/>
@@ -124,8 +124,8 @@
     <executor implementation="com.vk.admstorm.executors.WatchDebugLogExecutor" id="WatchDebugLog"/>
 
     <vcs.changes.localCommitExecutor
-            implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
-            id="git.commit.and.push.to.gitlab"/>
+      implementation="com.vk.admstorm.actions.git.commit.GitCommitAndPushToGitlabExecutor"
+      id="git.commit.and.push.to.gitlab"/>
 
     <checkinHandlerFactory implementation="com.vk.admstorm.actions.git.commit.GitCustomPushCheckinHandlerFactory"/>
 
@@ -144,8 +144,12 @@
 
     <errorHandler implementation="com.vk.admstorm.diagnostic.SentryErrorReporter"/>
 
-<!--    <toolWindow id="Service List" icon="icons/services.svg" anchor="right" doNotActivateOnStart="true"-->
-<!--                factoryClass="com.vk.admstorm.ui.ServiceListToolWindow" />-->
+    <toolWindow id="Service List" icon="icons/services.svg" anchor="right" doNotActivateOnStart="true"
+                factoryClass="com.vk.admstorm.ui.ServiceListToolWindow"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="com.jetbrains.php">
+    <docTagParserExtension tagName="admstorm-marker" implementationClass="com.vk.admstorm.tags.phptags.AdmStormMarkerTag"/>
   </extensions>
 
   <actions>
