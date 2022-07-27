@@ -23,7 +23,7 @@ object CommandRunner {
         project: Project,
         command: String,
         trimOutput: Boolean = true,
-        processListener: ProcessListener? = null
+        processListener: ProcessListener? = null,
     ): Output {
         return runLocally(project, command.split(" "), trimOutput, processListener)
     }
@@ -31,7 +31,7 @@ object CommandRunner {
     fun runLocallyToFile(
         project: Project,
         command: String,
-        redirectToFile: File
+        redirectToFile: File,
     ): Output {
         return runLocally(project, command.split(" "), false, null, redirectToFile)
     }
@@ -41,7 +41,7 @@ object CommandRunner {
         commands: List<String>,
         trimOutput: Boolean = true,
         processListener: ProcessListener? = null,
-        redirectToFile: File? = null
+        redirectToFile: File? = null,
     ): Output {
         LOG.info("Start a local command execution (command: '${commands.joinToString(" ")}')")
         val startTime = System.currentTimeMillis()
@@ -127,13 +127,15 @@ object CommandRunner {
     fun runRemotely(
         project: Project,
         command: String,
+        firstLine: String = command,
+        workingDir: String? = null,
         timeout: Long = 3_000,
-        processListener: ProcessListener? = null
+        processListener: ProcessListener? = null,
     ): Output {
         LOG.info("Start a synchronous SSH command execution (command: '$command', workingDir: '${Env.data.projectRoot}')")
         val startTime = System.currentTimeMillis()
 
-        val handler = MySshUtils.exec(project, command) ?: return Output("", "", 2)
+        val handler = MySshUtils.exec(project, command, firstLine, workingDir) ?: return Output("", "", 2)
 
         LOG.info("Waiting for the end of command execution")
 
