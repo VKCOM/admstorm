@@ -89,8 +89,8 @@ object GitUtils {
         return CommandRunner.runRemotely(
             project,
             pullFromServerCommand.withParam(branchName),
-            20_000,
-            GitPullProgressListener(indicator)
+            timeout = 20_000,
+            processListener = GitPullProgressListener(indicator)
         )
     }
 

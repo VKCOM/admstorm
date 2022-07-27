@@ -38,7 +38,7 @@ object MyPathUtils {
             return remoteRoot
         }
 
-        val res = CommandRunner.runRemotely(project, "echo ${Env.data.projectRoot}", 500)
+        val res = CommandRunner.runRemotely(project, "echo ${Env.data.projectRoot}", timeout = 500)
         if (res.exitCode != 0) {
             return null
         }
