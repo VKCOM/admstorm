@@ -2,7 +2,7 @@ package com.vk.admstorm.executors
 
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.kphp.KphpRunType
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class KphpComplexRunExecutor(
     project: Project,
@@ -16,7 +16,7 @@ class KphpComplexRunExecutor(
 
     override fun command() = command
 
-    override fun icon() = MyIcons.kphp
+    override fun icon() = AdmIcons.General.Kphp
 
     override fun onFinish() {}
 }

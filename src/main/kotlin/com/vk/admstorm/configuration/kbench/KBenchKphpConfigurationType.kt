@@ -3,12 +3,12 @@ package com.vk.admstorm.configuration.kbench
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import com.intellij.openapi.project.Project
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class KBenchKphpConfigurationType : ConfigurationTypeBase(
     ID, "KPHP Benchmark",
     "KPHP Benchmark",
-    MyIcons.kphpBench
+    AdmIcons.General.KphpBench
 ) {
     companion object {
         const val ID = "KBenchKphpConfiguration"
@@ -29,7 +29,7 @@ class KBenchKphpConfigurationType : ConfigurationTypeBase(
 class KBenchPhpConfigurationType : ConfigurationTypeBase(
     ID, "PHP Benchmark",
     "PHP Benchmark configuration type",
-    MyIcons.kphpBench
+    AdmIcons.General.KphpBench
 ) {
     companion object {
         const val ID = "KBenchPhpConfiguration"
@@ -50,7 +50,7 @@ class KBenchPhpConfigurationType : ConfigurationTypeBase(
 class KBenchKphpVsPhpConfigurationType : ConfigurationTypeBase(
     ID, "KPHP vs PHP Benchmark",
     "KPHP vs PHP Benchmark configuration type",
-    MyIcons.kphpBench
+    AdmIcons.General.KphpBench
 ) {
     companion object {
         const val ID = "KBenchKphpVsPhpConfiguration"
@@ -71,7 +71,7 @@ class KBenchKphpVsPhpConfigurationType : ConfigurationTypeBase(
 class KBenchKphpAbConfigurationType : ConfigurationTypeBase(
     ID, "Compare with other",
     "KPHP AB Benchmark configuration type",
-    MyIcons.kphpBench
+    AdmIcons.General.KphpBench
 ) {
     companion object {
         const val ID = "KBenchKphpAbConfiguration"

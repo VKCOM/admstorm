@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.PhpLinterWarningsParser
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class PhpLinterExecutor(project: Project, private val command: String) : BaseRemoteExecutor(project, "PHP Linter") {
     private val myProblemsTab = ProblemsTab()
@@ -20,7 +20,7 @@ class PhpLinterExecutor(project: Project, private val command: String) : BaseRem
 
     override fun command() = command
 
-    override fun icon() = MyIcons.phpLinter
+    override fun icon() = AdmIcons.General.KhpLinter
 
     override fun onFinish() {
         invokeLater {

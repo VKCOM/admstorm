@@ -8,7 +8,7 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.JBUI
 import com.vk.admstorm.playground.KphpPlaygroundWindow
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 import javax.swing.JComponent
 
 class PlaygroundFromSelectionAction : AdmActionBase() {
@@ -61,6 +61,6 @@ class PlaygroundFromSelectionAction : AdmActionBase() {
         val hasSelection = primaryCaret?.hasSelection()
 
         e.presentation.isEnabledAndVisible = file != null && project != null && editor != null && hasSelection == true
-        e.presentation.icon = MyIcons.kphp
+        e.presentation.icon = AdmIcons.General.Kphp
     }
 }
