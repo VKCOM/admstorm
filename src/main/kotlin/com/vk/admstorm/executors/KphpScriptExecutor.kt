@@ -12,7 +12,7 @@ import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.tabs.ConsoleTab
 import com.vk.admstorm.executors.tabs.DiffTab
 import com.vk.admstorm.parsers.KphpScriptOutputParser
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import java.util.function.BiConsumer
@@ -47,7 +47,7 @@ class KphpScriptExecutor(
 
     override fun workingDir() = "~/"
 
-    override fun icon() = MyIcons.kphp
+    override fun icon() = AdmIcons.General.Kphp
 
     override fun onFinish() {
         val output = output()

@@ -6,7 +6,7 @@ import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.problems.panels.ProblemsPanel
 import com.vk.admstorm.executors.tabs.ProblemsTab
 import com.vk.admstorm.parsers.KphpErrorsParser
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class KphpRunExecutor(
     project: Project,
@@ -26,7 +26,7 @@ class KphpRunExecutor(
 
     override fun command() = command
 
-    override fun icon() = MyIcons.kphp
+    override fun icon() = AdmIcons.General.Kphp
 
     override fun onFinish() {
         invokeLater {

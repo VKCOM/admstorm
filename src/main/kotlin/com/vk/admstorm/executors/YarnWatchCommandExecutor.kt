@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.vk.admstorm.git.sync.files.RemoteFileManager
 import com.vk.admstorm.services.YarnWatchService
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class YarnWatchCommandExecutor(project: Project, private val command: String) :
     BaseRemoteExecutor(project, "Yarn watch") {
@@ -65,7 +65,7 @@ class YarnWatchCommandExecutor(project: Project, private val command: String) :
 
     override fun command() = command
 
-    override fun icon() = MyIcons.yarn
+    override fun icon() = AdmIcons.General.Yarn
 
     override fun executorInstance() = YarnWatchExecutor.getRunExecutorInstance()
 

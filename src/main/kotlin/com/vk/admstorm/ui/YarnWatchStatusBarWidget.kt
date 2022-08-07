@@ -25,15 +25,15 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
     private var panel: ToolsStatusBarPanel? = null
     private val service = YarnWatchService.getInstance(project)
 
-    private val animatedErrorIcon = AnimatedIcon(600, MyIcons.toolError, MyIcons.toolStopped)
+    private val animatedErrorIcon = AnimatedIcon(600, AdmIcons.General.ToolError, AdmIcons.General.ToolStopped)
 
     override fun getWidgetState(file: VirtualFile?): WidgetState {
         return when (YarnWatchService.getInstance(project).state()) {
             YarnWatchService.State.RUNNING -> {
-                YarnWidgetState("Yarn watch works", "yarn watch", MyIcons.toolWorking)
+                YarnWidgetState("Yarn watch works", "yarn watch", AdmIcons.General.ToolWorking)
             }
             YarnWatchService.State.STOPPED -> {
-                YarnWidgetState("Yawn watch is stopped", "yarn watch", MyIcons.toolStopped)
+                YarnWidgetState("Yawn watch is stopped", "yarn watch", AdmIcons.General.ToolStopped)
             }
             YarnWatchService.State.WITH_ERRORS -> {
                 YarnWidgetState("Yarn watch works, but found errors", "yarn watch", animatedErrorIcon)

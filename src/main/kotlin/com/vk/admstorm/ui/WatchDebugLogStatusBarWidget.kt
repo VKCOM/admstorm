@@ -27,10 +27,10 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
     override fun getWidgetState(file: VirtualFile?): WidgetState {
         return when (WatchDebugLogService.getInstance(project).state()) {
             WatchDebugLogService.State.RUNNING -> {
-                DebugLogWidgetState("Watch debug log works", "watch debug log", MyIcons.toolWorking)
+                DebugLogWidgetState("Watch debug log works", "watch debug log", AdmIcons.General.ToolWorking)
             }
             WatchDebugLogService.State.STOPPED -> {
-                DebugLogWidgetState("Watch debug log is stopped", "watch debug log", MyIcons.toolStopped)
+                DebugLogWidgetState("Watch debug log is stopped", "watch debug log", AdmIcons.General.ToolStopped)
             }
         }
     }

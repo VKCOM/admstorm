@@ -2,7 +2,7 @@ package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.vk.admstorm.playground.KphpPlaygroundWindow
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class KphpPlaygroundAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
@@ -10,6 +10,6 @@ class KphpPlaygroundAction : AdmActionBase() {
     }
 
     override fun beforeUpdate(e: AnActionEvent) {
-        e.presentation.icon = MyIcons.kphp
+        e.presentation.icon = AdmIcons.General.Kphp
     }
 }

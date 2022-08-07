@@ -2,7 +2,7 @@ package com.vk.admstorm.executors
 
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.services.WatchDebugLogService
-import com.vk.admstorm.ui.MyIcons
+import com.vk.admstorm.ui.AdmIcons
 
 class WatchDebugLogCommandExecutor(project: Project, private val command: String) :
     BaseRemoteExecutor(project, "Watch debug log") {
@@ -32,7 +32,7 @@ class WatchDebugLogCommandExecutor(project: Project, private val command: String
 
     override fun command() = command
 
-    override fun icon() = MyIcons.logs
+    override fun icon() = AdmIcons.General.Logs
 
     override fun executorInstance() = WatchDebugLogExecutor.getRunExecutorInstance()
 
