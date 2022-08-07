@@ -155,6 +155,10 @@ object CommandRunner {
         val elapsedTime = System.currentTimeMillis() - startTime
         LOG.info("Elapsed time for synchronous SSH command: ${elapsedTime}ms")
 
+        if (result.exitCode == FAILED_CODE) {
+            LOG.warn("A remote execution of the command returned an error code of '$FAILED_CODE', the same as the reserved")
+        }
+
         if (result.exitCode != 0) {
             LOG.warn("Remote command execution failed (command: '$command'), exit code: ${result.exitCode}, output: ${result.stdout}, error: ${result.stderr}")
         }
