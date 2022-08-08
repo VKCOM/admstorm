@@ -30,6 +30,13 @@ data class KphpCommand(
 
 @Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
+data class Service(
+    val name: String,
+    val url: String,
+)
+
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
+@Serializable
 data class EnvConfig(
     var serverName: String = "",
     var projectRoot: String = "",
@@ -55,6 +62,7 @@ data class EnvConfig(
     var testDomainSite: String = "",
     var serviceDomain: String = "",
     var kphpCommands: List<KphpCommand> = listOf(),
+    var services: List<Service> = listOf(),
 )
 
 object Env {

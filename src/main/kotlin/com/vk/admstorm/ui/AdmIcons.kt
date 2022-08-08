@@ -17,6 +17,13 @@ object AdmIcons {
     }
 
     object Service {
-        val Sentry = icon("/icons/sentry")
+        val Default = icon("/icons/service/default")
+        val Sentry = icon("/icons/service/sentry")
+        val Jira = icon("/icons/service/jira")
+        val Confluence = icon("/icons/service/confluence")
+        val GitLab = icon("/icons/service/gitlab")
+        val TeamCity = icon("/icons/service/teamcity")
+        val Grafana = icon("/icons/service/grafana")
+        val Pmcmanager = icon("/icons/service/pmcmanager")
     }
 }
