@@ -1,5 +1,11 @@
 # AdmStorm Changelog
 
+[Unreleased]
+
+### Added
+
+- Test coverage for **packages** PHPUnit tests.
+
 ## 1.3.1 — 29.06.2022
 
 ### Added
