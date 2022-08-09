@@ -14,7 +14,7 @@ import java.awt.FlowLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-class ServiceListToolWindowFactory : ToolWindowFactory {
+class ServiceListToolWindow : ToolWindowFactory {
     companion object {
         private val serviceToIcon = mapOf(
             "Jira" to AdmIcons.Service.Jira,
