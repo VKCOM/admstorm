@@ -7,7 +7,12 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.Gaps
+import com.intellij.util.application
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.env.EnvListener
+import java.awt.FlowLayout
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 class ServiceListToolWindowFactory : ToolWindowFactory {
     companion object {
@@ -26,7 +31,7 @@ class ServiceListToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val contentManager = toolWindow.contentManager
-        val content = contentManager.factory.createContent(createDialogPanel(), null, false)
+        val content = contentManager.factory.createContent(toolWindowPanel(), null, false)
 
         val ex = toolWindow as ToolWindowEx
         ex.stretchWidth(0)
@@ -34,22 +39,38 @@ class ServiceListToolWindowFactory : ToolWindowFactory {
         contentManager.addContent(content)
     }
 
-    private fun createDialogPanel(): DialogPanel {
-        val services = Env.data.services
-
+    private fun showServicesPanel(): DialogPanel {
         return panel {
-            panel {
-                customize(Gaps(0, 15, 0, 0))
+            customize(Gaps(0, 15, 0, 0))
 
-                services.forEach { service ->
-                    row {
-                        val icon = serviceToIcon.getOrDefault(service.name, defaultIcon)
-                        icon(icon)
+            val services = Env.data.services
+            services.forEach { service ->
+                row {
+                    val icon = serviceToIcon.getOrDefault(service.name, defaultIcon)
+                    icon(icon)
 
-                        browserLink(service.name, service.url)
-                    }
+                    browserLink(service.name, service.url)
                 }
             }
         }
+
+    }
+
+    private fun toolWindowPanel(): JComponent {
+        val panel = JPanel(FlowLayout(FlowLayout.LEFT))
+
+        if (Env.isResolved() && panel.components.isEmpty()) {
+            panel.add(showServicesPanel())
+        }
+
+        application.messageBus.connect().subscribe(EnvListener.TOPIC, object : EnvListener {
+            override fun resolveChanged() {
+                if (panel.components.isEmpty()) {
+                    panel.add(showServicesPanel())
+                }
+            }
+        })
+
+        return panel
     }
 }
