@@ -32,10 +32,6 @@ class ServiceListToolWindow : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val contentManager = toolWindow.contentManager
         val content = contentManager.factory.createContent(toolWindowPanel(), null, false)
-
-        val ex = toolWindow as ToolWindowEx
-        ex.stretchWidth(0)
-
         contentManager.addContent(content)
     }
 
