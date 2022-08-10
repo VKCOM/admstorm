@@ -162,7 +162,7 @@ object Env {
         }
 
         myIsResolved = true
-        application.messageBus.syncPublisher(EnvListener.TOPIC).resolveChanged()
+        application.messageBus.syncPublisher(EnvListener.TOPIC).onResolve()
     }
 
     private fun setPhpLinterCheckers(project: Project) {

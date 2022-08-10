@@ -64,7 +64,7 @@ class ServiceListToolWindow : ToolWindowFactory {
         }
 
         application.messageBus.connect().subscribe(EnvListener.TOPIC, object : EnvListener {
-            override fun resolveChanged() {
+            override fun onResolve() {
                 if (panel.components.isEmpty()) {
                     panel.add(showServicesPanel())
                 }

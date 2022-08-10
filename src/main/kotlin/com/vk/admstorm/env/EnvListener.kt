@@ -7,5 +7,5 @@ interface EnvListener {
         val TOPIC = Topic.create("EnvListener", EnvListener::class.java)
     }
 
-    fun resolveChanged() {}
+    fun onResolve() {}
 }
