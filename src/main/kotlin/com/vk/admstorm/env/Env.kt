@@ -2,6 +2,7 @@ package com.vk.admstorm.env
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.intellij.util.application
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.phplinter.PhpLinterCheckers
@@ -25,7 +26,14 @@ data class KphpCommand(
     var key: String,
     var command: String,
     var arguments: String,
-    var description: String
+    var description: String,
+)
+
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
+@Serializable
+data class Service(
+    val name: String,
+    val url: String,
 )
 
 @Suppress("PROVIDED_RUNTIME_TOO_LOW")
@@ -55,6 +63,7 @@ data class EnvConfig(
     var testDomainSite: String = "",
     var serviceDomain: String = "",
     var kphpCommands: List<KphpCommand> = listOf(),
+    var services: List<Service> = listOf(),
 )
 
 object Env {
@@ -153,6 +162,7 @@ object Env {
         }
 
         myIsResolved = true
+        application.messageBus.syncPublisher(EnvListener.TOPIC).onResolve()
     }
 
     private fun setPhpLinterCheckers(project: Project) {

@@ -148,6 +148,9 @@
             implementation="com.vk.admstorm.psi.references.JiraReferenceContributor"/>
 
     <errorHandler implementation="com.vk.admstorm.diagnostic.SentryErrorReporter"/>
+
+    <toolWindow id="Service List" icon="icons/services.svg" anchor="right" doNotActivateOnStart="true"
+                factoryClass="com.vk.admstorm.ui.ServiceListToolWindow" />
   </extensions>
 
   <actions>
