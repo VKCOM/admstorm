@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 object CommandRunner {
     private val LOG = logger<CommandRunner>()
     const val FAILED_CODE = -512
+    const val TIMEOUT_CODE = -513
 
     fun runLocally(
         project: Project,
@@ -150,13 +151,18 @@ object CommandRunner {
         handler.startNotify()
         handler.waitFor(timeout)
 
+        if (handler.exitCode == null) {
+            return Output("", "", TIMEOUT_CODE)
+        }
+
         val result = outputListener.output
 
         val elapsedTime = System.currentTimeMillis() - startTime
         LOG.info("Elapsed time for synchronous SSH command: ${elapsedTime}ms")
 
-        if (result.exitCode == FAILED_CODE) {
-            LOG.warn("A remote execution of the command returned an error code of '$FAILED_CODE', the same as the reserved")
+        val reserveCode = listOf(FAILED_CODE, TIMEOUT_CODE)
+        if (result.exitCode in reserveCode) {
+            LOG.warn("A remote execution of the command returned an error code of '${result.exitCode}', the same as the reserved")
         }
 
         if (result.exitCode != 0) {
