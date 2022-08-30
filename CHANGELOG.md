@@ -1,5 +1,12 @@
 # AdmStorm Changelog
 
+## 1.3.2 — 31.08.2022
+
+### Fixed
+
+- Exception in 2022.2.1 about `GitUtils.getCurrentRepository()`
+- Bug with API tests for PHPUnit
+
 ## 1.3.1 — 29.06.2022
 
 ### Added
