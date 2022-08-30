@@ -9,8 +9,10 @@ import com.vk.admstorm.actions.git.listeners.GitPullProgressListener
 import com.vk.admstorm.actions.git.listeners.GitPushProgressListener
 import com.vk.admstorm.git.sync.commits.Commit
 import com.vk.admstorm.ui.MessageDialog
+import com.vk.admstorm.utils.MyUtils.invokeAndWaitResult
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
+import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil
 import java.text.SimpleDateFormat
 import java.util.*
@@ -604,6 +606,11 @@ object GitUtils {
 
         return User(outputName, outputEmail)
     }
+
+    /**
+     * Starting with 2022.2.1 `getCurrentRepository()` must be called in EDT.
+     */
+    fun getCurrentRepository(project: Project) = invokeAndWaitResult { GitBranchUtil.getCurrentRepository(project) }
 
     /**
      * Helper function for building commands.

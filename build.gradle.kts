@@ -100,6 +100,10 @@ tasks {
         gradleVersion = properties("gradleVersion")
     }
 
+    runIde {
+        maxHeapSize = "2g"
+    }
+
     patchPluginXml {
         version.set(properties("pluginVersion"))
         sinceBuild.set(properties("pluginSinceBuild"))

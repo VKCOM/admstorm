@@ -19,13 +19,13 @@ import com.intellij.util.TextFieldCompletionProvider
 import com.intellij.util.textCompletion.TextFieldWithCompletion
 import com.jetbrains.php.lang.PhpLanguage
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.services.DeployTestDomainService
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUiUtils.bindText
 import com.vk.admstorm.utils.MyUtils.runBackground
-import git4idea.branch.GitBranchUtil
 import java.awt.Dimension
 import java.awt.Point
 import java.util.*
@@ -85,7 +85,7 @@ class DeployTestDomainAction : AdmActionBase() {
             lateinit var useLastUsedDomainCheckBox: Cell<JBRadioButton>
             lateinit var domainCellTextField: Cell<LanguageTextField>
 
-            val repository = GitBranchUtil.getCurrentRepository(project) ?: return JLabel("No repository found")
+            val repository = GitUtils.getCurrentRepository(project) ?: return JLabel("No repository found")
             val currentBranch = repository.currentBranchName ?: return JLabel("No current branch found")
 
             model.branch = currentBranch
@@ -207,7 +207,7 @@ class DeployTestDomainAction : AdmActionBase() {
             private val project: Project,
         ) : TextFieldCompletionProvider(), DumbAware {
             override fun addCompletionVariants(text: String, offset: Int, prefix: String, result: CompletionResultSet) {
-                val repository = GitBranchUtil.getCurrentRepository(project) ?: return
+                val repository = GitUtils.getCurrentRepository(project) ?: return
                 repository.branches.localBranches.forEach {
                     result.addElement(LookupElementBuilder.create(it.name))
                 }

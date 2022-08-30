@@ -6,10 +6,10 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.encoding.EncodingRegistry
 import com.vk.admstorm.CommandRunner
+import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils
-import git4idea.branch.GitBranchUtil
 import git4idea.index.GitFileStatus
 import git4idea.index.LightFileStatus
 import git4idea.index.NUL
@@ -49,7 +49,7 @@ object GitStatus {
     fun localStatus(project: Project): List<ExtendedFile> {
         val startTime = System.currentTimeMillis()
 
-        val repo = GitBranchUtil.getCurrentRepository(project)!!
+        val repo = GitUtils.getCurrentRepository(project)!!
         val root = repo.root
 
         var files = Parser.rawLocalStatus(project, root, includeUntracked = false)

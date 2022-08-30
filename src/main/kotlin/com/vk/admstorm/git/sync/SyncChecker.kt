@@ -19,7 +19,6 @@ import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.MyUtils.measureTimeValue
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
-import git4idea.branch.GitBranchUtil
 import java.util.function.Consumer
 
 @Service
@@ -59,7 +58,7 @@ class SyncChecker(private var myProject: Project) {
      * @param notCheckFiles if true, file synchronization is not checked
      */
     fun currentState(notCheckFiles: Boolean = false): State {
-        val repo = GitBranchUtil.getCurrentRepository(myProject) ?: return State.Ok
+        val repo = GitUtils.getCurrentRepository(myProject) ?: return State.Ok
         myLocalBranch = repo.currentBranch?.name ?: return State.Ok
 
         val localLastCommit = GitUtils.localLastCommit(myProject)

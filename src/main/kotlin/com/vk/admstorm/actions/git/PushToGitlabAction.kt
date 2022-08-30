@@ -28,7 +28,6 @@ import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import git4idea.DialogManager
-import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.code
 
 class PushToGitlabAction : AdmActionBase() {
@@ -57,7 +56,7 @@ class PushToGitlabAction : AdmActionBase() {
 
     private fun showDialog(project: Project) {
         runBackground(project, "Preparing data for dialog") {
-            val branchName = GitBranchUtil.getCurrentRepository(project)?.currentBranch?.name!!
+            val branchName = GitUtils.getCurrentRepository(project)?.currentBranch?.name!!
             val branchExistsInGitlab = GitUtils.remoteBranchExist(project, "origin/$branchName")
 
             val commits = if (branchExistsInGitlab)
@@ -104,7 +103,7 @@ class PushToGitlabAction : AdmActionBase() {
          *         the two suggested options to remove files from git status.
          */
         private fun checkGitStatus(project: Project): Boolean {
-            val repo = GitBranchUtil.getCurrentRepository(project) ?: return true
+            val repo = GitUtils.getCurrentRepository(project) ?: return true
             val root = repo.root
             val statusFiles = GitStatus.rawRemoteStatus(project, root, includeUntracked = true)
                 .filter {
@@ -332,7 +331,7 @@ class PushToGitlabAction : AdmActionBase() {
             after: Runnable? = null,
             indicator: ProgressIndicator
         ): Boolean {
-            val currentBranch = GitBranchUtil.getCurrentRepository(project)!!.currentBranch!!.name
+            val currentBranch = GitUtils.getCurrentRepository(project)!!.currentBranch!!.name
             LOG.info("Run push to ${ServerNameProvider.name()} (current branch: '$currentBranch')")
 
             val countNewCommits = GitUtils.countNewLocalCommits(project, currentBranch)
