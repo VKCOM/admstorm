@@ -13,7 +13,6 @@ import com.vk.admstorm.ssh.LostConnectionHandler
 import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.GitNotificationIdsHolder
-import git4idea.branch.GitBranchUtil
 import git4idea.util.GitUIUtil.bold
 import git4idea.util.GitUIUtil.code
 
@@ -46,7 +45,7 @@ class RemoteBranchSwitcher(private val myProject: Project, private val myOnGitCo
 
     private fun switchAction(branch: String, force: Boolean, onReady: Runnable?) {
         val branchName = if (branch == "HEAD") {
-            GitBranchUtil.getCurrentRepository(myProject)?.currentBranch?.name ?: return
+            GitUtils.getCurrentRepository(myProject)?.currentBranch?.name ?: return
         } else branch
 
         if (!GitUtils.remoteBranchExist(myProject, branchName)) {

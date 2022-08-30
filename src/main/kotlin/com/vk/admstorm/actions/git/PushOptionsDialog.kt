@@ -16,7 +16,6 @@ import com.vk.admstorm.actions.git.panels.ServerRepoTreeNode
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.git.sync.commits.Commit
 import com.vk.admstorm.utils.MyUiUtils.spacer
-import git4idea.branch.GitBranchUtil
 import git4idea.push.GitPushTagMode
 import git4idea.push.localizedTitle
 import java.awt.event.ActionEvent
@@ -73,7 +72,7 @@ class PushOptionsDialog(
             CommitTreeNode(project, commit)
         }
         val rootNodeBuilder = {
-            val branchName = GitBranchUtil.getCurrentRepository(project)?.currentBranch?.name!!
+            val branchName = GitUtils.getCurrentRepository(project)?.currentBranch?.name!!
             val exists = GitUtils.remoteBranchExist(project, branchName)
             ServerRepoTreeNode(branchName, !exists)
         }

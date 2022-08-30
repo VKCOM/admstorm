@@ -1,6 +1,7 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.progress.PerformInBackgroundOption
@@ -10,6 +11,7 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.Ref
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -189,13 +191,13 @@ object MyUtils {
     }
 
     inline fun <T> invokeAndWaitResult(crossinline block: () -> T): T {
-        var result: T? = null
+        val result = Ref<T>()
 
-        ApplicationManager.getApplication().invokeAndWait {
-            result = block()
+        invokeAndWaitIfNeeded {
+            result.set(block())
         }
 
-        return result!!
+        return result.get()
     }
 
     inline fun executeOnPooledThread(crossinline block: () -> Unit) {

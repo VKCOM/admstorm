@@ -14,10 +14,10 @@ import com.vk.admstorm.actions.git.PushToGitlabAction
 import com.vk.admstorm.actions.git.panels.CommitWithCommentTreeNode
 import com.vk.admstorm.actions.git.panels.LocalRepoTreeNode
 import com.vk.admstorm.actions.git.panels.PushCommitsPanel
+import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.utils.MyUiUtils
 import com.vk.admstorm.utils.ServerNameProvider
 import git4idea.DialogManager
-import git4idea.branch.GitBranchUtil
 import java.awt.Insets
 import javax.swing.*
 import javax.swing.border.Border
@@ -148,7 +148,7 @@ class NotSyncCommitsDialog(
         }
 
         val rootBuilder = {
-            val branchName = GitBranchUtil.getCurrentRepository(project)?.currentBranch?.name!!
+            val branchName = GitUtils.getCurrentRepository(project)?.currentBranch?.name!!
             LocalRepoTreeNode(branchName)
         }
 
