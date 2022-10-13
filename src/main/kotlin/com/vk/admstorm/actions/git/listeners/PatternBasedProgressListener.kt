@@ -44,7 +44,7 @@ abstract class PatternBasedProgressListener(protected val myIndicator: ProgressI
      */
     protected fun getGroup(matcher: Matcher, groupName: String): String? = try {
         matcher.group(groupName)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 
