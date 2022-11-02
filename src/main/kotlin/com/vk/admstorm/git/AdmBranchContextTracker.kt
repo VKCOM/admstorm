@@ -46,7 +46,7 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
                     Try restarting ${GitUIUtil.code("ssh-agent")} and reconnect
                 """.trimIndent()
             )
-                .withTitle("Branch is not switched on ${ServerNameProvider.name().ifEmpty { "dev-server" }}")
+                .withTitle("Branch is not switched on ${ServerNameProvider.name()}")
                 .withActions(AdmNotification.Action("Reconnect and switch...") { _, notification ->
                     notification.expire()
 

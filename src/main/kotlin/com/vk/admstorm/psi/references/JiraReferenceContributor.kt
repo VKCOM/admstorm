@@ -19,6 +19,7 @@ import com.jetbrains.php.lang.lexer.PhpTokenTypes
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
+// TODO: remove this
 class JiraReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         // /** @see DT-100 */ for PHP

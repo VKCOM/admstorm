@@ -13,14 +13,12 @@ plugins {
     id("org.jetbrains.intellij") version "1.8.0"
     // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
     id("org.jetbrains.changelog") version "1.3.1"
-    // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
-    id("io.gitlab.arturbosch.detekt") version "1.20.0"
-    // Gradle Qodana Plugin
-    id("org.jetbrains.qodana") version "0.1.13"
     // kotlinx serialization - read more: https://github.com/Kotlin/kotlinx.serialization
     kotlin("plugin.serialization") version "1.5.31"
-    // Diktat Plugin
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.1.0"
+    // detekt linter - read more: https://github.com/detekt/detekt
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
+    // diktat linter - read more: https://github.com/saveourtool/diktat
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.3"
 }
 
 group = properties("pluginGroup")
@@ -31,7 +29,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("org.jetbrains:markdown:0.2.4")

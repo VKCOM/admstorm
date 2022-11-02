@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.Gaps
 import com.intellij.util.application
@@ -49,7 +48,6 @@ class ServiceListToolWindow : ToolWindowFactory {
                 }
             }
         }
-
     }
 
     private fun toolWindowPanel(): JComponent {

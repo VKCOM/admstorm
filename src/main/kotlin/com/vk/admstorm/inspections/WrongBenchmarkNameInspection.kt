@@ -13,14 +13,14 @@ class WrongBenchmarkNameInspection : LocalInspectionTool() {
             override fun visitPhpClass(klass: PhpClass) {
                 val namePsi = klass.nameIdentifier ?: return
                 val name = klass.name
-                if (name.endsWith("Benchmark")) {
-                    val withoutBenchmarkSuffix = name.removeSuffix("Benchmark")
-                    holder.registerProblem(
-                        namePsi,
-                        "Perhaps you meant 'Benchmark$withoutBenchmarkSuffix', benchmark class name should be prefixed with 'Benchmark' and not suffixed",
-                        ProblemHighlightType.WARNING,
-                    )
-                }
+                if (!name.endsWith("Benchmark")) return
+
+                val withoutBenchmarkSuffix = name.removeSuffix("Benchmark")
+                holder.registerProblem(
+                    namePsi,
+                    "Perhaps you meant 'Benchmark$withoutBenchmarkSuffix', benchmark class name should be prefixed with 'Benchmark' and not suffixed",
+                    ProblemHighlightType.WARNING,
+                )
             }
         }
     }
