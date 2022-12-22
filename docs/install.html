@@ -19,6 +19,16 @@
 
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="css/index.css">
+    <style>
+        .jb-ban-panel {
+            margin: 0 0 30px;
+            padding: 20px 30px 20px;
+            background: #c84d4d;
+            color: white;
+            border-top-left-radius: 30px;
+            border-bottom-right-radius: 30px
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -148,12 +158,26 @@ PKCS11Provider /usr/local/lib/opensc-pkcs11.so</code>
                 <div class="chapter__text-image-block">
                     <div class="chapter__text-image-block-text">
                         <h2 class="chapter__small-title">
-                            Откройте настройки → Plugins →
-                            <br>
-                            В поиске введите AdmStorm →
-                            Install → Restart IDE
+                            Установка плагина в PHPStorm
                         </h2>
                     </div>
+                    <div class="jb-ban-panel">
+                        JetBrains больше не может предоставлять услуги VK как компании из РФ,
+                        поэтому все наши плагины распространяются
+                        не через официальный Marketplace, а через наш собственный.
+                    </div>
+                    <p>
+                        <kbd>Settings</kbd> → <kbd>Plugins</kbd> → <kbd>⚙️</kbd> → <kbd>Manage plugin repositories</kbd>:
+                    </p>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.dev/admstorm/images/screen-manage-custom.png" alt="">
+                    </div>
+                    <p>Добавляем адрес <b><code>https://idea-plugins.kphp.dev</code></b></p>
+                    <div class="chapter__text-image-block-image">
+                        <img src="https://kphp.dev/admstorm/images/screen-manage-custom-add.png" alt="">
+                    </div>
+                    <p>Закрываем окно настроек через ОК и открываем настройки заново.<br>
+                        Теперь он должен находиться по запросу (иногда без иконки):</p>
                     <div class="chapter__text-image-block-image">
                         <img src="https://kphp.dev/admstorm/images/install-search.png" alt="">
                     </div>
