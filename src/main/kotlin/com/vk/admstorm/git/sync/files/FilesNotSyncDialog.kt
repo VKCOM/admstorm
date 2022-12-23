@@ -8,8 +8,11 @@ import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.dsl.builder.Cell
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
-import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import com.vk.admstorm.ui.MessageDialog
@@ -26,150 +29,175 @@ import javax.swing.event.ListSelectionEvent
 import javax.swing.table.AbstractTableModel
 
 class FilesNotSyncDialog(
-    private val myProject: Project,
+    private val project: Project,
     files: List<RemoteFile>,
-) : DialogWrapper(myProject, true) {
+) : DialogWrapper(project, true) {
+    private lateinit var useLocalVersionButton: Cell<JButton>
+    private lateinit var useRemoteVersionButton: Cell<JButton>
+    private lateinit var showDiffButton: Cell<JButton>
 
-    private lateinit var myContentPanel: JPanel
-    private lateinit var myFilesTablePanel: JPanel
-    private lateinit var myFilesDifferLabel: JLabel
-    private lateinit var myUseLocalVersionButton: JButton
-    private lateinit var myUseRemoteVersionButton: JButton
-    private lateinit var myShowDiffButton: JButton
-    private val myFilesTable = JBTable(FilesTableModel())
-    private val myUnresolvedFiles = mutableListOf<RemoteFile>()
+    private val filesTable = JBTable(FilesTableModel())
+    private val unresolvedFiles = mutableListOf<RemoteFile>()
 
-    private val myFileManager = RemoteFileManager(myProject)
+    private val fileManager = RemoteFileManager(project)
 
     init {
-        myUnresolvedFiles.addAll(files.sortedBy { it.status() })
-
+        unresolvedFiles.addAll(files.sortedBy { it.status() })
         title = "Files not Synchronized"
 
-        myFilesDifferLabel.text = "The following files differ on ${ServerNameProvider.name()} and locally:"
+        setOKButtonText("Resolve")
+        setSize(750, 250)
+        init()
 
-        myUseLocalVersionButton.text = "Use local"
-        myUseLocalVersionButton.addActionListener {
-            onResolve(true)
-        }
+        getButton(okAction)?.isEnabled = unresolvedFiles.isEmpty()
+    }
 
-        myUseRemoteVersionButton.text = "Use ${ServerNameProvider.name()}"
-        myUseRemoteVersionButton.addActionListener {
-            onResolve(false)
-        }
+    override fun createCenterPanel(): JComponent {
+        filesTable.selectionModel = DefaultListSelectionModel()
+        filesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
+        filesTable.intercellSpacing = JBUI.emptySize()
+        filesTable.setDefaultRenderer(Any::class.java, DiffCellRenderer())
 
-        myShowDiffButton.addActionListener {
-            onSelect()
-        }
-
-        myFilesTable.selectionModel = DefaultListSelectionModel()
-        myFilesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
-        myFilesTable.intercellSpacing = JBUI.emptySize()
-        myFilesTable.setDefaultRenderer(Any::class.java, MyCellRenderer())
-
-        myFilesTable.columnModel.getColumn(1).preferredWidth = 150
-        myFilesTable.columnModel.getColumn(1).maxWidth = 150
+        filesTable.columnModel.getColumn(1).preferredWidth = 150
+        filesTable.columnModel.getColumn(1).maxWidth = 200
 
         object : DoubleClickListener() {
             override fun onDoubleClick(e: MouseEvent): Boolean {
                 onSelect()
                 return true
             }
-        }.installOn(myFilesTable)
+        }.installOn(filesTable)
 
-        myFilesTable.selectionModel.addListSelectionListener { e ->
+        if (unresolvedFiles.isNotEmpty()) {
+            filesTable.setRowSelectionInterval(0, 0)
+        }
+
+        val filesPanel = panel {
+            row {
+                val decoratedTable = ToolbarDecorator.createDecorator(filesTable).createPanel()
+
+                cell(decoratedTable)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .verticalAlign(VerticalAlign.FILL)
+
+            }.resizableRow()
+        }
+
+        val buttonsPanel = panel {
+            buttonsGroup {
+                row {
+                    useLocalVersionButton = button("Use local") { onResolve(true) }
+                        .horizontalAlign(HorizontalAlign.FILL)
+                }
+
+                row {
+                    useRemoteVersionButton = button("Use ${ServerNameProvider.name()}") { onResolve(false) }
+                        .horizontalAlign(HorizontalAlign.FILL)
+                }
+
+                row {
+                    showDiffButton = button("Show diff") { onSelect() }
+                        .horizontalAlign(HorizontalAlign.FILL)
+                }
+            }
+        }
+
+        val panel = panel {
+            row {
+                label("The following files differ on ${ServerNameProvider.name()} and locally:")
+            }
+
+            row {
+                cell(filesPanel)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .verticalAlign(VerticalAlign.FILL)
+                    .resizableColumn()
+
+                cell(buttonsPanel)
+                    .horizontalAlign(HorizontalAlign.RIGHT)
+                    .verticalAlign(VerticalAlign.FILL)
+
+            }.resizableRow()
+        }
+
+        filesTable.selectionModel.addListSelectionListener { e ->
             onRowFocus(e)
         }
 
-        val decoratedTable = ToolbarDecorator.createDecorator(myFilesTable).createPanel()
-
-        myFilesTablePanel.add(decoratedTable, GridConstraints().apply {
-            row = 0; column = 0; fill = GridConstraints.FILL_BOTH
-        })
-
-        if (myUnresolvedFiles.isNotEmpty()) {
-            myFilesTable.setRowSelectionInterval(0, 0)
-        }
-
-        setOKButtonText("Resolve")
-        setSize(650, 250)
-
-        init()
-
-        getButton(okAction)?.isEnabled = myUnresolvedFiles.isEmpty()
+        return panel
     }
 
     private fun onRowFocus(e: ListSelectionEvent) {
         if (e.valueIsAdjusting) return
 
-        val rowIndex = myFilesTable.selectedRow
+        val rowIndex = filesTable.selectedRow
         if (rowIndex == -1) {
-            myShowDiffButton.isEnabled = false
+            showDiffButton.component.isEnabled = false
             return
         }
 
-        myShowDiffButton.isEnabled = true
+        showDiffButton.component.isEnabled = true
 
-        val file = myUnresolvedFiles[rowIndex]
+        val file = unresolvedFiles[rowIndex]
 
-        myUseRemoteVersionButton.text = when {
-            file.isRenamed -> "Rename back on local"
-            file.isRemoved -> "Remove on local"
-            file.isNotFound -> "Remove on local"
+        useRemoteVersionButton.component.text = when {
+            file.isRenamed           -> "Rename back on local"
+            file.isRemoved           -> "Remove on local"
+            file.isNotFound          -> "Remove on local"
             file.localFile.isRemoved -> "Get from ${ServerNameProvider.name()}"
-            else -> "Use ${ServerNameProvider.name()}"
+            else                     -> "Use ${ServerNameProvider.name()}"
         }
 
-        myUseLocalVersionButton.text = when {
-            file.isRenamed -> "Rename on ${ServerNameProvider.name()}"
-            file.isNotFound -> "Send to ${ServerNameProvider.name()}"
-            file.isRemoved -> "Send to ${ServerNameProvider.name()}"
+        useLocalVersionButton.component.text = when {
+            file.isRenamed           -> "Rename on ${ServerNameProvider.name()}"
+            file.isNotFound          -> "Send to ${ServerNameProvider.name()}"
+            file.isRemoved           -> "Send to ${ServerNameProvider.name()}"
             file.localFile.isRemoved -> "Remove on ${ServerNameProvider.name()}"
-            else -> "Use local"
+            else                     -> "Use local"
         }
     }
 
-    override fun getPreferredFocusedComponent() = myFilesTable
+    override fun getPreferredFocusedComponent() = filesTable
 
     private fun onResolve(useLocal: Boolean) {
-        val selectedRow = myFilesTable.selectedRow
-        val remoteFile = myUnresolvedFiles.getOrNull(selectedRow) ?: return
+        val selectedRow = filesTable.selectedRow
+        val remoteFile = unresolvedFiles.getOrNull(selectedRow) ?: return
 
         val onResolve = {}
 
         when {
             (remoteFile.isNotFound || remoteFile.isRemoved) && !useLocal -> doRemoveLocalFile(remoteFile, onResolve)
-            remoteFile.localFile.isRemoved -> doResolveLocalFileRemoved(useLocal, remoteFile, onResolve)
-            remoteFile.isRenamed -> doResolveLocalFileRenamed(useLocal, remoteFile, onResolve)
-            else -> doResolveContentMismatch(remoteFile, useLocal, onResolve)
+            remoteFile.localFile.isRemoved                               -> doResolveLocalFileRemoved(useLocal, remoteFile, onResolve)
+            remoteFile.isRenamed                                         -> doResolveLocalFileRenamed(useLocal, remoteFile, onResolve)
+            else                                                         -> doResolveContentMismatch(remoteFile, useLocal, onResolve)
         }
 
-        myUnresolvedFiles.removeAt(selectedRow)
-        (myFilesTable.model as FilesTableModel).fireTableDataChanged()
+        unresolvedFiles.removeAt(selectedRow)
+        (filesTable.model as FilesTableModel).fireTableDataChanged()
 
-        if (myUnresolvedFiles.isNotEmpty()) {
-            myFilesTable.requestFocus()
-            myFilesTable.setRowSelectionInterval(0, 0)
+        if (unresolvedFiles.isNotEmpty()) {
+            filesTable.requestFocus()
+            filesTable.setRowSelectionInterval(0, 0)
         }
 
-        getButton(okAction)?.isEnabled = myUnresolvedFiles.isEmpty()
+        getButton(okAction)?.isEnabled = unresolvedFiles.isEmpty()
     }
 
     private fun doResolveLocalFileRenamed(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            myFileManager.revertRemoteFileToOriginal(remoteFile, onReady)
+            fileManager.revertRemoteFileToOriginal(remoteFile, onReady)
         } else {
-            myFileManager.renameLocalFile(remoteFile, onReady)
+            fileManager.renameLocalFile(remoteFile, onReady)
         }
     }
 
     private fun doResolveContentMismatch(
         remoteFile: RemoteFile,
         useLocal: Boolean,
-        onReady: Runnable
+        onReady: Runnable,
     ) {
         val relativeFilePath = remoteFile.path
-        val localFile = MyUtils.virtualFileByRelativePath(myProject, relativeFilePath)
+        val localFile = MyUtils.virtualFileByRelativePath(project, relativeFilePath)
 
         if (localFile == null) {
             MessageDialog.showWarning("Can't find local ${code(relativeFilePath)} file", "Overwrite Fail")
@@ -177,49 +205,47 @@ class FilesNotSyncDialog(
         }
 
         if (useLocal) {
-            myFileManager.rewriteRemoteFileWithLocalContent(localFile, onReady)
+            fileManager.rewriteRemoteFileWithLocalContent(localFile, onReady)
         } else {
-            myFileManager.rewriteLocalFileWithRemoteContent(localFile, remoteFile.content, onReady)
+            fileManager.rewriteLocalFileWithRemoteContent(localFile, remoteFile.content, onReady)
         }
     }
 
     private fun doResolveLocalFileRemoved(useLocal: Boolean, remoteFile: RemoteFile, onReady: Runnable) {
         if (useLocal) {
-            myFileManager.removeRemoteFile(remoteFile, onReady)
+            fileManager.removeRemoteFile(remoteFile, onReady)
         } else {
-            myFileManager.createLocalFileFromRemote(remoteFile, onReady)
+            fileManager.createLocalFileFromRemote(remoteFile, onReady)
         }
     }
 
     private fun doRemoveLocalFile(remoteFile: RemoteFile, onReady: Runnable) {
-        myFileManager.removeLocalFile(remoteFile, onReady)
+        fileManager.removeLocalFile(remoteFile, onReady)
     }
 
     private fun onSelect() {
-        val selectedRow = myFilesTable.selectedRow
-        val remoteFile = myUnresolvedFiles.getOrNull(selectedRow) ?: return
+        val selectedRow = filesTable.selectedRow
+        val remoteFile = unresolvedFiles.getOrNull(selectedRow) ?: return
 
-        val localFile = MyUtils.virtualFileByRelativePath(myProject, remoteFile.path)
+        val localFile = MyUtils.virtualFileByRelativePath(project, remoteFile.path)
         val localFileText =
             if (localFile == null) null
             else LoadTextUtil.loadText(localFile).toString()
 
-        val factory = NotSyncFilesViewerFactory(myProject, remoteFile, localFile?.path ?: "", localFileText)
+        val factory = NotSyncFilesViewerFactory(project, remoteFile, localFile?.path ?: "", localFileText)
         factory.viewer.showAndGet()
     }
 
-    override fun createCenterPanel() = myContentPanel
-
-    private inner class MyCellRenderer : ColoredTableCellRenderer() {
+    private inner class DiffCellRenderer : ColoredTableCellRenderer() {
 
         private fun RemoteFile.statusTextAttributes() =
             SimpleTextAttributes(
                 SimpleTextAttributes.STYLE_PLAIN, when {
-                    isRenamed -> FileStatus.MODIFIED.color
-                    isRemoved -> FileStatus.DELETED.color
-                    isNotFound -> FileStatus.DELETED.color
+                    isRenamed           -> FileStatus.MODIFIED.color
+                    isRemoved           -> FileStatus.DELETED.color
+                    isNotFound          -> FileStatus.DELETED.color
                     localFile.isRemoved -> FileStatus.ADDED.color
-                    else -> FileStatus.MODIFIED.color
+                    else                -> FileStatus.MODIFIED.color
                 }
             )
 
@@ -229,7 +255,7 @@ class FilesNotSyncDialog(
             selected: Boolean,
             hasFocus: Boolean,
             row: Int,
-            column: Int
+            column: Int,
         ) {
             val file = value as RemoteFile
 
@@ -241,11 +267,12 @@ class FilesNotSyncDialog(
                     file.status(),
                     file.statusTextAttributes()
                 )
+
                 0 -> {
                     icon = MyUiUtils.fileTypeIcon(file.path)
 
                     if (file.isRenamed && file.origPath != null) {
-                        val absOrigPath = MyPathUtils.absoluteLocalPath(myProject, file.origPath)
+                        val absOrigPath = MyPathUtils.absoluteLocalPath(project, file.origPath)
                         val origFile = File(absOrigPath)
 
                         append(origFile.name, file.statusTextAttributes())
@@ -254,7 +281,7 @@ class FilesNotSyncDialog(
 
                         append(" ${UIUtil.rightArrow()} ")
 
-                        val absNewPath = MyPathUtils.absoluteLocalPath(myProject, file.path)
+                        val absNewPath = MyPathUtils.absoluteLocalPath(project, file.path)
                         val newFile = File(absNewPath)
 
                         append(newFile.name)
@@ -264,31 +291,31 @@ class FilesNotSyncDialog(
                         return
                     }
 
-                    val absPath = MyPathUtils.absoluteLocalPath(myProject, file.path)
-                    val iofile = File(absPath)
+                    val absPath = MyPathUtils.absoluteLocalPath(project, file.path)
+                    val ioFile = File(absPath)
 
-                    append(iofile.name, file.statusTextAttributes())
+                    append(ioFile.name, file.statusTextAttributes())
                     append(" ")
-                    append(foldUserHome(iofile.parent), SimpleTextAttributes.GRAY_ATTRIBUTES)
+                    append(foldUserHome(ioFile.parent), SimpleTextAttributes.GRAY_ATTRIBUTES)
                 }
             }
         }
     }
 
     private inner class FilesTableModel : AbstractTableModel() {
-        override fun getRowCount() = myUnresolvedFiles.size
+        override fun getRowCount() = unresolvedFiles.size
         override fun getColumnCount() = 2
 
         override fun getColumnName(column: Int): String {
             return when (column) {
-                0 -> "Name"
-                1 -> "Status"
+                0    -> "Name"
+                1    -> "Status"
                 else -> "unknown"
             }
         }
 
         override fun getValueAt(rowIndex: Int, columnIndex: Int): Any {
-            return myUnresolvedFiles[rowIndex]
+            return unresolvedFiles[rowIndex]
         }
     }
 }
