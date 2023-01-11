@@ -1,5 +1,19 @@
 # AdmStorm Changelog
 
+## 1.3.4 — 23.12.2022
+
+### Fixed
+
+- Bug when checking the diff by file
+
+## 1.3.3 — 15.12.2022
+
+- Adapt code for PhpStorm 2022.3
+
+### Removed
+
+- Links for Jira tickets in PHP, JS, and CSS comments
+
 ## 1.3.2 — 31.08.2022
 
 ### Fixed
