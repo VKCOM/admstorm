@@ -4,34 +4,54 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.ActionLink
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.MyUtils
 import com.vk.admstorm.utils.ServerNameProvider
+import java.awt.event.ItemEvent
+import javax.swing.JComponent
 import javax.swing.JLabel
-import javax.swing.JPanel
 
 class SyncBranchesDialog(
-    private val myProject: Project,
-    localBranch: String,
-    remoteBranch: String,
-    private var onCancelSync: Runnable?,
-    private val onSyncFinish: Runnable
-) : DialogWrapper(myProject, true) {
+    private val project: Project,
+    private val localBranch: String,
+    private val remoteBranch: String,
+    private val onCancelSync: Runnable?,
+    private val onSyncFinish: Runnable,
+) : DialogWrapper(project, true) {
+    private lateinit var branchComboBox: Cell<ComboBox<String>>
+    private val helperLabel = JLabel("Branch will be changed on server")
 
-    private lateinit var contentPane: JPanel
+    init {
+        title = "Branches not Synchronized"
 
-    private lateinit var myRemoteBranchLabel: JLabel
-    private lateinit var myRemoteBranchLabelLink: ActionLink
-    private lateinit var myLocalBranchLabelLink: ActionLink
+        setOKButtonText("Sync")
+        setSize(380, 150)
+        init()
+    }
 
-    private lateinit var mySelectMainBranchCombo: ComboBox<String>
-    private lateinit var myHelpLabelForCheckBox: JLabel
+    private fun doLocalCheckoutToRemoteBranch() {
+        LocalBranchSwitcher(project)
+            .switch(remoteBranch, onSyncFinish)
+    }
+
+    private fun doRemoteCheckoutToLocalBranch() {
+        RemoteBranchSwitcher(project, onCancelSync)
+            .switch(localBranch, false, onSyncFinish)
+    }
+
+    private fun copyTextAndShowNotification(text: String) {
+        invokeLater {
+            MyUtils.copyToClipboard(text)
+            AdmNotification("Branch name '$text' copied").show()
+        }
+    }
 
     override fun doOKAction() {
         super.doOKAction()
 
-        val useRemoteBranch = mySelectMainBranchCombo.selectedItem as String == myRemoteBranchLabelLink.text
+        val useRemoteBranch = branchComboBox.component.selectedItem == remoteBranch
         if (useRemoteBranch) {
             doLocalCheckoutToRemoteBranch()
         } else {
@@ -39,57 +59,51 @@ class SyncBranchesDialog(
         }
     }
 
-    private fun doLocalCheckoutToRemoteBranch() {
-        LocalBranchSwitcher(myProject)
-            .switch(myRemoteBranchLabelLink.text, onSyncFinish)
-    }
+    override fun createCenterPanel(): JComponent {
+        return panel {
+            row {
+                label("${ServerNameProvider.uppercase()} branch:")
+            }
+            indent {
+                row {
+                    link(remoteBranch) { copyTextAndShowNotification(remoteBranch) }
+                }
+            }
 
-    private fun doRemoteCheckoutToLocalBranch() {
-        RemoteBranchSwitcher(myProject, onCancelSync)
-            .switch(myLocalBranchLabelLink.text, false, onSyncFinish)
-    }
+            row {
+                label("Local branch:")
+            }
+            indent {
+                row {
+                    link(localBranch) { copyTextAndShowNotification(localBranch) }
+                }
+            }
 
-    init {
-        title = "Branches not Synchronized"
+            separator()
 
-        myRemoteBranchLabelLink.text = remoteBranch
-        myRemoteBranchLabelLink.addActionListener {
-            copyTextAndShowNotification(remoteBranch)
-        }
+            row {
+                label("Select main branch to sync:")
+            }
+            row {
+                val branches = listOf(localBranch, remoteBranch)
 
-        myLocalBranchLabelLink.text = localBranch
-        myLocalBranchLabelLink.addActionListener {
-            copyTextAndShowNotification(localBranch)
-        }
-
-        mySelectMainBranchCombo.addItem(localBranch)
-        mySelectMainBranchCombo.addItem(remoteBranch)
-
-        myRemoteBranchLabel.text = "Adm branch:"
-        myHelpLabelForCheckBox.text = "Branch will be changed in ${ServerNameProvider.name()}"
-
-        mySelectMainBranchCombo.addItemListener { e ->
-            val selected = e.itemSelectable.selectedObjects[0] as String
-            if (selected == remoteBranch) {
-                myHelpLabelForCheckBox.text = "Branch will be changed locally"
-            } else {
-                myHelpLabelForCheckBox.text = "Branch will be changed on ${ServerNameProvider.name()}"
+                branchComboBox = comboBox(branches)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .applyToComponent {
+                        addItemListener {
+                            if (it.stateChange == ItemEvent.SELECTED) {
+                                helperLabel.text = if (it.item == remoteBranch) {
+                                    "Branch will be changed locally"
+                                } else {
+                                    "Branch will be changed on ${ServerNameProvider.name()}"
+                                }
+                            }
+                        }
+                    }
+            }
+            row {
+                cell(helperLabel)
             }
         }
-
-        setOKButtonText("Sync")
-
-        setSize(380, 150)
-
-        init()
     }
-
-    private fun copyTextAndShowNotification(text: String) {
-        invokeLater {
-            MyUtils.copyToClipboard(text)
-            AdmNotification("Branch name $text copied").show()
-        }
-    }
-
-    override fun createCenterPanel() = contentPane
 }
