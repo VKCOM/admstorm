@@ -69,6 +69,8 @@ data class EnvConfig(
 object Env {
     private val LOG = logger<Env>()
 
+    private const val configFile = "admstorm_config.json"
+
     private var myIsResolved = false
     var data = EnvConfig()
 
@@ -93,12 +95,12 @@ object Env {
             return
         }
 
-        val configPath = "~/admstorm_config.json"
+        val configPath = "~/$configFile"
         val output = CommandRunner.runRemotely(project, "cat $configPath")
         if (output.exitCode != 0) {
             MessageDialog.showError(
                 """
-                    Unable to get ${code("admstorm_config.json")}, further work of the plugin is impossible
+                    Unable to get ${code(configFile)}, further work of the plugin is impossible
                     
                     ${output.stderr}
                 """.trimIndent(),

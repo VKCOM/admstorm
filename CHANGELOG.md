@@ -1,5 +1,11 @@
 # AdmStorm Changelog
 
+## 1.3.5 — 07.03.2023
+
+### Fixed
+
+- Bug when checking sync branches
+
 ## 1.3.4 — 23.12.2022
 
 ### Fixed
