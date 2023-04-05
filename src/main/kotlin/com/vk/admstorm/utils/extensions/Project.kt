@@ -4,3 +4,5 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.AdmService
 
 fun Project.pluginEnabled() = AdmService.getInstance(this).needBeEnabled()
+
+fun Project.pluginIsInitialized() = AdmService.getInstance(this).isInitialized()

@@ -5,13 +5,13 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.util.messages.Topic
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.WatchDebugLogCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
-import java.beans.PropertyChangeSupport
 
-@Service
+@Service(Service.Level.PROJECT)
 class WatchDebugLogService(private val project: Project) : Disposable {
     companion object {
         const val PROPERTY_ID = "admstorm.watch.debug.log.running.state"
@@ -24,7 +24,6 @@ class WatchDebugLogService(private val project: Project) : Disposable {
     }
 
     private var executor: WatchDebugLogCommandExecutor? = null
-    val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
 
@@ -73,12 +72,21 @@ class WatchDebugLogService(private val project: Project) : Disposable {
 
     private fun setState(value: State) {
         PropertiesComponent.getInstance(project).setValue(PROPERTY_ID, value.name)
-        changes.firePropertyChange(PROPERTY_ID, "", value.name)
+
+        project.messageBus.syncPublisher(WatchDebugLogListener.TOPIC).onUpdateState()
     }
 
     private fun isConnected() = SshConnectionService.getInstance(project).isConnectedOrWarning()
 
     override fun dispose() {
         executor?.dispose()
+    }
+
+    internal interface WatchDebugLogListener {
+        companion object {
+            val TOPIC = Topic.create("WatchDebugLogListener", WatchDebugLogListener::class.java)
+        }
+
+        fun onUpdateState() {}
     }
 }

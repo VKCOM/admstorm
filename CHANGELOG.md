@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
+## 2.0.1 — 01.08.2022
+
+- Adapt code for PhpStorm 2023.1
+
 ## 2.0.0 — 11.05.2023
 
-Second stable version
+- Second stable version
 
 ### Added
 
@@ -49,7 +53,7 @@ Second stable version
 - Users can now run PHPUnit tests from the context menu of a file.
 - Users can now run ktest benchmarks from the context menu of a file.
 - On the installation page, the point about opening the project has been clarified.
-- On the installation page, the section about Yubikey has been updated, 
+- On the installation page, the section about Yubikey has been updated,
 - Added a clarification about the settings page.
 - Added settings to enable/disable widgets.
 - Updated api tests.
@@ -59,7 +63,8 @@ Second stable version
 
 - Freeze when running a PHPUnit test, or a ktest benchmark.
 - Freeze when connection is lost for yarn watch.
-- Launch of a separate benchmark method, now if a method with a name that's a prefix for the name of other methods is launched, then other methods won't be launched.
+- Launch of a separate benchmark method, now if a method with a name that's a prefix for the name of other methods is
+  launched, then other methods won't be launched.
 - Exception when the plugin automatically opens a new SSH tunnel.
 - Performance warning for line marker for ktest.
 - Yarn watch no longer appears in non-vkcom projects.
@@ -72,10 +77,10 @@ Second stable version
 ### Added
 
 - Full support for ktest benchmarks:
-  - Running a benchmark on an entire class or a single method
-  - Launching benchmark for memory allocations
-  - Comparison of two classes and two methods
-  - Checking the name of the benchmark class
+    - Running a benchmark on an entire class or a single method
+    - Launching benchmark for memory allocations
+    - Comparison of two classes and two methods
+    - Checking the name of the benchmark class
 - Yarn Watch support
 - Ability to share code from KPHP Playground
 - Ability to view KPHP compilation output in Playground
@@ -155,15 +160,15 @@ improvements and fixes.
 ### Other improvements
 
 - Improved file sync dialog;
-  - Files are now displayed sorted (by state);
-  - For files that are only in the local repository, added the ability to delete them;
-  - Now the full path to the file is displayed starting from `~/`;
-  - Now after clicking the button to download a file from the server, it will be started immediately, and not after
-    closing the dialog;
-  - Now if the file is located only locally or only on the server, when viewing its contents, it will be displayed in
-    a simple viewer, and not in a diff viewer with two editors;
-  - Fixed a bug when deleting a file from the list, the focus did not go to the next one, and it was necessary to
-    select the file manually.
+    - Files are now displayed sorted (by state);
+    - For files that are only in the local repository, added the ability to delete them;
+    - Now the full path to the file is displayed starting from `~/`;
+    - Now after clicking the button to download a file from the server, it will be started immediately, and not after
+      closing the dialog;
+    - Now if the file is located only locally or only on the server, when viewing its contents, it will be displayed in
+      a simple viewer, and not in a diff viewer with two editors;
+    - Fixed a bug when deleting a file from the list, the focus did not go to the next one, and it was necessary to
+      select the file manually.
 
 ### Fixed
 

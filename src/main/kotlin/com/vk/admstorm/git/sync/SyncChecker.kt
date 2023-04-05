@@ -21,7 +21,7 @@ import com.vk.admstorm.utils.MyUtils.runBackground
 import com.vk.admstorm.utils.ServerNameProvider
 import java.util.function.Consumer
 
-@Service
+@Service(Service.Level.PROJECT)
 class SyncChecker(private var myProject: Project) {
     companion object {
         fun getInstance(project: Project) = project.service<SyncChecker>()

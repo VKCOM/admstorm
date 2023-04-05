@@ -41,6 +41,10 @@
               topic="com.intellij.openapi.vcs.BranchChangeListener"/>
     <listener class="com.vk.admstorm.YarnWatchGitBranchContextTracker"
               topic="com.intellij.openapi.vcs.BranchChangeListener"/>
+    <listener class="com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory$Listener"
+              topic="com.vk.admstorm.env.EnvListener"/>
+    <listener class="com.vk.admstorm.ui.WatchDebugLogStatusBarWidgetFactory$Listener"
+              topic="com.vk.admstorm.env.EnvListener"/>
   </projectListeners>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -52,19 +56,18 @@
     <codeInsight.lineMarkerProvider id="com.vk.admstorm.highlight.markers.AdmStormMarkerLineMarkerProvider" language="PHP"
                                     implementationClass="com.vk.admstorm.highlight.markers.AdmStormMarkerLineMarkerProvider"/>
 
-    <statusBarWidgetFactory id="com.vk.admstorm.ui.status.bar.yarn.watch"
+    <statusBarWidgetFactory id="yarnWatchStatusBar"
                             implementation="com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory"
                             order="before gitWidget"/>
 
-    <statusBarWidgetFactory id="com.vk.admstorm.ui.status.bar.watch.debug.log"
+    <statusBarWidgetFactory id="watchDebugLogStatusBar"
                             implementation="com.vk.admstorm.ui.WatchDebugLogStatusBarWidgetFactory"
-                            order="before com.vk.admstorm.ui.status.bar.yarn.watch"/>
+                            order="before yarnWatchStatusBar"/>
 
     <projectService serviceImplementation="com.vk.admstorm.AdmService"/>
     <projectService serviceImplementation="com.vk.admstorm.ssh.SshConnectionService"/>
     <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
-    <projectService serviceImplementation="com.vk.admstorm.AdmStormStartupActivity"/>
     <projectService serviceImplementation="com.vk.admstorm.services.YarnWatchService"/>
     <projectService serviceImplementation="com.vk.admstorm.services.WatchDebugLogService"/>
     <projectService serviceImplementation="com.vk.admstorm.services.RunAnythingOnServerService"/>
@@ -144,7 +147,7 @@
 
     <errorHandler implementation="com.vk.admstorm.diagnostic.SentryErrorReporter"/>
 
-    <toolWindow id="Service List" icon="icons/services.svg" anchor="right" doNotActivateOnStart="true"
+    <toolWindow id="Service List" icon="/icons/services.svg" anchor="right" doNotActivateOnStart="true"
                 factoryClass="com.vk.admstorm.ui.ServiceListToolWindow"/>
   </extensions>
 

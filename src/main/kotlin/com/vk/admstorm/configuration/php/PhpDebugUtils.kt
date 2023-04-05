@@ -112,7 +112,7 @@ object PhpDebugUtils {
         )
             .withTitle("Remote PHP debug delay")
             .withActions(
-                AdmNotification.Action("Don't show again") { e, notification ->
+                AdmNotification.Action("Don't show again") { _, notification ->
                     notification.expire()
                     PropertiesComponent.getInstance(project).setValue(key, true)
                 }

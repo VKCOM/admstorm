@@ -12,7 +12,7 @@ import com.vk.admstorm.executors.RunAnythingExecutor
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.ServerNameProvider
 
-@Service
+@Service(Service.Level.PROJECT)
 class RunAnythingOnServerService(private val project: Project) {
     companion object {
         fun getInstance(project: Project) = project.service<RunAnythingOnServerService>()

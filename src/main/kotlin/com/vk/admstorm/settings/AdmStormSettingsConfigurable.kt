@@ -6,8 +6,8 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.*
 import com.vk.admstorm.git.GitConflictResolutionStrategy
 import com.vk.admstorm.ui.StatusBarUtils
-import com.vk.admstorm.ui.WatchDebugLogStatusBarWidget
-import com.vk.admstorm.ui.YarnWatchStatusBarWidget
+import com.vk.admstorm.ui.WatchDebugLogStatusBarWidgetFactory
+import com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory
 import com.vk.admstorm.utils.ServerNameProvider
 
 /**
@@ -153,16 +153,16 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             userNameForSentry = model.userNameForSentry
         }
 
-        StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidget.WIDGET_ID, model.showYarnWatchWidget)
-        StatusBarUtils.setEnabled(project, WatchDebugLogStatusBarWidget.WIDGET_ID, model.showWatchDebugLogWidget)
+        StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
+        StatusBarUtils.setEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID, model.showWatchDebugLogWidget)
     }
 
     override fun reset() {
         val settings = AdmStormSettingsState.getInstance()
 
         // Users can change settings in a context menu of the status bar, so need check.
-        val actualYarnWatchVisibility = StatusBarUtils.getEnabled(project, YarnWatchStatusBarWidget.WIDGET_ID)
-        val actualWatchDebugLogVisibility = StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidget.WIDGET_ID)
+        val actualYarnWatchVisibility = StatusBarUtils.getEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID)
+        val actualWatchDebugLogVisibility = StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID)
 
         if (settings.showYarnWatchWidget != actualYarnWatchVisibility) {
             settings.showYarnWatchWidget = actualYarnWatchVisibility
