@@ -154,7 +154,8 @@
 
   <actions>
     <!-- Add your actions here -->
-    <group id="com.vk.admstorm.adm.actions" class="com.vk.admstorm.actions.AdmActionsGroup" popup="true">
+    <group id="com.vk.admstorm.adm.actions" class="com.vk.admstorm.actions.AdmActionsGroup" popup="true"
+           icon="/icons/admstorm-logo.svg">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
 
       <action id="com.vk.admstorm.connect.to.adm.via.ssh" class="com.vk.admstorm.actions.ConnectToAdmViaSshAction"

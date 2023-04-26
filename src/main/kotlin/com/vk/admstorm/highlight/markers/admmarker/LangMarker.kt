@@ -62,7 +62,7 @@ class LangMarker(project: Project) : MarkerService<LangMarker.LangConfig>(projec
 
             if (model.description.isNotNullOrBlank()) {
                 rowContent("Описание:") {
-                    label(model.description)
+                    description(model.description)
                 }
             }
 

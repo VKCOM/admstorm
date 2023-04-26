@@ -21,7 +21,7 @@ import com.vk.admstorm.utils.php.PhpFunctionUtils
 
 class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
     companion object {
-        private val tagName = "@admstorm-marker"
+        private const val tagName = "@admstorm-marker"
 
         private fun calcService(serviceName: String, project: Project): IMarker? {
             return when (serviceName) {

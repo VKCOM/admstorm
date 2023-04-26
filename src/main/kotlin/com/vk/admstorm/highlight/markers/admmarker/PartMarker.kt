@@ -75,11 +75,11 @@ class PartMarker(project: Project) : MarkerService<PartMarker.PartConfig>(projec
 
             if (model.description.isNotNullOrBlank()) {
                 rowContent("Описание:") {
-                    label(model.description)
+                    description(model.description)
                 }
             }
 
-            if (model.ownerUrl != null && model.ownerName != null) {
+            if (model.ownerName != null && model.ownerUrl != null) {
                 rowContent("Автор:") {
                     browserLink(model.ownerName, model.ownerUrl)
                 }

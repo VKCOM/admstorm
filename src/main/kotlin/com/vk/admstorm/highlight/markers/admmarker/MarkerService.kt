@@ -15,10 +15,7 @@ import com.vk.admstorm.admscript.AdmScript
 import com.vk.admstorm.utils.UiDslBuilderUtils.italic
 import org.apache.commons.lang.StringEscapeUtils
 import org.jetbrains.annotations.Nls
-import javax.swing.BorderFactory
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.ScrollPaneConstants
+import javax.swing.*
 
 abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(project), IMarkerPopup<TModel> {
     protected fun popupPanel(init: Panel.() -> Unit): DialogPanel {
@@ -55,6 +52,10 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
             .italic()
     }
 
+    protected fun Row.description(@Nls text: String): Cell<JEditorPane> {
+        return text(text, 90)
+    }
+
     enum class ViewMode {
         SINGLE,
         MULTILINE;
@@ -64,6 +65,10 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
                 return ViewMode.values().firstOrNull { it.name.lowercase() == viewMode } ?: SINGLE
             }
         }
+    }
+
+    fun Row.textComponent(text: String, viewMode: ViewMode): Cell<JComponent> {
+        return cell(renderTextComponent(text, viewMode))
     }
 
     private fun renderTextComponent(text: String, viewMode: ViewMode): JComponent {
@@ -89,10 +94,6 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
                 }
             }
         }
-    }
-
-    fun Row.textComponent(text: String, viewMode: ViewMode): Cell<JComponent> {
-        return cell(renderTextComponent(text, viewMode))
     }
 
     fun errorMessage(textError: String): JComponent {

@@ -18,7 +18,7 @@ object PhpFunctionUtils {
 
         val noNamedArgumentsSize = parameterList.parameters.size - nameIdentifiers.size
         for (i in 0 until noNamedArgumentsSize) {
-            val paramName = function.parameters[i].name
+            val paramName = function.parameters.getOrNull(i)?.name ?: break
             paramsMap[paramName] = parameterList.getParameter(i)?.text
         }
 
@@ -35,7 +35,7 @@ object PhpFunctionUtils {
 
         val noNamedArgumentsSize = parameterList.parameters.size - nameIdentifiers.size
         for (i in 0 until noNamedArgumentsSize) {
-            val paramName = function.parameters[i].name
+            val paramName = function.parameters.getOrNull(i)?.name ?: break
             paramsMap[paramName] = parameterList.getParameter(i)
         }
 

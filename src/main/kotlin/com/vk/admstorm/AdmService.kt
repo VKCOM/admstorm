@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils
+import com.vk.admstorm.utils.extensions.unquote
 
 @Service
 class AdmService(private var myProject: Project) {
@@ -55,7 +56,7 @@ class AdmService(private var myProject: Project) {
         var containsGlobal = false
         composerPsiFile.accept(object : JsonRecursiveElementVisitor() {
             override fun visitStringLiteral(lit: JsonStringLiteral) {
-                containsGlobal = containsGlobal || lit.text.contains("vk/global")
+                containsGlobal = containsGlobal || lit.text.unquote() == "vk/global"
             }
         })
 
