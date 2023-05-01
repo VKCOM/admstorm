@@ -6,9 +6,9 @@ import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiElement
 import com.intellij.ui.awt.RelativePoint
-import com.vk.admstorm.highlight.markers.admmarker.IMarker
-import com.vk.admstorm.highlight.markers.admmarker.IMarkerBrowser
-import com.vk.admstorm.highlight.markers.admmarker.MarkerService
+import com.vk.admstorm.highlight.markers.impl.IMarker
+import com.vk.admstorm.highlight.markers.impl.IMarkerBrowser
+import com.vk.admstorm.highlight.markers.impl.MarkerService
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import java.awt.event.MouseEvent
 

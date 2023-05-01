@@ -232,7 +232,10 @@ class AdmStormStartupActivity : StartupActivity {
 
     override fun runActivity(project: Project) {
         setupLogger(project)
+        initPlugin(project)
+    }
 
+    private fun initPlugin(project: Project) {
         if (!project.pluginEnabled()) {
             // We don't connect if this is not a vkcom project
             return

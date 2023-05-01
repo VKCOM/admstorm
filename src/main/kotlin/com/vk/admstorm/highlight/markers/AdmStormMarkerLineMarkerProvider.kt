@@ -15,6 +15,7 @@ import com.jetbrains.php.lang.psi.elements.impl.ClassConstImpl
 import com.jetbrains.php.lang.psi.elements.impl.ParameterListImpl
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.highlight.markers.admmarker.*
+import com.vk.admstorm.highlight.markers.impl.IMarker
 import com.vk.admstorm.utils.extensions.unquote
 import com.vk.admstorm.utils.php.PhpFieldUtils
 import com.vk.admstorm.utils.php.PhpFunctionUtils
@@ -23,15 +24,16 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
     companion object {
         private const val tagName = "@admstorm-marker"
 
-        private fun calcService(serviceName: String, project: Project): IMarker? {
-            return when (serviceName) {
+        private fun calcMarker(markerName: String, project: Project): IMarker? {
+            return when (markerName) {
                 "lang"           -> LangMarker(project)
                 "confdata"       -> ConfdataMarker(project)
                 "part"           -> PartMarker(project)
                 "config"         -> ConfigMarker(project)
                 "buggerLog"      -> BufferMarker()
-                "statsHouseView" -> StatshouseMarker(StatshouseMarker.Mode.VIEW)
                 "logger"         -> LoggerMarker()
+                "ab"             -> ABMarker()
+                "statsHouseView" -> StatshouseMarker(StatshouseMarker.Mode.VIEW)
 
                 else             -> null
             }
@@ -67,17 +69,17 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
                 continue
             }
 
-            val marker = markerElements.first()
-            if (marker !is PhpDocTagImpl) {
+            val markerElement = markerElements.first()
+            if (markerElement !is PhpDocTagImpl) {
                 continue
             }
 
-            val markerItem = AdmStormMarkerItem(marker)
+            val markerItem = AdmStormMarkerItem(markerElement)
             if (!markerItem.isValueNode() || !markerItem.isValidValue()) {
                 continue
             }
 
-            val service = calcService(markerItem.kindValue(), element.project) ?: continue
+            val marker = calcMarker(markerItem.kindValue(), element.project) ?: continue
 
             var containingClass: PhpClass? = null
             var callClass: PhpClass? = null
@@ -98,13 +100,13 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
 
             val keyName = parseQValue(qValues, arg, callClass, containingClass) ?: continue
 
-            val text = service.getTooltip()
+            val text = marker.tooltip
             val lineMarkerInfo = LineMarkerInfo(
                 element,
                 element.textRange,
-                service.getIcon(),
+                marker.icon,
                 { text },
-                ServiceGutterIconNavigationHandler(keyName, service),
+                ServiceGutterIconNavigationHandler(keyName, marker),
                 GutterIconRenderer.Alignment.CENTER,
                 { text },
             )
@@ -208,7 +210,8 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun parseConst(containingClass: PhpClass?, callClass: PhpClass, type: String, fieldName: String): String? {
-        val filed = PhpFieldUtils.getFiledByTypeInClass(containingClass, callClass, type, fieldName, true) ?: return null
+        val filed =
+            PhpFieldUtils.getFiledByTypeInClass(containingClass, callClass, type, fieldName, true) ?: return null
         if (filed !is ClassConstImpl) {
             return null
         }

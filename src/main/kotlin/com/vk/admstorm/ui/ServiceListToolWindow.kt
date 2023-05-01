@@ -16,14 +16,17 @@ import javax.swing.JPanel
 class ServiceListToolWindow : ToolWindowFactory {
     companion object {
         private val serviceToIcon = mapOf(
-            "jira" to AdmIcons.Service.Jira,
             "confluence" to AdmIcons.Service.Confluence,
+            "enginestat" to AdmIcons.Service.Enginestat,
             "gitlab" to AdmIcons.Service.GitLab,
-            "sentry" to AdmIcons.Service.Sentry,
-            "teamcity" to AdmIcons.Service.TeamCity,
             "grafana" to AdmIcons.Service.Grafana,
+            "ingria" to AdmIcons.Service.Ingria,
+            "jira" to AdmIcons.Service.Jira,
             "pmc_manager" to AdmIcons.Service.Pmcmanager,
+            "sentry" to AdmIcons.Service.Sentry,
             "statshouse" to AdmIcons.Service.Statshouse,
+            "teamcity" to AdmIcons.Service.TeamCity,
+            "watchdogs" to AdmIcons.Service.Watchdogs,
         )
 
         private val defaultIcon = AdmIcons.Service.Default

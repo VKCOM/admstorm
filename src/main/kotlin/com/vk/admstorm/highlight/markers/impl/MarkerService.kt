@@ -1,4 +1,4 @@
-package com.vk.admstorm.highlight.markers.admmarker
+package com.vk.admstorm.highlight.markers.impl
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
@@ -31,9 +31,14 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
         }
     }
 
-    protected fun Panel.rowTitle(@Nls text: String, init: Row.() -> Unit): Row {
+    protected fun Panel.rowTitle(@Nls text: String, isDangerous: Boolean = false, init: Row.() -> Unit): Row {
         return row(Label(text, bold = true)) {
             init()
+
+            if (isDangerous) {
+                label("(опасная)")
+                    .bold()
+            }
         }
     }
 
@@ -75,7 +80,7 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
         val unescapeText = StringEscapeUtils.unescapeJavaScript(text)
 
         return when (viewMode) {
-            ViewMode.SINGLE    -> {
+            ViewMode.SINGLE -> {
                 return JLabel(unescapeText)
             }
 

@@ -3,17 +3,18 @@ package com.vk.admstorm.highlight.markers.admmarker
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.vk.admstorm.admscript.utils.DataResponse
+import com.vk.admstorm.highlight.markers.impl.MarkerService
 import com.vk.admstorm.utils.UiDslBuilderUtils.monospace
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import javax.swing.JComponent
 
 class ConfigMarker(project: Project) : MarkerService<ConfigMarker.ConfigConfig>(project) {
-    override fun methodName() = "config.get"
+    override val methodName = "config.get"
 
-    override fun getIcon() = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Nodes.Editorconfig
 
-    override fun getTooltip() = "Show config value"
+    override val tooltip = "Show config value"
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     @Serializable

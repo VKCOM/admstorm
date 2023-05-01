@@ -14,14 +14,14 @@ abstract class AdmScript<TModel>(private val project: Project) : IService<TModel
         private val LOG = logger<AdmScript<Any>>()
     }
 
-    abstract fun methodName(): String
+    abstract val methodName: String
 
     protected fun <TModel : Any> execCommand(keyName: String, serializer: KSerializer<TModel>): DataResponse<TModel> {
         val workingDir = "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
         val admScriptName = Env.data.admScriptName
 
         val baseCommand = "php ${workingDir}/${admScriptName}"
-        val command = "$baseCommand --method ${methodName()} --key $keyName"
+        val command = "$baseCommand --method $methodName --key $keyName"
 
         val output = CommandRunner.runRemotely(
             project,

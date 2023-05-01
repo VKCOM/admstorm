@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.RightGap
 import com.vk.admstorm.admscript.utils.DataResponse
+import com.vk.admstorm.highlight.markers.impl.MarkerService
 import com.vk.admstorm.utils.UiDslBuilderUtils.monospace
 import com.vk.admstorm.utils.extensions.isNotNullOrBlank
 import kotlinx.serialization.SerialName
@@ -11,11 +12,11 @@ import kotlinx.serialization.Serializable
 import javax.swing.JComponent
 
 class PartMarker(project: Project) : MarkerService<PartMarker.PartConfig>(project) {
-    override fun methodName() = "part.get"
+    override val methodName = "part.get"
 
-    override fun getIcon() = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Nodes.Editorconfig
 
-    override fun getTooltip() = "Show part value"
+    override val tooltip = "Show part value"
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     @Serializable
@@ -43,6 +44,9 @@ class PartMarker(project: Project) : MarkerService<PartMarker.PartConfig>(projec
 
         val description: String?,
 
+        @SerialName("is_dangerous")
+        val isDangerous: Boolean,
+
         @SerialName("owner_name")
         val ownerName: String?,
 
@@ -68,9 +72,10 @@ class PartMarker(project: Project) : MarkerService<PartMarker.PartConfig>(projec
 
     override fun generatePopup(model: PartConfig): JComponent {
         return popupPanel {
-            rowTitle("Ручка:") {
+            rowTitle("Ручка:", model.isDangerous) {
                 browserLink(model.keyName, model.keyUrl)
                     .monospace()
+                    .gap(RightGap.SMALL)
             }
 
             if (model.description.isNotNullOrBlank()) {

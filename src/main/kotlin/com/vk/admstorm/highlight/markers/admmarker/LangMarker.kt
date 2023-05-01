@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.RightGap
 import com.intellij.ui.dsl.builder.TopGap
 import com.vk.admstorm.admscript.utils.DataResponse
+import com.vk.admstorm.highlight.markers.impl.MarkerService
 import com.vk.admstorm.utils.UiDslBuilderUtils.monospace
 import com.vk.admstorm.utils.extensions.isNotNullOrBlank
 import kotlinx.serialization.SerialName
@@ -12,11 +13,11 @@ import kotlinx.serialization.Serializable
 import javax.swing.JComponent
 
 class LangMarker(project: Project) : MarkerService<LangMarker.LangConfig>(project) {
-    override fun methodName() = "lang.get"
+    override val methodName = "lang.get"
 
-    override fun getTooltip() = "Show lang value"
+    override val tooltip = "Show lang value"
 
-    override fun getIcon() = AllIcons.Actions.MatchCaseHovered
+    override val icon = AllIcons.Actions.MatchCaseHovered
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     @Serializable
@@ -71,7 +72,7 @@ class LangMarker(project: Project) : MarkerService<LangMarker.LangConfig>(projec
                 rowContent("$rowLangName:") {
                     val mode = ViewMode.getByName(langInfo.viewMode)
                     if (mode == ViewMode.SINGLE) {
-                        label(langInfo.value)
+                        description(langInfo.value)
                     } else {
                         browserLink("Посмотреть значение", model.keyUrl)
                     }

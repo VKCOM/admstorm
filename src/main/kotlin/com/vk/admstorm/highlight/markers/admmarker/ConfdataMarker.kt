@@ -4,6 +4,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.RightGap
 import com.vk.admstorm.admscript.utils.DataResponse
+import com.vk.admstorm.highlight.markers.impl.MarkerService
 import com.vk.admstorm.utils.UiDslBuilderUtils.monospace
 import com.vk.admstorm.utils.extensions.isNotNullOrBlank
 import kotlinx.serialization.SerialName
@@ -11,11 +12,11 @@ import kotlinx.serialization.Serializable
 import javax.swing.JComponent
 
 class ConfdataMarker(project: Project) : MarkerService<ConfdataMarker.ConfdataConfig>(project) {
-    override fun methodName() = "confdata.get"
+    override val methodName = "confdata.get"
 
-    override fun getIcon() = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Nodes.Editorconfig
 
-    override fun getTooltip() = "Show confdata value"
+    override val tooltip = "Show confdata value"
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
     @Serializable

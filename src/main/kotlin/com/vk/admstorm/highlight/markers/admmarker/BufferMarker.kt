@@ -1,12 +1,13 @@
 package com.vk.admstorm.highlight.markers.admmarker
 
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.highlight.markers.impl.MarkerBrowser
 import com.vk.admstorm.ui.AdmIcons
 
 class BufferMarker : MarkerBrowser() {
-    override fun getIcon() = AdmIcons.General.ExternalLinkArrow
+    override val icon = AdmIcons.General.ExternalLinkArrow
 
-    override fun getTooltip() = "Go to buffer"
+    override val tooltip = "Go to buffer"
 
     override fun generateUrl(uri: String): String {
         val service = Env.data.services.getByKey("buffer_log") ?: return ""
