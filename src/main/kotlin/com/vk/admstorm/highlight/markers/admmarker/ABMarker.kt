@@ -12,6 +12,6 @@ class ABMarker : MarkerBrowser() {
     override fun generateUrl(uri: String): String {
         val service = Env.data.services.getByKey("ab_platform") ?: return ""
 
-        return service.url
+        return "${service.url}?$uri"
     }
 }

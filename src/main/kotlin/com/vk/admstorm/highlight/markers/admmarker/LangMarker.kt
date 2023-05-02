@@ -74,7 +74,7 @@ class LangMarker(project: Project) : MarkerService<LangMarker.LangConfig>(projec
                     if (mode == ViewMode.SINGLE) {
                         description(langInfo.value)
                     } else {
-                        browserLink("Посмотреть значение", model.keyUrl)
+                        browserLink("Невозможно отобразить значение", model.keyUrl)
                     }
                 }.topGap(TopGap.SMALL)
 
