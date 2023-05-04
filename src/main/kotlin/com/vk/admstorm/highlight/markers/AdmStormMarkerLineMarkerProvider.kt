@@ -154,30 +154,12 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
     private fun parseVariable(psiElement: PsiElement): String? {
         if (psiElement is ConstantReference) {
             val constantPsi = psiElement.resolve() as? Constant ?: return null
-            val stringPsi = constantPsi.value as? StringLiteralExpression ?: return null
-            if (stringPsi.children.isNotEmpty()) {
-                return null
-            }
-
-            return stringPsi.contents
+            return parseVariable(constantPsi.value ?: return null)
         }
 
         if (psiElement is ClassConstantReference) {
             val constantPsi = psiElement.resolve() as? ClassConstImpl ?: return null
-            val stringPsi = constantPsi.children.first() as? StringLiteralExpression ?: return null
-            if (stringPsi.children.isNotEmpty()) {
-                return null
-            }
-
-            return stringPsi.contents
-        }
-
-        if (psiElement is StringLiteralExpression) {
-            if (psiElement.children.isNotEmpty()) {
-                return null
-            }
-
-            return psiElement.contents
+            return parseVariable(constantPsi.children.first())
         }
 
         if (psiElement is FieldReference) {
@@ -186,12 +168,15 @@ class AdmStormMarkerLineMarkerProvider : LineMarkerProvider {
             }
 
             val constantPsi = psiElement.resolve() as? Field ?: return null
-            val stringPsi = constantPsi.children.first() as? StringLiteralExpression ?: return null
-            if (stringPsi.children.isNotEmpty()) {
+            return parseVariable(constantPsi.children.first())
+        }
+
+        if (psiElement is StringLiteralExpression) {
+            if (psiElement.children.isNotEmpty()) {
                 return null
             }
 
-            return stringPsi.contents
+            return psiElement.contents
         }
 
         if (psiElement is PhpExpression) {

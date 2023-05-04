@@ -12,7 +12,7 @@ import javax.swing.JComponent
 class ConfigMarker(project: Project) : MarkerService<ConfigMarker.ConfigConfig>(project) {
     override val methodName = "config.get"
 
-    override val icon = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Actions.ShowCode
 
     override val tooltip = "Show config value"
 

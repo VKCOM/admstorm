@@ -14,7 +14,7 @@ import javax.swing.JComponent
 class ConfdataMarker(project: Project) : MarkerService<ConfdataMarker.ConfdataConfig>(project) {
     override val methodName = "confdata.get"
 
-    override val icon = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Actions.ShowCode
 
     override val tooltip = "Show confdata value"
 

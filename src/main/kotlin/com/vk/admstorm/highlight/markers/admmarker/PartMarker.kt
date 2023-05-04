@@ -14,7 +14,7 @@ import javax.swing.JComponent
 class PartMarker(project: Project) : MarkerService<PartMarker.PartConfig>(project) {
     override val methodName = "part.get"
 
-    override val icon = AllIcons.Nodes.Editorconfig
+    override val icon = AllIcons.Actions.ToggleVisibility
 
     override val tooltip = "Show part value"
 
