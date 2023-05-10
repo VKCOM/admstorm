@@ -392,6 +392,10 @@ footer .footer__end-line .footer__code img {
   font-size: 0;
   vertical-align: top;
   margin-bottom: 35px;
+  max-width: calc(100vw - 40px);
+}
+.chapter .single-image-center-c > img {
+  max-width: calc(100vw - 40px);
 }
 .chapter.single-images-layout .chapter_inner {
   width: 800px;
@@ -423,10 +427,21 @@ footer .footer__end-line .footer__code img {
   font-weight: 600;
   display: inline-block;
 }
+@media only screen and (max-width: 800px) {
+  .chapter .chapter__head1 > h1 {
+    margin: 20px 0;
+  }
+}
 .chapter .head1-description {
   margin-left: 150px;
   margin-right: 150px;
   font-size: 1.2em;
+}
+@media only screen and (max-width: 800px) {
+  .chapter .head1-description {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 }
 .chapter .head1-description--conclusion {
   text-align: center;
