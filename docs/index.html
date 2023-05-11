@@ -83,7 +83,7 @@
             <img src="https://kphp.dev/admstorm/images/vk_logo.svg" alt="">
         </a>
         <h1 class="first-page__title">AdmStorm</h1>
-        <p class="first-page__description">Плагин для работы с <span class="server-name"></span> из IDE</p>
+        <p class="first-page__description">Плагин для работы с <span class="server-name">server</span> из IDE</p>
         <div class="first-page__download-block">
             <a href="install.html" class="first-page__download-button inner-link">Установить</a>
             <a href="https://github.com/VKCOM/admstorm" target="_blank" class="first-page__source-link">
@@ -117,9 +117,11 @@
                 <br>
                 <br>
 
-                Вся наша разработка разделена на две части: локальный репозиторий и <span class="server-name"></span>.
+                Вся наша разработка разделена на две части: локальный репозиторий и
+                <span class="server-name">server</span>.
                 В локальном репозитории
-                мы пишем код, а на <span class="server-name"></span> запускаем инструменты, тесты и пушим в Gitlab.
+                мы пишем код, а на <span class="server-name">server</span>
+                запускаем инструменты, тесты и пушим в Gitlab.
 
                 <br>
                 <br>
@@ -131,6 +133,152 @@
         <div class="chapter__image-col with-big-title">
             <img class="js-security-image" src="https://kphp.dev/admstorm/images/main.png" alt="">
         </div>
+    </div>
+</div>
+
+<div class="chapter head1" style="padding-bottom: 0">
+    <div class="chapter_inner">
+        <div class="chapter__head1">
+            <h1>IDE вместо админок</h1>
+        </div>
+
+        <p class="head1-description">
+            Код бэкенда — это не статичная логика.
+        </p>
+        <p class="head1-description">
+            Мы не хардкодим <code>640</code> —
+            мы пишем <code>Config::getInt('kbytes_will_be_enough')</code>.
+        </p>
+        <p class="head1-description">
+            Мы не хардкодим строки на русском/английском языках —<br>
+            мы создаём языковые ключи и используем <code>lang('verification_title_small')</code>.
+        </p>
+        <p class="head1-description">
+            Код не линейный, он обмазан ручками / тогглами / флагами, ветки кода скрыты за <code>if else</code> —
+            и, читая код, мы каждый раз спрашиваем себя: этот блок кода исполняется на продакшене или заброшен?
+            Какое значение прилетит из конфига? Что здесь подставится на русском языке?
+        </p>
+        <p class="head1-description">
+            Теперь не нужно копировать названия ключей, идти в админки и вставлять их в поиск:
+            при навигации по коду <b>значения ручек, конфдаты, лангов</b> и т.п. доступны сразу в PHPStorm.
+        </p>
+        <div class="single-image-center-c" style="margin-bottom: 0">
+            <img src="https://kphp.dev/admstorm/images/screen-window-with-gutter.png" alt="" width="1231">
+        </div>
+    </div>
+</div>
+
+<div class="chapter dark single-images-layout">
+    <div class="chapter_inner">
+        <h2 class="chapter__big-title">Ручки</h2>
+        <p class="chapter__title-description">
+            Термин "ручка" значит "динамическое значение для раскатки" на какой-то процент пользователей.
+            AdmStorm подгружает и показывает описание, текущее значение, кем и когда изменено, исключения.
+        </p>
+        <p class="chapter__title-description">
+            По клику на название — сразу же <b>переход в админку</b> к нужному ключу,
+            а по клику на пользователей — в их профиль. И везде ниже — аналогично.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-part.png" alt="part" width="800">
+        </div>
+
+        <h2 class="chapter__big-title">Конфдата</h2>
+        <p class="chapter__title-description">
+            Confdata — это динамическое хранилище всей конфигурации сайта, встроено в KPHP.
+            AdmStorm распознаёт <code>confdataGet()</code> и подобные, показывая значения.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-confdata.png" alt="confdata" width="800">
+        </div>
+
+        <h2 class="chapter__big-title">Config::get()</h2>
+        <p class="chapter__title-description">
+            Конфиг — это вынесенный в код огромный key-value массив, на который накладывается
+            специальная секция конфдаты. Работают <code>Config::getInt()</code> и все остальные.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-config.png" alt="config" width="800">
+        </div>
+
+        <h2 class="chapter__big-title">StatsHouse, Logger, etc.</h2>
+        <p class="chapter__title-description">
+            Для ряда функций, которые пишут различные логи — просто слева появляется кнопочка,
+            при клике на которую открывается браузер со страничкой на уже нужном ключе.
+            Не нужно копировать название ключа, идти в браузер, открывать вкладку и вставлять в поиск.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-statshouse.png" alt="statshouse" width="800">
+        </div>
+
+        <h2 class="chapter__big-title">lang() и переводы</h2>
+        <p class="chapter__title-description">
+            Любая инлайн-вёрстка или формирование сообщений об ошибках теперь значительно понятнее,
+            т.к. видя <code>$err_txt = lang('security_error')</code> можно кликнуть на кнопочку
+            и посмотреть, что это за строчка по-русски и по-английски.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-lang.png" alt="lang" width="800">
+        </div>
+
+        <h2 class="chapter__big-title">A/B эксперименты</h2>
+        <p class="chapter__title-description">
+            Если код скрыт за <code>if</code>'ами A/B эксперимента, то опять-таки рядом кнопочка,
+            чтобы перейти в детали этого эксперимента.
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-kind-ab.png" alt="lang" width="800">
+        </div>
+    </div>
+</div>
+
+<div class="chapter blue single-images-layout">
+    <div class="chapter_inner">
+        <h1 class="chapter__big-title">Как это работает?</h1>
+        <p class="chapter__title-description">
+            Функции, которые распознаёт AdmStorm — не захардкожены. Поэтому в продуктовом коде,
+            где есть обёртки над статистикой, языками и прочее, всё тоже будет работать, если и те функции
+            "разметить", добавя специальный PHPDoc <code>@admstorm-marker</code>:
+        </p>
+        <div class="single-image-center-c">
+            <img src="https://kphp.dev/admstorm/images/code-admstorm-marker-phpdoc.png" alt="lang" width="800">
+        </div>
+        <p class="chapter__title-description">
+            Есть разные <code>kind</code>, функциональность которых зашита, и с помощью <code>q</code>
+            мы формируем запрос. Внутри <code>q</code> можно использовать даже self/static и константы,
+            благодаря чему работают обёртки над секциями в конфдате.
+        </p>
+        <p class="chapter__title-description">
+            При клике на кнопку плагин отправляет запрос на <span class="server-name">server</span>,
+            он отвечает всеми текстами и ссылками (для этого нужен VPN, как и при SSH-соединении).
+            Исходники того скрипта не сложные, но слишком VK-специфичные и в Open Source не выложены.
+            Если другие компании захотят перенят нашу практику (ведь это реально удобно) и сделать по аналогии,
+            им в любом случае нужно будет делать под себя, на своих технологиях.
+        </p>
+    </div>
+</div>
+
+<div class="chapter head1">
+    <div class="chapter_inner">
+        <div class="chapter__head1">
+            <h1>IDE вместо консоли</h1>
+        </div>
+
+        <p class="head1-description">
+            Ещё одна цель AdmStorm — скрыть наличие <span class="server-name">server</span>, перенеся действия в IDE:
+        </p>
+        <ul class="head1-description">
+            <li>можно и KPHP собирать,</li>
+            <li>и тесты удалённо запускать,</li>
+            <li>и плюсовые исходники смотреть,</li>
+            <li>и git синхронизировать,</li>
+            <li>и сквозной push/pull делать,</li>
+            <li>и yarn watch с компанией,</li>
+            <li>...</li>
+        </ul>
+        <p class="head1-description head1-description--conclusion">
+            Теперь те вещи, ради которых мы заходили в dev-консоль,<br>делаются просто кнопками в IDE.
+        </p>
     </div>
 </div>
 
@@ -258,8 +406,7 @@
                         </h2>
 
                         <p class="chapter__text">
-                            Для этого достаточно подключить два файла <code
-                                class="chapter__code-block__inline">autoload</code>.
+                            Для этого достаточно подключить два файла <code>autoload</code>.
                         </p>
                     </div>
                     <div class="chapter__text-image-block-image">
@@ -366,13 +513,13 @@
     <div class="chapter_inner">
         <div class="chapter__header-row">
             <h2 class="chapter__middle-title">
-                Локальный git <span>==</span> git на <span class="server-name"></span>
+                Локальный git <span>==</span> git на <span class="server-name">server</span>
             </h2>
 
             <p class="chapter__header-text">
                 Плагин внедряет проверки, что состояние гита локально равно состоянию гита
-                на <span class="server-name"></span>. Благодаря этому, перейдя на
-                <span class="server-name"></span> с локали или наоборот, вы можете быть уверены, что находитесь
+                на <span class="server-name">server</span>. Благодаря этому, перейдя на
+                <span class="server-name">server</span> с локали или наоборот, вы можете быть уверены, что находитесь
                 в одном и том же окружении.
 
                 <br>
@@ -397,7 +544,7 @@
                         </h2>
 
                         <p class="chapter__text">
-                            Делали необходимые правки на <span class="server-name"></span> и затем переключились
+                            Делали необходимые правки на <span class="server-name">server</span> и затем переключились
                             в IDE? Плагин подскажет, если ветки различаются.
                             <br>
                             <br>
@@ -416,7 +563,7 @@
 
                         <p class="chapter__text">
                             Возможно, вы создали несколько коммитов непосредственно на
-                            <span class="server-name"></span>?
+                            <span class="server-name">server</span>?
                             Плагин подскажет, какие коммиты отсутствуют локально.
 
                             <br>
@@ -436,14 +583,14 @@
                         </h2>
 
                         <p class="chapter__text">
-                            Изменили или удалили несколько файлов на <span class="server-name"></span>?
+                            Изменили или удалили несколько файлов на <span class="server-name">server</span>?
                             Плагин подскажет, какие файлы различаются.
 
                             <br>
                             <br>
 
                             Их можно сразу синхронизировать,
-                            использовав локальную версию или скачав с <span class="server-name"></span>.
+                            использовав локальную версию или скачав с <span class="server-name">server</span>.
                         </p>
                     </div>
                     <div class="chapter__text-image-block-image">
@@ -460,14 +607,15 @@
                     <br>
                     <br>
 
-                    Например, при переключении ветки она также переключается и на <span class="server-name"></span>.
+                    Например, при переключении ветки она также переключается и на
+                    <span class="server-name">server</span>.
                     Считается, что у вас включен SFTP upload — а значит, при изменении локальных файлов они будут
                     заливаться средствами IDE.
 
                     <br>
                     <br>
-                    В идеале, рассинхрон появляется только если что-то делать в консоли на <span
-                        class="server-name"></span>.
+                    В идеале, рассинхрон появляется только если что-то делать в консоли на
+                    <span class="server-name">server</span>.
                     А если работать только из IDE, то вообще не придётся сталкиваться с этими окошками.
                 </p>
 
@@ -488,7 +636,7 @@
                         </h2>
 
                         <p class="chapter__text">
-                            Если вы работали на <span class="server-name"></span>, а
+                            Если вы работали на <span class="server-name">server</span>, а
                             потом перешли в IDE для дальнейшей работы — плагин сразу проверит, совпадает ли окружение.
                         </p>
                     </div>
@@ -505,7 +653,7 @@
 
                         <p class="chapter__text">
                             Если вы что-то меняли локально и не загрузили изменения на
-                            <span class="server-name"></span>,
+                            <span class="server-name">server</span>,
                             плагин найдёт расхождения и покажет вам окно для синхронизации.
                         </p>
                     </div>
@@ -520,7 +668,7 @@
                         </h2>
 
                         <p class="chapter__text">
-                            Если вы что-то поменяли через консоль на <span class="server-name"></span>,
+                            Если вы что-то поменяли через консоль на <span class="server-name">server</span>,
                             а потом вернулись обратно в IDE для дальнейшей работы — плагин сразу проверит, совпадает ли
                             окружение.
                         </p>
@@ -539,12 +687,12 @@
                     <div class="chapter__text-image-block">
                         <div class="chapter__text-image-block-text">
                             <h2 class="chapter__small-title">
-                                Pull Gitlab → <span class="server-name"></span> → local
+                                Pull Gitlab → <span class="server-name">server</span> → local
                             </h2>
 
                             <p class="chapter__text">
                                 Новая кнопка подтягивает Gitlab в один клик.
-                                Плагин сначала подгрузит изменения на <span class="server-name"></span>,
+                                Плагин сначала подгрузит изменения на <span class="server-name">server</span>,
                                 а затем оттуда в локальный репозиторий.
                             </p>
                         </div>
@@ -556,11 +704,12 @@
                     <div class="chapter__text-image-block">
                         <div class="chapter__text-image-block-text">
                             <h2 class="chapter__small-title">
-                                Push local → <span class="server-name"></span> → Gitlab
+                                Push local → <span class="server-name">server</span> → Gitlab
                             </h2>
 
                             <p class="chapter__text">
-                                И наоборот тоже. Все pre-push хуки запускаются на <span class="server-name"></span>,
+                                И наоборот тоже. Все pre-push хуки запускаются на
+                                <span class="server-name">server</span>,
                                 а их вывод показывается в отдельной консоли внутри IDE.
                             </p>
                         </div>
@@ -594,7 +743,8 @@
                             </h2>
 
                             <p class="chapter__text">
-                                Для консистентности, git status на <span class="server-name"></span> должен быть пустым.
+                                Для консистентности, git status на
+                                <span class="server-name">server</span> должен быть пустым.
                                 Если нет, будет диалоговое окно с действиями.
                             </p>
                         </div>
@@ -606,7 +756,7 @@
                     <div class="chapter__text-image-block">
                         <div class="chapter__text-image-block-text">
                             <h2 class="chapter__small-title">
-                                <code class="chapter__code-block__inline">--no-phplinter</code> и другие
+                                <code>--no-phplinter</code> и другие
                             </h2>
 
                             <p class="chapter__text">
