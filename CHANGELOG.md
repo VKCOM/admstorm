@@ -1,5 +1,15 @@
 # AdmStorm Changelog
 
+## [Unreleased]
+
+## 2.0.0 — 11.05.2023
+
+Second stable version
+
+### Added
+
+- `@admstorm-marker` - allowing you to see the values directly in the IDE
+
 ## 1.3.5 — 07.03.2023
 
 ### Fixed
