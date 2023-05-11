@@ -1,5 +1,8 @@
 package com.vk.admstorm.utils.extensions
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
+
 fun String.normalizeSlashes() = replace("\\", "/")
 
 /**
@@ -57,3 +60,16 @@ fun String.fixIndent(): String {
 }
 
 fun String.unquote() = removeSurrounding("\"").removeSurrounding("'")
+
+/**
+ * Returns `true` if this nullable charsequence is not either `null` or not empty or consists solely of whitespace characters.
+ *
+ * @see isNullOrBlank
+ */
+@OptIn(ExperimentalContracts::class)
+fun CharSequence?.isNotNullOrBlank(): Boolean {
+    contract {
+        returns(true) implies (this@isNotNullOrBlank != null)
+    }
+    return !isNullOrBlank()
+}

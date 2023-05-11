@@ -2,7 +2,6 @@ package com.vk.admstorm.env
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.util.application
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.phplinter.PhpLinterCheckers
@@ -33,6 +32,7 @@ data class KphpCommand(
 @Serializable
 data class Service(
     val name: String,
+    val key: String,
     val url: String,
 )
 
@@ -63,6 +63,7 @@ data class EnvConfig(
     var testDomainSite: String = "",
     var serviceDomain: String = "",
     var kphpCommands: List<KphpCommand> = listOf(),
+    var admScriptName: String = "",
     var services: List<Service> = listOf(),
 )
 
@@ -164,7 +165,7 @@ object Env {
         }
 
         myIsResolved = true
-        application.messageBus.syncPublisher(EnvListener.TOPIC).onResolve()
+        project.messageBus.syncPublisher(EnvListener.TOPIC).onResolve()
     }
 
     private fun setPhpLinterCheckers(project: Project) {

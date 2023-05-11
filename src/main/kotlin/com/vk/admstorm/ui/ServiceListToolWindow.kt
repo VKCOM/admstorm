@@ -6,9 +6,9 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.gridLayout.Gaps
-import com.intellij.util.application
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.env.EnvListener
+import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.awt.FlowLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -16,13 +16,17 @@ import javax.swing.JPanel
 class ServiceListToolWindow : ToolWindowFactory {
     companion object {
         private val serviceToIcon = mapOf(
-            "Jira" to AdmIcons.Service.Jira,
-            "Confluence" to AdmIcons.Service.Confluence,
-            "GitLab" to AdmIcons.Service.GitLab,
-            "Sentry" to AdmIcons.Service.Sentry,
-            "TeamCity" to AdmIcons.Service.TeamCity,
-            "Grafana" to AdmIcons.Service.Grafana,
-            "PMC Manager" to AdmIcons.Service.Pmcmanager,
+            "confluence" to AdmIcons.Service.Confluence,
+            "enginestat" to AdmIcons.Service.Enginestat,
+            "gitlab" to AdmIcons.Service.GitLab,
+            "grafana" to AdmIcons.Service.Grafana,
+            "ingria" to AdmIcons.Service.Ingria,
+            "jira" to AdmIcons.Service.Jira,
+            "pmc_manager" to AdmIcons.Service.Pmcmanager,
+            "sentry" to AdmIcons.Service.Sentry,
+            "statshouse" to AdmIcons.Service.Statshouse,
+            "teamcity" to AdmIcons.Service.TeamCity,
+            "watchdogs" to AdmIcons.Service.Watchdogs,
         )
 
         private val defaultIcon = AdmIcons.Service.Default
@@ -30,8 +34,11 @@ class ServiceListToolWindow : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val contentManager = toolWindow.contentManager
-        val content = contentManager.factory.createContent(toolWindowPanel(), null, false)
-        contentManager.addContent(content)
+
+        if (project.pluginEnabled()) {
+            val content = contentManager.factory.createContent(toolWindowPanel(project), null, false)
+            contentManager.addContent(content)
+        }
     }
 
     private fun showServicesPanel(): DialogPanel {
@@ -41,7 +48,7 @@ class ServiceListToolWindow : ToolWindowFactory {
             val services = Env.data.services
             services.forEach { service ->
                 row {
-                    val icon = serviceToIcon.getOrDefault(service.name, defaultIcon)
+                    val icon = serviceToIcon.getOrDefault(service.key, defaultIcon)
                     icon(icon)
 
                     browserLink(service.name, service.url)
@@ -50,14 +57,14 @@ class ServiceListToolWindow : ToolWindowFactory {
         }
     }
 
-    private fun toolWindowPanel(): JComponent {
+    private fun toolWindowPanel(project: Project): JComponent {
         val panel = JPanel(FlowLayout(FlowLayout.LEFT))
 
         if (Env.isResolved() && panel.components.isEmpty()) {
             panel.add(showServicesPanel())
         }
 
-        application.messageBus.connect().subscribe(EnvListener.TOPIC, object : EnvListener {
+        project.messageBus.connect().subscribe(EnvListener.TOPIC, object : EnvListener {
             override fun onResolve() {
                 if (panel.components.isEmpty()) {
                     panel.add(showServicesPanel())
