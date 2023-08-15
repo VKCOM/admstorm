@@ -13,6 +13,7 @@ import java.awt.FlowLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
+// TODO: disable display if the project is not VKCOM
 class ServiceListToolWindow : ToolWindowFactory {
     companion object {
         private val serviceToIcon = mapOf(

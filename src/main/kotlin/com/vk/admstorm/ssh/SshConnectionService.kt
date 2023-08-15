@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Service responsible for connecting via SSH to the development server.
  */
-@Service
+@Service(Service.Level.PROJECT)
 class SshConnectionService(private var myProject: Project) : Disposable {
     companion object {
         fun getInstance(project: Project) = project.service<SshConnectionService>()

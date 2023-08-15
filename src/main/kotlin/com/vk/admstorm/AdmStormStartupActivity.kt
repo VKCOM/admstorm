@@ -7,7 +7,6 @@ import com.intellij.ide.util.RunOnceUtil
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
@@ -18,7 +17,7 @@ import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
+import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
@@ -40,8 +39,7 @@ import com.vk.admstorm.utils.ServerNameProvider
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Service
-class AdmStormStartupActivity : StartupActivity {
+class AdmStormStartupActivity : ProjectActivity {
     companion object {
         private val LOG = logger<AdmStormStartupActivity>()
 
@@ -230,9 +228,13 @@ class AdmStormStartupActivity : StartupActivity {
         config.userNameForSentry = output.stdout.trim()
     }
 
-    override fun runActivity(project: Project) {
+    override suspend fun execute(project: Project) {
         setupLogger(project)
-        initPlugin(project)
+
+        // TODO: move to using DumbService?
+        invokeLater {
+            initPlugin(project)
+        }
     }
 
     private fun initPlugin(project: Project) {

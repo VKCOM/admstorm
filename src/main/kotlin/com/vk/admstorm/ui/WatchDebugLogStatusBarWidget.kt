@@ -8,17 +8,18 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
+import com.intellij.util.messages.MessageBusConnection
 import com.vk.admstorm.services.WatchDebugLogService
+import com.vk.admstorm.services.WatchDebugLogService.WatchDebugLogListener
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import javax.swing.Icon
 import javax.swing.JPanel
 
 class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, true) {
     companion object {
-        val WIDGET_ID: String = WatchDebugLogStatusBarWidget::class.java.name
+        private val WIDGET_ID: String = WatchDebugLogStatusBarWidget::class.java.name
     }
 
     private var panel: ToolsStatusBarPanel? = null
@@ -29,6 +30,7 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
             WatchDebugLogService.State.RUNNING -> {
                 DebugLogWidgetState("Watch debug log works", "watch debug log", AdmIcons.General.ToolWorking)
             }
+
             WatchDebugLogService.State.STOPPED -> {
                 DebugLogWidgetState("Watch debug log is stopped", "watch debug log", AdmIcons.General.ToolStopped)
             }
@@ -68,6 +70,7 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
                     },
                 )
             }
+
             WatchDebugLogService.State.STOPPED -> {
                 arrayOf(
                     object : AnAction("Start", "Start watch debug log", AllIcons.Actions.Execute) {
@@ -80,12 +83,12 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
         }
     }
 
-    override fun registerCustomListeners() {
-        service.changes.addPropertyChangeListener { evt ->
-            if (evt.propertyName == WatchDebugLogService.PROPERTY_ID) {
+    override fun registerCustomListeners(connection: MessageBusConnection) {
+        connection.subscribe(WatchDebugLogListener.TOPIC, object : WatchDebugLogListener {
+            override fun onUpdateState() {
                 update()
             }
-        }
+        })
     }
 
     override fun createInstance(project: Project) = WatchDebugLogStatusBarWidget(project)
@@ -108,10 +111,11 @@ class WatchDebugLogStatusBarWidget(project: Project) : EditorBasedStatusBarPopup
             return
         }
 
-        panel!!.setIcon(state.icon)
-        panel!!.setText(state.text)
-        panel!!.toolTipText = state.toolTip
+        panel?.setIcon(state.icon)
+        panel?.setText(state.text!!)
+        panel?.toolTipText = state.toolTip
     }
 
-    override fun isEmpty() = StringUtil.isEmpty(panel!!.text)
+    override val isEmpty: Boolean
+        get() = panel?.text.isNullOrEmpty()
 }

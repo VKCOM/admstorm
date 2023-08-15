@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 /**
  * Service responsible for downloading and uploading files to the development server.
  */
-@Service
+@Service(Service.Level.PROJECT)
 class TransferService(private var myProject: Project) {
     companion object {
         fun getInstance(project: Project) = project.service<TransferService>()

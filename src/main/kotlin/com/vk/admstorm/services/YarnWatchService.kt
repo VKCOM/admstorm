@@ -5,13 +5,13 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
+import com.intellij.util.messages.Topic
 import com.vk.admstorm.executors.YarnWatchCommandExecutor
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
-import java.beans.PropertyChangeSupport
 
-@Service
+@Service(Service.Level.PROJECT)
 class YarnWatchService(private val myProject: Project) : Disposable {
     companion object {
         const val PROPERTY_ID = "admstorm.yarn.watch.running.state"
@@ -25,7 +25,6 @@ class YarnWatchService(private val myProject: Project) : Disposable {
     }
 
     private var executor: YarnWatchCommandExecutor? = null
-    val changes = PropertyChangeSupport(this)
 
     fun isRunning() = state() != State.STOPPED
 
@@ -93,12 +92,21 @@ class YarnWatchService(private val myProject: Project) : Disposable {
 
     private fun setState(value: State) {
         PropertiesComponent.getInstance(myProject).setValue(PROPERTY_ID, value.name)
-        changes.firePropertyChange(PROPERTY_ID, "", value.name)
+
+        myProject.messageBus.syncPublisher(YarnWatchListener.TOPIC).onUpdateState()
     }
 
     private fun isConnected() = SshConnectionService.getInstance(myProject).isConnectedOrWarning()
 
     override fun dispose() {
         executor?.dispose()
+    }
+
+    internal interface YarnWatchListener {
+        companion object {
+            val TOPIC = Topic.create("YarnWatchListener", YarnWatchListener::class.java)
+        }
+
+        fun onUpdateState() {}
     }
 }

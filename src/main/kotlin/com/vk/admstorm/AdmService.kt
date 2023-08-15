@@ -12,7 +12,7 @@ import com.vk.admstorm.utils.MyPathUtils
 import com.vk.admstorm.utils.MyUtils
 import com.vk.admstorm.utils.extensions.unquote
 
-@Service
+@Service(Service.Level.PROJECT)
 class AdmService(private var myProject: Project) {
     companion object {
         private val LOG = logger<AdmService>()
@@ -27,6 +27,15 @@ class AdmService(private var myProject: Project) {
      * null value means that the value has not yet been calculated.
      */
     private var myNeedBeEnabled: Boolean? = null
+
+    /**
+     * Checks that the value has been calculated.
+     *
+     * Use [Project.pluginEnabled()].
+     */
+    fun isInitialized(): Boolean {
+        return myNeedBeEnabled != null
+    }
 
     /**
      * Checks if the current project is vkcom to determine

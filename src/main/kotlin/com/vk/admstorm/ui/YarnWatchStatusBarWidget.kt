@@ -8,18 +8,19 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.status.EditorBasedStatusBarPopup
 import com.intellij.ui.AnimatedIcon
+import com.intellij.util.messages.MessageBusConnection
 import com.vk.admstorm.services.YarnWatchService
+import com.vk.admstorm.services.YarnWatchService.YarnWatchListener
 import com.vk.admstorm.utils.extensions.pluginEnabled
 import javax.swing.Icon
 import javax.swing.JPanel
 
 class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(project, true) {
     companion object {
-        val WIDGET_ID: String = YarnWatchStatusBarWidget::class.java.name
+        private val WIDGET_ID: String = YarnWatchStatusBarWidget::class.java.name
     }
 
     private var panel: ToolsStatusBarPanel? = null
@@ -29,12 +30,14 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
 
     override fun getWidgetState(file: VirtualFile?): WidgetState {
         return when (YarnWatchService.getInstance(project).state()) {
-            YarnWatchService.State.RUNNING -> {
+            YarnWatchService.State.RUNNING     -> {
                 YarnWidgetState("Yarn watch works", "yarn watch", AdmIcons.General.ToolWorking)
             }
-            YarnWatchService.State.STOPPED -> {
+
+            YarnWatchService.State.STOPPED     -> {
                 YarnWidgetState("Yawn watch is stopped", "yarn watch", AdmIcons.General.ToolStopped)
             }
+
             YarnWatchService.State.WITH_ERRORS -> {
                 YarnWidgetState("Yarn watch works, but found errors", "yarn watch", animatedErrorIcon)
             }
@@ -64,7 +67,7 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
             }
         }
         return when (service.state()) {
-            YarnWatchService.State.RUNNING -> {
+            YarnWatchService.State.RUNNING     -> {
                 arrayOf(
                     stopAction,
                     object : AnAction("Open Console", "Open console", AllIcons.Debugger.Console) {
@@ -74,6 +77,7 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
                     },
                 )
             }
+
             YarnWatchService.State.WITH_ERRORS -> {
                 arrayOf(
                     stopAction,
@@ -84,7 +88,8 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
                     },
                 )
             }
-            YarnWatchService.State.STOPPED -> {
+
+            YarnWatchService.State.STOPPED     -> {
                 arrayOf(
                     object : AnAction("Start", "Start yarn watch", AllIcons.Actions.Execute) {
                         override fun actionPerformed(e: AnActionEvent) {
@@ -96,12 +101,12 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
         }
     }
 
-    override fun registerCustomListeners() {
-        service.changes.addPropertyChangeListener { evt ->
-            if (evt.propertyName == YarnWatchService.PROPERTY_ID) {
+    override fun registerCustomListeners(connection: MessageBusConnection) {
+        connection.subscribe(YarnWatchListener.TOPIC, object : YarnWatchListener {
+            override fun onUpdateState() {
                 update()
             }
-        }
+        })
     }
 
     override fun createInstance(project: Project) = YarnWatchStatusBarWidget(project)
@@ -124,10 +129,11 @@ class YarnWatchStatusBarWidget(project: Project) : EditorBasedStatusBarPopup(pro
             return
         }
 
-        panel!!.setIcon(state.icon)
-        panel!!.setText(state.text)
-        panel!!.toolTipText = state.toolTip
+        panel?.setIcon(state.icon)
+        panel?.setText(state.text!!)
+        panel?.toolTipText = state.toolTip
     }
 
-    override fun isEmpty() = StringUtil.isEmpty(panel!!.text)
+    override val isEmpty: Boolean
+        get() = panel?.text.isNullOrEmpty()
 }

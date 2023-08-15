@@ -31,7 +31,7 @@ object MyEditorUtils {
     private fun splitCurrentVertically(project: Project, virtualFile: VirtualFile): EditorWindow? {
         val fileEditorManager = FileEditorManagerEx.getInstanceEx(project)
         val curWindow = fileEditorManager.currentWindow
-        return curWindow.split(SwingConstants.VERTICAL, false, virtualFile, true)
+        return curWindow?.split(SwingConstants.VERTICAL, false, virtualFile, true)
     }
 
     /**
