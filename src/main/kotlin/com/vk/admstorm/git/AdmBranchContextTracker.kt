@@ -3,7 +3,7 @@ package com.vk.admstorm.git
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.BranchChangeListener
-import com.vk.admstorm.AdmStormStartupActivity
+import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.git.sync.branches.RemoteBranchSwitcher
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -51,7 +51,7 @@ class AdmBranchContextTracker(private var myProject: Project) : BranchChangeList
                     notification.expire()
 
                     SshConnectionService.getInstance(myProject).connect {
-                        AdmStormStartupActivity.getInstance(myProject).afterConnectionTasks(myProject) {
+                        AdmStartupService.getInstance(myProject).afterConnectionTasks {
                             RemoteBranchSwitcher(myProject, onGitConflictCanceled)
                                 .switch(branchName, false)
                         }

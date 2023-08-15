@@ -2,14 +2,14 @@ package com.vk.admstorm.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.vk.admstorm.AdmStormStartupActivity
+import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
 class ConnectToAdmViaSshAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         SshConnectionService.getInstance(e.project!!).connect {
-            AdmStormStartupActivity.getInstance(e.project!!).afterConnectionTasks(e.project!!)
+            AdmStartupService.getInstance(e.project!!).afterConnectionTasks()
         }
     }
 

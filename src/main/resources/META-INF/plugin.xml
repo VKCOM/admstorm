@@ -65,6 +65,7 @@
                             order="before yarnWatchStatusBar"/>
 
     <projectService serviceImplementation="com.vk.admstorm.AdmService"/>
+    <projectService serviceImplementation="com.vk.admstorm.AdmStartupService"/>
     <projectService serviceImplementation="com.vk.admstorm.ssh.SshConnectionService"/>
     <projectService serviceImplementation="com.vk.admstorm.transfer.TransferService"/>
     <projectService serviceImplementation="com.vk.admstorm.git.sync.SyncChecker"/>
