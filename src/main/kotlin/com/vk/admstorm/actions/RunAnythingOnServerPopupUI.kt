@@ -79,7 +79,7 @@ class RunAnythingOnServerPopupUI(project: Project?) : BigPopupUI(project) {
         val textFieldTitle = JLabel("Run Anything on ${ServerNameProvider.name()}")
         val topPanel = NonOpaquePanel(BorderLayout())
         val foregroundColor =
-            if (StartupUiUtil.isUnderDarcula())
+            if (StartupUiUtil.isUnderDarcula)
                 if (UIUtil.isUnderWin10LookAndFeel()) JBColor.WHITE
                 else JBColor(Gray._240, Gray._200)
             else UIUtil.getLabelForeground()

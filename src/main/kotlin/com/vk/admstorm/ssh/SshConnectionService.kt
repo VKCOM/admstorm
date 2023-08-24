@@ -16,7 +16,7 @@ import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.connectionBuilder
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
-import com.vk.admstorm.AdmStormStartupActivity
+import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -91,7 +91,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                 AdmNotification.Action("Connect...") { e, notification ->
                     notification.expire()
                     connect {
-                        AdmStormStartupActivity.getInstance(myProject).afterConnectionTasks(e.project!!)
+                        AdmStartupService.getInstance(e.project!!).afterConnectionTasks()
                     }
                 }
             )

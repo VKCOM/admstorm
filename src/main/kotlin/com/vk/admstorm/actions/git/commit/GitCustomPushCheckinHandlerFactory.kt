@@ -4,7 +4,7 @@ import com.intellij.openapi.vcs.CheckinProjectPanel
 import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.checkin.CheckinHandler
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory
-import com.vk.admstorm.AdmStormStartupActivity
+import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.actions.git.PushToGitlabAction
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -34,7 +34,7 @@ class GitCustomPushCheckinHandlerFactory : CheckinHandlerFactory() {
                             AdmNotification.Action("Connect...") { e, notification ->
                                 notification.expire()
                                 SshConnectionService.getInstance(panel.project).connect {
-                                    AdmStormStartupActivity.getInstance(panel.project).afterConnectionTasks(e.project!!)
+                                    AdmStartupService.getInstance(e.project!!).afterConnectionTasks()
                                 }
                             }
                         )

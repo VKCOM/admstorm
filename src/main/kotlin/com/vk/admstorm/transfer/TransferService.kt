@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ssh.RemoteFileObject
-import com.vk.admstorm.AdmStormStartupActivity
+import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
@@ -346,7 +346,7 @@ class TransferService(private var myProject: Project) {
                 AdmNotification.Action("Connect...") { e, notification ->
                     notification.expire()
                     SshConnectionService.getInstance(e.project!!).connect {
-                        AdmStormStartupActivity.getInstance(e.project!!).afterConnectionTasks(e.project!!)
+                        AdmStartupService.getInstance(e.project!!).afterConnectionTasks()
                     }
                 }
             )
