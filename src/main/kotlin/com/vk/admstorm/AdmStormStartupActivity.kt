@@ -5,6 +5,7 @@ import com.intellij.ide.plugins.InstalledPluginsState
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.options.ShowSettingsUtil
@@ -69,13 +70,20 @@ class AdmStormStartupActivity : ProjectActivity {
         Logger.setFactory(AdmStormLoggerFactory(sentry, defaultLoggerFactory))
     }
 
+    private fun hasNewVersion(pluginId : PluginId): Boolean {
+        return InstalledPluginsState.getInstance().hasNewerVersion(pluginId)
+    }
+
     private fun checkUpdates(project: Project) {
-        val hasNewerVersion = InstalledPluginsState.getInstance().hasNewerVersion(AdmService.PLUGIN_ID)
-        if (!hasNewerVersion) {
+        val hasAdmNewerVersion = hasNewVersion(AdmService.ADM_PLUGIN_ID)
+        val hasKphpStormNewVersion = hasNewVersion(AdmService.KPHPSTORM_PLUGIN_ID)
+        val hasModuliteNewVersion = hasNewVersion(AdmService.MODULITE_PLUGIN_ID)
+
+        if (!(hasAdmNewerVersion && hasModuliteNewVersion && hasKphpStormNewVersion)) {
             return
         }
 
-        AdmNotification("New version of the plugin is available")
+        var updateNotification = AdmNotification("New version of the plugin is available")
             .withActions(
                 AdmNotification.Action("Update") { _, _ ->
                     invokeLater {
@@ -83,12 +91,15 @@ class AdmStormStartupActivity : ProjectActivity {
                     }
                 }
             )
-            .withActions(
+
+        if (hasAdmNewerVersion) {
+            updateNotification = updateNotification.withActions(
                 AdmNotification.Action("What's new") { _, _ ->
                     val url = "https://vkcom.github.io/admstorm/whatsnew.html?server_name=${ServerNameProvider.name()}"
                     BrowserUtil.browse(url)
                 }
             )
-            .show(project)
+        }
+        updateNotification.show(project)
     }
 }

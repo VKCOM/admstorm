@@ -45,7 +45,7 @@ class SentryService(project: Project) {
             return
         }
 
-        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)
+        val plugin = PluginManagerCore.getPlugin(AdmService.ADM_PLUGIN_ID)
         val application = ApplicationInfo.getInstance()
 
         LOG.info("Sending errors to Sentry is enabled")

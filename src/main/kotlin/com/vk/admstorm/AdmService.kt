@@ -16,7 +16,9 @@ import com.vk.admstorm.utils.extensions.unquote
 class AdmService(private var myProject: Project) {
     companion object {
         private val LOG = logger<AdmService>()
-        val PLUGIN_ID = PluginId.getId("com.vk.admstorm")
+        val ADM_PLUGIN_ID = PluginId.getId("com.vk.admstorm")
+        val KPHPSTORM_PLUGIN_ID = PluginId.getId("com.vk.kphpstorm")
+        val MODULITE_PLUGIN_ID = PluginId.getId("com.vk.modulite")
 
         fun getInstance(project: Project) = project.service<AdmService>()
     }
