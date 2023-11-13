@@ -79,7 +79,7 @@ class AdmStormStartupActivity : ProjectActivity {
         val hasKphpStormNewVersion = hasNewVersion(AdmService.KPHPSTORM_PLUGIN_ID)
         val hasModuliteNewVersion = hasNewVersion(AdmService.MODULITE_PLUGIN_ID)
 
-        if (!(hasAdmNewerVersion && hasModuliteNewVersion && hasKphpStormNewVersion)) {
+        if (!(hasAdmNewerVersion || hasModuliteNewVersion || hasKphpStormNewVersion)) {
             return
         }
 
