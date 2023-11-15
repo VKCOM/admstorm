@@ -10,6 +10,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
@@ -102,8 +103,10 @@ class AdmStartupService(private var project: Project) {
                     }
 
                     step(0.9) {
-                        checkSyncSilently()
-                        setListenerForEditorsFocus()
+                        project.service<DumbService>().runWhenSmart {
+                            checkSyncSilently()
+                            setListenerForEditorsFocus()
+                        }
                     }
 
                     step(1.0) {
