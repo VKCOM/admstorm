@@ -29,9 +29,9 @@ import com.vk.admstorm.actions.SimpleToolbarAction
 import com.vk.admstorm.console.Console
 import com.vk.admstorm.executors.tabs.Tab
 import com.vk.admstorm.notifications.AdmNotification
+import com.vk.admstorm.services.HastebinService
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils.copyToClipboard
-import com.vk.admstorm.utils.MyUtils.createHaste
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import com.vk.admstorm.utils.MyUtils.invokeAfter
 import com.vk.admstorm.utils.ServerNameProvider
@@ -90,7 +90,7 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
     private val hasteOutputAction = SimpleToolbarAction("Haste launch output", AllIcons.Actions.MoveTo2) { e ->
         executeOnPooledThread {
             val output = outputListener.output.stdout + outputListener.output.stderr
-            val link = createHaste(e.project!!, output)
+            val link = HastebinService.createHaste(e.project!!, output)
             copyToClipboard(link)
 
             AdmNotification()
