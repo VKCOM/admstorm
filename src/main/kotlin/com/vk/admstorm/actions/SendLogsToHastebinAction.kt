@@ -22,6 +22,6 @@ class SendLogsToHastebinAction : AdmActionBase() {
     }
 
     override fun beforeUpdate(e: AnActionEvent) {
-        e.presentation.icon = AdmIcons.Service.Sentry
+        e.presentation.icon = AdmIcons.Service.Hastebin
     }
 }

@@ -3,7 +3,7 @@ package com.vk.admstorm.ui
 import com.intellij.ui.IconManager
 
 object AdmIcons {
-    private fun icon(name: String) = IconManager.getInstance().getIcon(name, javaClass)
+    private fun icon(name: String) = IconManager.getInstance().getIcon(name, javaClass.classLoader)
 
     object General {
         val Kphp = icon("/icons/kphp.svg")
@@ -30,5 +30,6 @@ object AdmIcons {
         val Statshouse = icon("/icons/service/statshouse.svg")
         val TeamCity = icon("/icons/service/teamcity.svg")
         val Watchdogs = icon("/icons/service/watchdogs.svg")
+        val Hastebin = icon("/icons/service/hastebin.svg")
     }
 }
