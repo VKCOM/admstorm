@@ -13,5 +13,4 @@ class HastebinService() {
             return CommandRunner.runRemotely(project, "echo \"$output\" | ${Env.data.pasteBinCommand}").stdout
         }
     }
-
 }
