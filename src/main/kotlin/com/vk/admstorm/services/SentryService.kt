@@ -2,7 +2,6 @@ package com.vk.admstorm.services
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -11,21 +10,18 @@ import com.intellij.openapi.util.SystemInfo
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.settings.AdmStormSettingsState
+import com.vk.admstorm.utils.MyUtils.readIdeaLogFile
 import io.sentry.Attachment
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
 import io.sentry.protocol.*
-import org.apache.commons.io.input.ReversedLinesFileReader
-import java.io.File
 import java.nio.charset.StandardCharsets
 
-@Service
+@Service(Service.Level.PROJECT)
 class SentryService(project: Project) {
     companion object {
         private val LOG = logger<SentryService>()
-        private const val MAX_FULL_LOG_READ_LINES = 2000
-        private const val MAX_LOGGING_READ_LINES = 500
 
         fun getInstance(project: Project) = project.service<SentryService>()
     }
@@ -77,14 +73,12 @@ class SentryService(project: Project) {
 
     fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name ?: "User"}", withFullLog = true)
-
     private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
-            val file = readIdeaLogFile(withFullLog)
-            scope.addAttachment(Attachment(file, "idea.log"))
+            val fileContent = readIdeaLogFile(withFullLog).toByteArray(StandardCharsets.UTF_8)
+            scope.addAttachment(Attachment(fileContent, "idea.log"))
 
             val sentryEvents = SentryEvent().also { event ->
                 event.throwable = t
@@ -100,24 +94,5 @@ class SentryService(project: Project) {
         }
 
         return sentryId
-    }
-
-    private fun readIdeaLogFile(full: Boolean = false): ByteArray {
-        val logFile = File(PathManager.getLogPath(), "idea.log")
-        val countNeedLines = if (full) {
-            MAX_FULL_LOG_READ_LINES
-        } else {
-            MAX_LOGGING_READ_LINES
-        }
-
-        val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
-
-        var lines = ""
-        for (i in 0 until countNeedLines) {
-            val line = reader.readLine() ?: break
-            lines += "$line\n"
-        }
-
-        return lines.toByteArray(StandardCharsets.UTF_8)
     }
 }

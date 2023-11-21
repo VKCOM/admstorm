@@ -44,6 +44,7 @@ import com.vk.admstorm.configuration.kphp.KphpUtils.scriptBinaryPath
 import com.vk.admstorm.console.Console
 import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.psi.PhpRecursiveElementVisitor
+import com.vk.admstorm.services.HastebinService
 import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MyPathUtils.remotePathByLocalPath
 import com.vk.admstorm.utils.MySshUtils
@@ -126,7 +127,7 @@ require_once 'vendor/autoload.php';
             val content = myEditor.document.text
 
             executeOnPooledThread {
-                val link = MyUtils.createHaste(myProject, content)
+                val link = HastebinService.getInstance(myProject).createHaste(content)
                 MyUtils.copyToClipboard(link)
 
                 invokeLater {

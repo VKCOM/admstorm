@@ -1,6 +1,7 @@
 package com.vk.admstorm.utils
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
@@ -16,9 +17,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.vk.admstorm.CommandRunner
-import com.vk.admstorm.env.Env
 import com.vk.admstorm.utils.extensions.toHex
+import org.apache.commons.io.input.ReversedLinesFileReader
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -28,12 +28,16 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.util.*
 import kotlin.system.measureTimeMillis
 
 object MyUtils {
     val LOG = logger<MyUtils>()
+
+    private  const val MAX_FULL_LOG_READ_LINES = 2000
+    private  const val MAX_LOGGING_READ_LINES = 500
 
     fun copyToClipboard(data: String) {
         Toolkit.getDefaultToolkit().systemClipboard
@@ -94,9 +98,23 @@ object MyUtils {
         return result.toString().removeSuffix("\n")
     }
 
-    fun createHaste(project: Project, data: String): String {
-        val output = data.replace("\"", "\\\"").replace("$", "\\$")
-        return CommandRunner.runRemotely(project, "echo \"$output\" | ${Env.data.pasteBinCommand}").stdout
+    fun readIdeaLogFile(full: Boolean = false): String {
+        val logFile = File(PathManager.getLogPath(), "idea.log")
+        val countNeedLines = if (full) {
+            MAX_FULL_LOG_READ_LINES
+        } else {
+            MAX_LOGGING_READ_LINES
+        }
+
+        val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
+
+        var lines = ""
+        for (i in 0 until countNeedLines) {
+            val line = reader.readLine() ?: break
+            lines += "$line\n"
+        }
+
+        return lines
     }
 
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {

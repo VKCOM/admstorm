@@ -248,8 +248,8 @@
       <add-to-group group-id="SegmentedVcsActionsBarGroup" anchor="last"/>
     </action>
 
-    <action id="com.vk.admstorm.send.logs" class="com.vk.admstorm.actions.SendLogsToSentryAction"
-            text="Send Log to Sentry">
+    <action id="com.vk.admstorm.send.logs" class="com.vk.admstorm.actions.SendLogsToHastebinAction"
+            text="Send Log to Hastebin">
       <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="ShowLog"/>
     </action>
 
