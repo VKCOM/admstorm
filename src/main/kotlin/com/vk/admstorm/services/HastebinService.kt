@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 
-@Service
+@Service(Service.Level.PROJECT)
 class HastebinService() {
     companion object {
         fun createHaste(project: Project, data: String): String {
