@@ -10,7 +10,7 @@ class SendLogsToHastebinAction : AdmActionBase() {
 
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val haste = HastebinService.createHaste(project,readIdeaLogFile())
+        val haste = HastebinService.createHaste(project, readIdeaLogFile())
 
         AdmNotification("Thanks for logs!")
             .withTitle("Logs successfully sent to Hastebin")
