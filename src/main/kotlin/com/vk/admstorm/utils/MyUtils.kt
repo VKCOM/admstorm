@@ -117,10 +117,6 @@ object MyUtils {
         return lines
     }
 
-    fun readIdeaLogFileByte(full: Boolean = false): ByteArray {
-        return  readIdeaLogFile(full).toByteArray(StandardCharsets.UTF_8)
-    }
-
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {
         val projectDir = project.guessProjectDir()?.path ?: ""
         val absolutePath = "$projectDir/$filepath"

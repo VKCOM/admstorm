@@ -10,12 +10,12 @@ import com.vk.admstorm.utils.MyUtils.readIdeaLogFile
 class SendLogsToHastebinAction : AdmActionBase() {
     override fun actionWithConnectionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val haste = HastebinService.getInstance(project).createHaste(readIdeaLogFile())
+        val hasteLink = HastebinService.getInstance(project).createHaste(readIdeaLogFile())
 
         AdmNotification("Thanks for logs!")
             .withTitle("Logs successfully sent to Hastebin")
             .withActions(AdmNotification.Action("Copy hastebin link") { _, notification ->
-                MyUtils.copyToClipboard(haste)
+                MyUtils.copyToClipboard(hasteLink)
                 notification.expire()
             })
             .show(project)

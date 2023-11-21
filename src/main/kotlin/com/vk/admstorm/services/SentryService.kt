@@ -10,12 +10,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.vk.admstorm.AdmService
 import com.vk.admstorm.git.GitUtils
 import com.vk.admstorm.settings.AdmStormSettingsState
-import com.vk.admstorm.utils.MyUtils.readIdeaLogFileByte
+import com.vk.admstorm.utils.MyUtils.readIdeaLogFile
 import io.sentry.Attachment
 import io.sentry.Sentry
 import io.sentry.SentryEvent
 import io.sentry.SentryLevel
 import io.sentry.protocol.*
+import java.nio.charset.StandardCharsets
 
 @Service(Service.Level.PROJECT)
 class SentryService(project: Project) {
@@ -76,8 +77,8 @@ class SentryService(project: Project) {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
-            val file = readIdeaLogFileByte(withFullLog)
-            scope.addAttachment(Attachment(file, "idea.log"))
+            val fileContent = readIdeaLogFile(withFullLog).toByteArray(StandardCharsets.UTF_8)
+            scope.addAttachment(Attachment(fileContent, "idea.log"))
 
             val sentryEvents = SentryEvent().also { event ->
                 event.throwable = t
