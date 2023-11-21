@@ -90,7 +90,7 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
     private val hasteOutputAction = SimpleToolbarAction("Haste launch output", AllIcons.Actions.MoveTo2) { e ->
         executeOnPooledThread {
             val output = outputListener.output.stdout + outputListener.output.stderr
-            val link = HastebinService.createHaste(e.project!!, output)
+            val link = HastebinService.getInstance(e.project!!).createHaste(output)
             copyToClipboard(link)
 
             AdmNotification()

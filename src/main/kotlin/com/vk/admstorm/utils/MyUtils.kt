@@ -118,22 +118,7 @@ object MyUtils {
     }
 
     fun readIdeaLogFileByte(full: Boolean = false): ByteArray {
-        val logFile = File(PathManager.getLogPath(), "idea.log")
-        val countNeedLines = if (full) {
-            MAX_FULL_LOG_READ_LINES
-        } else {
-            MAX_LOGGING_READ_LINES
-        }
-
-        val reader = ReversedLinesFileReader(logFile, StandardCharsets.UTF_8)
-
-        var lines = ""
-        for (i in 0 until countNeedLines) {
-            val line = reader.readLine() ?: break
-            lines += "$line\n"
-        }
-
-        return lines.toByteArray(StandardCharsets.UTF_8)
+        return  readIdeaLogFile(full).toByteArray(StandardCharsets.UTF_8)
     }
 
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {

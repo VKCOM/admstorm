@@ -72,8 +72,6 @@ class SentryService(project: Project) {
 
     fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    fun sendIdeaLog(): SentryId = sendEvent(SentryLevel.INFO, "Logs by ${user?.name ?: "User"}", withFullLog = true)
-
     private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 

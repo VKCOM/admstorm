@@ -127,7 +127,7 @@ require_once 'vendor/autoload.php';
             val content = myEditor.document.text
 
             executeOnPooledThread {
-                val link = HastebinService.createHaste(myProject, content)
+                val link = HastebinService.getInstance(myProject).createHaste(content)
                 MyUtils.copyToClipboard(link)
 
                 invokeLater {
