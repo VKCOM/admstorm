@@ -9,7 +9,6 @@ import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.Label
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.Gaps
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.util.ui.JBUI
 import com.vk.admstorm.admscript.AdmScript
 import com.vk.admstorm.utils.UiDslBuilderUtils.italic
@@ -121,7 +120,7 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
         return panel {
             row {
                 cell(internalPanel)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }
         }.apply {
             border = JBUI.Borders.customLine(
@@ -152,7 +151,7 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
         return panel {
             row {
                 cell(internalPanel)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }
         }
     }

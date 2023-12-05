@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.LanguageTextField
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.and
 import com.jetbrains.php.completion.PhpCompletionUtil
 import com.jetbrains.php.lang.PhpLanguage
@@ -90,12 +89,12 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
             buttonsGroup {
                 row("Scope:") {
                     classRadioButton = radioButton("Class", KBenchScope.Class)
-                        .horizontalAlign(HorizontalAlign.LEFT)
+                        .align(AlignX.LEFT)
                         .apply {
                             component.isSelected = true
                         }
                     methodRadioButton = radioButton("Method", KBenchScope.Method)
-                        .horizontalAlign(HorizontalAlign.LEFT)
+                        .align(AlignX.LEFT)
                 }.bottomGap(BottomGap.SMALL)
             }.bind(model::scope)
 
@@ -104,33 +103,33 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
                     KBenchType.values().toList(),
                     SimpleListCellRenderer.create(KBenchType.Bench.presentation) { it.presentation }
                 )
-                    .horizontalAlign(HorizontalAlign.FILL)
-                    .bindItemNullable(model::benchType)
+                    .align(AlignX.FILL)
+                    .bindItem(model::benchType)
             }.bottomGap(BottomGap.SMALL)
 
             row("Class:") {
                 cell(classTextField)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .bindText(model::className)
             }.bottomGap(BottomGap.SMALL)
 
             row("Method:") {
                 cell(methodTextField)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .bindText(model::methodName)
             }.visibleIf(methodRadioButton.selected)
                 .bottomGap(BottomGap.SMALL)
 
             row("Compare class:") {
                 cell(compareClassTextField)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .bindText(model::compareClassName)
             }.visibleIf(typeComboBox.selectedValueMatches { it == KBenchType.BenchAb }.and(classRadioButton.selected))
                 .bottomGap(BottomGap.SMALL)
 
             row("Compare method:") {
                 cell(compareMethodTextField)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .bindText(model::compareMethodName)
             }.visibleIf(methodRadioButton.selected.and(typeComboBox.selectedValueMatches { it == KBenchType.BenchAb }))
                 .bottomGap(BottomGap.SMALL)
@@ -143,7 +142,7 @@ open class KBenchConfigurationEditor(private val myProject: Project) : SettingsE
 
             row("Count:") {
                 intTextField(0..1000, 1)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .bindIntText(model::countIteration)
                     .comment(
                         "Number of iterations, larger number slows down the process but increases the accuracy",

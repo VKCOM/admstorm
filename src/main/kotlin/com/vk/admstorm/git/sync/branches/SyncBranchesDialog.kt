@@ -5,7 +5,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.MyUtils
 import com.vk.admstorm.utils.ServerNameProvider
@@ -88,7 +87,7 @@ class SyncBranchesDialog(
                 val branches = listOf(localBranch, remoteBranch)
 
                 branchComboBox = comboBox(branches)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .applyToComponent {
                         addItemListener {
                             if (it.stateChange == ItemEvent.SELECTED) {

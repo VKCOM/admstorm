@@ -12,10 +12,10 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.*
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.LabelPosition
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
 import com.jetbrains.php.PhpIndex
 import com.jetbrains.php.completion.PhpCompletionUtil
@@ -192,7 +192,7 @@ class KBenchConfigurationRunState(
             return panel {
                 row {
                     cell(myClassTextField)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .label("Class:", LabelPosition.LEFT)
                         .comment("Except $exceptClass")
                 }.resizableRow()
@@ -272,8 +272,8 @@ class KBenchConfigurationRunState(
                 }
                 row {
                     scrollCell(myTable)
-                        .horizontalAlign(HorizontalAlign.FILL)
-                        .verticalAlign(VerticalAlign.FILL)
+                        .align(AlignX.FILL)
+                        .align(AlignY.FILL)
                 }.resizableRow()
             }
                 .apply {
