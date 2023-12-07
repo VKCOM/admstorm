@@ -11,6 +11,8 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.IssueNavigationConfiguration
+import com.intellij.openapi.vcs.IssueNavigationLink
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
@@ -108,6 +110,7 @@ class AdmStartupService(private var project: Project) {
 
                     step(1.0) {
                         setSentryUser()
+                        setupIssueTrackers(project)
                     }
 
                     showWelcomeMessage()
@@ -120,6 +123,23 @@ class AdmStartupService(private var project: Project) {
                 }
             }
         })
+    }
+
+    private fun setupIssueTrackers(project: Project) {
+        fun List<com.vk.admstorm.env.Service>.getByKey(key: String) = firstOrNull { it.key == key }
+
+        val prj = IssueNavigationConfiguration.getInstance(project)
+        val service = Env.data.services.getByKey("jira") ?: return
+        val url = service.url + "/browse/\$0"
+
+        val isExist = prj.links.find { it ->
+            it.linkRegexp == url
+        }
+
+        if (isExist == null) {
+            val jiraLink = IssueNavigationLink("[A-Z]+\\-\\d+", url)
+            prj.links.add(jiraLink)
+        }
     }
 
     private fun showWelcomeMessage() {
