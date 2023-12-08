@@ -67,6 +67,8 @@ data class EnvConfig(
     var services: List<Service> = listOf(),
 )
 
+fun List<Service>.getByKey(key: String) = firstOrNull { it.key == key }
+
 object Env {
     private val LOG = logger<Env>()
 
@@ -74,8 +76,6 @@ object Env {
 
     private var myIsResolved = false
     var data = EnvConfig()
-
-    fun List<Service>.getByKey(key: String) = firstOrNull { it.key == key }
 
     private fun checkPropertyNotEmpty(name: String, value: String) =
         value.ifEmpty { throw IllegalArgumentException(name) }

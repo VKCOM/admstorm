@@ -1,7 +1,7 @@
 package com.vk.admstorm.highlight.markers.admmarker
 
 import com.vk.admstorm.env.Env
-import com.vk.admstorm.env.Env.getByKey
+import com.vk.admstorm.env.getByKey
 import com.vk.admstorm.highlight.markers.impl.IMarkerBrowser
 import com.vk.admstorm.ui.AdmIcons
 
