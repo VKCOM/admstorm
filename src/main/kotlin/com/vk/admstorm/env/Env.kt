@@ -75,6 +75,8 @@ object Env {
     private var myIsResolved = false
     var data = EnvConfig()
 
+    fun List<Service>.getByKey(key: String) = firstOrNull { it.key == key }
+
     private fun checkPropertyNotEmpty(name: String, value: String) =
         value.ifEmpty { throw IllegalArgumentException(name) }
 
