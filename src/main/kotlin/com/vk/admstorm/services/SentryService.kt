@@ -2,6 +2,7 @@ package com.vk.admstorm.services
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.application.ApplicationInfo
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -29,14 +30,25 @@ class SentryService(project: Project) {
     private val user = GitUtils.currentUser(project)
 
     init {
+        initSentry(project)
+    }
+
+    private fun initSentry(project: Project) {
+        if (ApplicationManager.getApplication().isInternal) {
+            LOG.info("Sending errors to Sentry is disabled. The IDE is running in development mode")
+            return
+        }
+
         val config = ConfigService.getInstance(project)
         val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)
         val application = ApplicationInfo.getInstance()
 
         if (config.sentryDsn.isEmpty()) {
-            LOG.info("Sending errors to Sentry is disabled")
+            LOG.info("Sending errors to Sentry is disabled. DSN is not specified")
+            return
         }
 
+        LOG.info("Sending errors to Sentry is enabled")
         Sentry.init { options ->
             options.dsn = config.sentryDsn
             options.release = plugin?.version ?: "UNKNOWN"
