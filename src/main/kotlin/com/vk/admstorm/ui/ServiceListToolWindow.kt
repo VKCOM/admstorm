@@ -5,7 +5,7 @@ import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.Gaps
+import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.env.EnvListener
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -44,7 +44,7 @@ class ServiceListToolWindow : ToolWindowFactory {
 
     private fun showServicesPanel(): DialogPanel {
         return panel {
-            customize(Gaps(0, 15, 0, 0))
+            customize(UnscaledGaps(0, 15, 0, 0))
 
             val services = Env.data.services
             services.forEach { service ->

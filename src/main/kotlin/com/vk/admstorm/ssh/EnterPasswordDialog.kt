@@ -4,10 +4,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.util.ui.JBDimension
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -55,7 +55,7 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
 
             row {
                 cell(myPasswordInput)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }.bottomGap(BottomGap.NONE)
         }.apply {
             preferredSize = JBDimension(300, -1)

@@ -8,10 +8,10 @@ import com.intellij.ui.ColoredTableCellRenderer
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.dsl.builder.AlignX
+import com.intellij.ui.dsl.builder.AlignY
 import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
-import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
@@ -77,8 +77,8 @@ class FilesNotSyncDialog(
                 val decoratedTable = ToolbarDecorator.createDecorator(filesTable).createPanel()
 
                 cell(decoratedTable)
-                    .horizontalAlign(HorizontalAlign.FILL)
-                    .verticalAlign(VerticalAlign.FILL)
+                    .align(AlignX.FILL)
+                    .align(AlignY.FILL)
 
             }.resizableRow()
         }
@@ -87,17 +87,17 @@ class FilesNotSyncDialog(
             buttonsGroup {
                 row {
                     useLocalVersionButton = button("Use local") { onResolve(true) }
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }
 
                 row {
                     useRemoteVersionButton = button("Use ${ServerNameProvider.name()}") { onResolve(false) }
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }
 
                 row {
                     showDiffButton = button("Show diff") { onSelect() }
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }
             }
         }
@@ -109,13 +109,13 @@ class FilesNotSyncDialog(
 
             row {
                 cell(filesPanel)
-                    .horizontalAlign(HorizontalAlign.FILL)
-                    .verticalAlign(VerticalAlign.FILL)
+                    .align(AlignX.FILL)
+                    .align(AlignY.FILL)
                     .resizableColumn()
 
                 cell(buttonsPanel)
-                    .horizontalAlign(HorizontalAlign.RIGHT)
-                    .verticalAlign(VerticalAlign.FILL)
+                    .align(AlignX.RIGHT)
+                    .align(AlignY.FILL)
 
             }.resizableRow()
         }

@@ -13,7 +13,6 @@ import com.intellij.ui.GotItTooltip
 import com.intellij.ui.LanguageTextField
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.or
 import com.intellij.util.TextFieldCompletionProvider
 import com.intellij.util.textCompletion.TextFieldWithCompletion
@@ -144,7 +143,7 @@ class DeployTestDomainAction : AdmActionBase() {
                 row("Domain:") {
                     domainCellTextField = cell(domainTextField)
                         .bindText(model::domain)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .comment(
                             "<a href='release'>Release</a> this domain. Open <a href='${Env.data.testDomainSite}'>domains</a>",
                             200
@@ -176,7 +175,7 @@ class DeployTestDomainAction : AdmActionBase() {
                 row("Branch:") {
                     cell(branchTextField)
                         .bindText(model::branch)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .comment("Use <a href='current'>current</a> branch", 100) {
                             centralPanel.apply()
                             model.branch = currentBranch

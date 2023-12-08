@@ -13,7 +13,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.LanguageTextField
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.layout.not
 import com.intellij.ui.layout.or
 import com.intellij.util.TextFieldCompletionProvider
@@ -77,15 +76,15 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
                 buttonsGroup {
                     row("Scope:") {
                         directoryRadioButton = radioButton("Directory", PhpUnitScope.Directory)
-                            .horizontalAlign(HorizontalAlign.LEFT)
+                            .align(AlignX.LEFT)
                             .apply {
                                 component.isSelected = true
                             }
 
                         classRadioButton = radioButton("Class", PhpUnitScope.Class)
-                            .horizontalAlign(HorizontalAlign.LEFT)
+                            .align(AlignX.LEFT)
                         methodRadioButton = radioButton("Method", PhpUnitScope.Method)
-                            .horizontalAlign(HorizontalAlign.LEFT)
+                            .align(AlignX.LEFT)
                     }.bottomGap(BottomGap.SMALL)
                 }.bind(model::scope)
 
@@ -95,29 +94,29 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
                         project,
                         FileChooserDescriptorFactory.createSingleFolderDescriptor()
                     )
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .bindText(model::directory)
                 }.visibleIf(directoryRadioButton.selected)
                     .bottomGap(BottomGap.SMALL)
 
                 row("Class:") {
                     cell(classTextField)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .bindText(model::className)
                 }.visibleIf(classRadioButton.selected.or(methodRadioButton.selected))
                     .bottomGap(BottomGap.SMALL)
 
                 row("Method:") {
                     cell(methodTextField)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .bindText(model::methodName)
                 }.visibleIf(methodRadioButton.selected)
                     .bottomGap(BottomGap.SMALL)
 
                 row("File:") {
                     cell(myFileTextCombo)
-                        .horizontalAlign(HorizontalAlign.FILL)
-                        .bindItemNullable(model::filename)
+                        .align(AlignX.FILL)
+                        .bindItem(model::filename)
                 }.visibleIf(directoryRadioButton.selected.not())
                     .bottomGap(BottomGap.SMALL)
             }.bottomGap(BottomGap.NONE)
@@ -129,7 +128,7 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
                         project,
                         FileChooserDescriptorFactory.createSingleFileDescriptor()
                     )
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .bindText(model::phpUnitExe)
                 }
                 row("Configuration file:") {
@@ -138,7 +137,7 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
                         project,
                         FileChooserDescriptorFactory.createSingleFileDescriptor(XmlFileType.INSTANCE)
                     )
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                         .bindText(model::phpUnitConfig)
                 }
             }.topGap(TopGap.NONE)
