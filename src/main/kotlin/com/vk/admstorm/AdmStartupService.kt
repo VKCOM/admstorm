@@ -128,17 +128,17 @@ class AdmStartupService(private var project: Project) {
     private fun setupIssueTrackers(project: Project) {
         fun List<com.vk.admstorm.env.Service>.getByKey(key: String) = firstOrNull { it.key == key }
 
-        val prj = IssueNavigationConfiguration.getInstance(project)
+        val navigationConfig = IssueNavigationConfiguration.getInstance(project)
         val service = Env.data.services.getByKey("jira") ?: return
         val url = service.url + "/browse/\$0"
 
-        val isExist = prj.links.find { it ->
+        val isExist = navigationConfig.links.any { it ->
             it.linkRegexp == url
         }
 
-        if (isExist == null) {
+        if (!isExist) {
             val jiraLink = IssueNavigationLink("[A-Z]+\\-\\d+", url)
-            prj.links.add(jiraLink)
+            navigationConfig.links.add(jiraLink)
         }
     }
 
