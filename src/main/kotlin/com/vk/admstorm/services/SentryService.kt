@@ -40,13 +40,13 @@ class SentryService(project: Project) {
         }
 
         val config = ConfigService.getInstance(project)
-        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)
-        val application = ApplicationInfo.getInstance()
-
         if (config.sentryDsn.isEmpty()) {
             LOG.info("Sending errors to Sentry is disabled. DSN is not specified")
             return
         }
+
+        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)
+        val application = ApplicationInfo.getInstance()
 
         LOG.info("Sending errors to Sentry is enabled")
         Sentry.init { options ->
