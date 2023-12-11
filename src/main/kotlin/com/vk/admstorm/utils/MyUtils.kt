@@ -1,5 +1,7 @@
 package com.vk.admstorm.utils
 
+import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
@@ -13,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.openapi.util.Ref
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -96,6 +99,21 @@ object MyUtils {
         }
 
         return result.toString().removeSuffix("\n")
+    }
+
+    private fun getInternalLogInfo(): String {
+        val pluginsList = PluginManagerCore.getPlugins().associate { item ->
+            item.pluginId to item.name
+        }.entries.joinToString("\n") { pair ->
+            "${pair.key} => ${pair.value}"
+        }
+
+        return "OS_Name: ${SystemInfo.OS_NAME} \n" +
+                "OS_Version: ${SystemInfo.OS_VERSION} \n" +
+                "OS_Arch: ${SystemInfo.OS_ARCH} \n" +
+                "IDE_version: ${ApplicationInfo.getInstance().fullVersion} \n" +
+                "IDE_plugins: \n" +
+                pluginsList
     }
 
     fun readIdeaLogFile(full: Boolean = false): String {
