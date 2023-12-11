@@ -131,12 +131,9 @@ class AdmStartupService(private var project: Project) {
         val service = Env.data.services.getByKey("jira") ?: return
         val url = service.url + "/browse/\$0"
 
-        val isExist = navigationConfig.links.any { it ->
-            it.linkRegexp == url
-        }
-
+        val isExist = navigationConfig.links.any { it.linkRegexp == url }
         if (!isExist) {
-            val jiraLink = IssueNavigationLink("[A-Z]+\\-\\d+", url)
+            val jiraLink = IssueNavigationLink("[A-Z]{2}[A-Z_0-9]*\\-\\d+", url)
             navigationConfig.links.add(jiraLink)
         }
     }
