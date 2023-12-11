@@ -132,7 +132,7 @@ object MyUtils {
             lines += "$line\n"
         }
 
-        return lines
+        return getInternalLogInfo() + lines
     }
 
     fun virtualFileByRelativePath(project: Project, filepath: String): VirtualFile? {
