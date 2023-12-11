@@ -67,6 +67,8 @@ data class EnvConfig(
     var services: List<Service> = listOf(),
 )
 
+fun List<Service>.getByKey(key: String) = firstOrNull { it.key == key }
+
 object Env {
     private val LOG = logger<Env>()
 
