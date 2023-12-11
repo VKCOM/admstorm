@@ -18,6 +18,7 @@ import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
 import com.intellij.util.messages.MessageBusConnection
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.env.getByKey
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -126,8 +127,6 @@ class AdmStartupService(private var project: Project) {
     }
 
     private fun setupIssueTrackers(project: Project) {
-        fun List<com.vk.admstorm.env.Service>.getByKey(key: String) = firstOrNull { it.key == key }
-
         val navigationConfig = IssueNavigationConfiguration.getInstance(project)
         val service = Env.data.services.getByKey("jira") ?: return
         val url = service.url + "/browse/\$0"
