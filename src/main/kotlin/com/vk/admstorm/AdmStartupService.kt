@@ -11,11 +11,14 @@ import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.ex.EditorEventMulticasterEx
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.IssueNavigationConfiguration
+import com.intellij.openapi.vcs.IssueNavigationLink
 import com.intellij.openapi.wm.IdeFrame
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.ssh.SshException
 import com.intellij.util.messages.MessageBusConnection
 import com.vk.admstorm.env.Env
+import com.vk.admstorm.env.getByKey
 import com.vk.admstorm.git.sync.SyncChecker
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
@@ -108,6 +111,7 @@ class AdmStartupService(private var project: Project) {
 
                     step(1.0) {
                         setSentryUser()
+                        setupIssueTrackers(project)
                     }
 
                     showWelcomeMessage()
@@ -120,6 +124,18 @@ class AdmStartupService(private var project: Project) {
                 }
             }
         })
+    }
+
+    private fun setupIssueTrackers(project: Project) {
+        val navigationConfig = IssueNavigationConfiguration.getInstance(project)
+        val service = Env.data.services.getByKey("jira") ?: return
+        val url = service.url + "/browse/\$0"
+
+        val isExist = navigationConfig.links.any { it.linkRegexp == url }
+        if (!isExist) {
+            val jiraLink = IssueNavigationLink("[A-Z]{2}[A-Z_0-9]*\\-\\d+", url)
+            navigationConfig.links.add(jiraLink)
+        }
     }
 
     private fun showWelcomeMessage() {
