@@ -2,6 +2,7 @@ package com.vk.admstorm.ssh
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.dsl.builder.AlignX
@@ -9,7 +10,10 @@ import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBDimension
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
 
 class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
@@ -31,10 +35,23 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
     fun getPassword() = String(myPasswordInput.password)
     fun isRemember() = myRememberCheckBox.isSelected
 
+    private val warningLabel = JLabel().apply { foreground = JBColor.RED }
+
     init {
         title = "Enter Password"
 
         init()
+
+        myPasswordInput.addKeyListener(object : KeyAdapter() {
+            override fun keyTyped(e: KeyEvent) {
+                val char = e.keyChar
+                if (!char.isLetterOrDigit() || char in 'А'..'я') {
+                    warningLabel.text = "Password should contain only English characters and numbers!"
+                } else {
+                    warningLabel.text = ""
+                }
+            }
+        })
     }
 
     override fun getPreferredFocusedComponent() = myPasswordInput
@@ -57,6 +74,11 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
                 cell(myPasswordInput)
                     .align(AlignX.FILL)
             }.bottomGap(BottomGap.NONE)
+
+            row{
+                cell(warningLabel)
+            }.bottomGap(BottomGap.NONE)
+
         }.apply {
             preferredSize = JBDimension(300, -1)
         }
