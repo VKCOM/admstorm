@@ -38,7 +38,7 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
     private val warningLabel = JLabel().apply { foreground = JBColor.RED }
 
     init {
-        title = "Enter Password"
+        title = "Enter PIN"
 
         init()
 
@@ -46,7 +46,7 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
             override fun keyTyped(e: KeyEvent) {
                 val char = e.keyChar
                 if (!char.isLetterOrDigit() || char in 'А'..'я') {
-                    warningLabel.text = "Password should contain only English characters and numbers!"
+                    warningLabel.text = "PIN should contain only English characters and numbers!"
                 } else {
                     warningLabel.text = ""
                 }
@@ -67,7 +67,7 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
     override fun createCenterPanel(): JComponent {
         return panel {
             row {
-                label("Enter password for Yubikey:")
+                label("Enter PIN for Yubikey:")
             }.topGap(TopGap.NONE)
 
             row {
