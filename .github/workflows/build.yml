@@ -67,9 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # Validate wrapper
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1.1.0
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v4
 
       # Set up Java environment for the next steps
       - name: Setup Java
