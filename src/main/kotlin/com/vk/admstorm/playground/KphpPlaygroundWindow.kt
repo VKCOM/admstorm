@@ -128,7 +128,9 @@ require_once 'vendor/autoload.php';
 
             executeOnPooledThread {
                 val link = HastebinService.getInstance(myProject).createHaste(content)
-                MyUtils.copyToClipboard(link)
+                if (link != null) {
+                    MyUtils.copyToClipboard(link)
+                }
 
                 invokeLater {
                     myShareLabel.text = "Link copied"

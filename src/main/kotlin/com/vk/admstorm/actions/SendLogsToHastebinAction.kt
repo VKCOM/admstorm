@@ -15,7 +15,9 @@ class SendLogsToHastebinAction : AdmActionBase() {
         AdmNotification("Thanks for logs!")
             .withTitle("Logs successfully sent to Hastebin")
             .withActions(AdmNotification.Action("Copy hastebin link") { _, notification ->
-                MyUtils.copyToClipboard(hasteLink)
+                if (hasteLink != null) {
+                    MyUtils.copyToClipboard(hasteLink)
+                }
                 notification.expire()
             })
             .show(project)

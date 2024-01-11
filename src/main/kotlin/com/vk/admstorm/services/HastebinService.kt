@@ -10,7 +10,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.net.URI
 import java.net.http.HttpClient
+import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
+import java.util.concurrent.Executors
 
 @Service(Service.Level.PROJECT)
 class HastebinService {
@@ -18,13 +21,19 @@ class HastebinService {
         fun getInstance(project: Project) = project.service<HastebinService>()
     }
 
-    fun createHaste(data: String): String {
-        val output = data.replace("\"", "\\\"").replace("$", "\\$")
+    private fun createHttpClient(): HttpClient {
+        return HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .executor(Executors.newCachedThreadPool())
+            .build()
+    }
+
+    fun createHaste(data: String): String? {
         val hastLink = Env.data.services.getByKey("hastebin")?.url ?: return ""
 
-        val client = HttpClient.newBuilder().build()
-        val request = java.net.http.HttpRequest.newBuilder().uri(URI.create("$hastLink/documents"))
-            .POST(java.net.http.HttpRequest.BodyPublishers.ofString(output)).build()
+        val client = createHttpClient()
+        val request = HttpRequest.newBuilder().uri(URI.create("$hastLink/documents"))
+            .POST(HttpRequest.BodyPublishers.ofString(data)).build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         val jsonResponse = Json.parseToJsonElement(response.body())
@@ -32,6 +41,6 @@ class HastebinService {
             val value = jsonResponse["key"]?.jsonPrimitive?.content
             return "$hastLink/${value}"
         }
-        return ""
+        return null
     }
 }

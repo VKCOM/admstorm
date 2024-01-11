@@ -20,10 +20,12 @@ class CreateHasteAction : AdmActionBase() {
 
         executeOnPooledThread {
             val link = HastebinService.getInstance(e.project!!).createHaste(copyText)
-            MyUtils.copyToClipboard(link)
-            AdmNotification()
-                .withTitle("Link to hastebin copied to clipboard")
-                .show()
+            if (link != null) {
+                MyUtils.copyToClipboard(link)
+                AdmNotification()
+                    .withTitle("Link to hastebin copied to clipboard")
+                    .show()
+            }
         }
     }
 
