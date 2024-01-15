@@ -12,15 +12,19 @@ class SendLogsToHastebinAction : AdmActionBase() {
         val project = e.project ?: return
         val hasteLink = HastebinService.getInstance(project).createHaste(readIdeaLogFile())
 
-        AdmNotification("Thanks for logs!")
-            .withTitle("Logs successfully sent to Hastebin")
-            .withActions(AdmNotification.Action("Copy hastebin link") { _, notification ->
-                if (hasteLink != null) {
+        val notification = if (hasteLink != null) {
+            AdmNotification("Thanks for logs!")
+                .withTitle("Logs successfully sent to Hastebin")
+                .withActions(AdmNotification.Action("Copy hastebin link") { _, notification ->
                     MyUtils.copyToClipboard(hasteLink)
-                }
-                notification.expire()
-            })
-            .show(project)
+                    notification.expire()
+                })
+        } else {
+            AdmNotification()
+                .withTitle("Hastebin service unavailable. Try again later")
+        }
+
+        notification.show(project)
     }
 
     override fun beforeUpdate(e: AnActionEvent) {

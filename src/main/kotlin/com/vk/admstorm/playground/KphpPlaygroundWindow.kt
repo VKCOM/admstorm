@@ -43,6 +43,7 @@ import com.vk.admstorm.configuration.kphp.KphpScriptRunner
 import com.vk.admstorm.configuration.kphp.KphpUtils.scriptBinaryPath
 import com.vk.admstorm.console.Console
 import com.vk.admstorm.notifications.AdmErrorNotification
+import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.psi.PhpRecursiveElementVisitor
 import com.vk.admstorm.services.HastebinService
 import com.vk.admstorm.transfer.TransferService
@@ -130,14 +131,18 @@ require_once 'vendor/autoload.php';
                 val link = HastebinService.getInstance(myProject).createHaste(content)
                 if (link != null) {
                     MyUtils.copyToClipboard(link)
-                }
 
-                invokeLater {
-                    myShareLabel.text = "Link copied"
-                    myShareLabel.isVisible = true
-                    invokeAfter(2000) {
-                        myShareLabel.isVisible = false
+                    invokeLater {
+                        myShareLabel.text = "Link copied"
+                        myShareLabel.isVisible = true
+                        invokeAfter(2000) {
+                            myShareLabel.isVisible = false
+                        }
                     }
+                } else {
+                    AdmNotification()
+                        .withTitle("Hastebin service unavailable. Try again later")
+                        .show()
                 }
             }
         }
