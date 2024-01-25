@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.ServerNameProvider
 
-data class PluginsHealthCard(val project: Project) {
+data class PluginsUpdateCenter(val project: Project) {
     private val admId = AdmService.ADM_PLUGIN_ID
     private val kphpId = AdmService.KPHPSTORM_PLUGIN_ID
     private val moduliteId = AdmService.MODULITE_PLUGIN_ID

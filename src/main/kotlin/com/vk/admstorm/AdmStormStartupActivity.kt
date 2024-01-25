@@ -38,7 +38,7 @@ class AdmStormStartupActivity : ProjectActivity {
         }
 
         ChangeSshBackendStartup.changeConfigurationProcess(project)
-        PluginsHealthCard(project).checkUpdates()
+        PluginsUpdateCenter(project).checkUpdates()
 
         measureTime(LOG, "patch cpp highlight") {
             val cppType = FileTypeChooser.getKnownFileTypeOrAssociate(".c") as AbstractFileType
