@@ -129,20 +129,20 @@ require_once 'vendor/autoload.php';
 
             executeOnPooledThread {
                 val link = HastebinService.getInstance(myProject).createHaste(content)
-                if (link != null) {
-                    MyUtils.copyToClipboard(link)
-
-                    invokeLater {
-                        myShareLabel.text = "Link copied"
-                        myShareLabel.isVisible = true
-                        invokeAfter(2000) {
-                            myShareLabel.isVisible = false
-                        }
-                    }
-                } else {
+                if (link == null) {
                     AdmNotification()
                         .withTitle("Hastebin service unavailable. Try again later")
                         .show()
+                    return@executeOnPooledThread
+                }
+
+                MyUtils.copyToClipboard(link)
+                invokeLater {
+                    myShareLabel.text = "Link copied"
+                    myShareLabel.isVisible = true
+                    invokeAfter(2000) {
+                        myShareLabel.isVisible = false
+                    }
                 }
             }
         }

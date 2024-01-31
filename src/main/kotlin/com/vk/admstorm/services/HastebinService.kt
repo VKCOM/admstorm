@@ -10,6 +10,7 @@ import com.vk.admstorm.env.getByKey
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.net.HttpURLConnection
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -39,27 +40,27 @@ class HastebinService {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$hastLink/documents"))
             .POST(HttpRequest.BodyPublishers.ofString(data))
-            .timeout(Duration.ofSeconds(10)).build()
+            .timeout(Duration.ofSeconds(10))
+            .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (response.statusCode() != 200) {
-            LOG.error(
-                "Something wrong with Hastebin service:" +
-                        " status code ${response.statusCode()}, error: ${response.body()}"
-            )
+        if (response.statusCode() != HttpURLConnection.HTTP_OK ) {
+            LOG.error("Error sending the request (status code: ${response.statusCode()}, body: ${response.body()})")
             return null
         }
 
         val jsonResponse = Json.parseToJsonElement(response.body())
         if(jsonResponse !is JsonObject){
-            LOG.error(
-                "Something wrong with Hastebin service:" +
-                        " status code ${response.statusCode()}, error: ${response.body()}"
-            )
+            LOG.error("Error parsing the request (body: ${response.body()})")
             return null
         }
 
         val value = jsonResponse["key"]?.jsonPrimitive?.content
+        if (value == null) {
+            LOG.error("JsonResponse returned null value")
+            return null
+        }
+
         return "$hastLink/${value}"
     }
 }
