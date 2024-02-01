@@ -12,6 +12,13 @@ class SendLogsToHastebinAction : AdmActionBase() {
         val project = e.project ?: return
         val hasteLink = HastebinService.getInstance(project).createHaste(readIdeaLogFile())
 
+        if (hasteLink == null) {
+            AdmNotification()
+                .withTitle("Hastebin service unavailable. Try again later")
+                .show(project)
+            return
+        }
+
         AdmNotification("Thanks for logs!")
             .withTitle("Logs successfully sent to Hastebin")
             .withActions(AdmNotification.Action("Copy hastebin link") { _, notification ->

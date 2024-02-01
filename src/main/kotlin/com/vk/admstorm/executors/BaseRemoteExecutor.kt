@@ -91,10 +91,16 @@ abstract class BaseRemoteExecutor(protected val project: Project, toolName: Stri
         executeOnPooledThread {
             val output = outputListener.output.stdout + outputListener.output.stderr
             val link = HastebinService.getInstance(e.project!!).createHaste(output)
-            copyToClipboard(link)
+
+            val text = if (link != null) {
+                copyToClipboard(link)
+                "Link to hastebin copied to clipboard"
+            } else {
+                "Hastebin service unavailable. Try again later"
+            }
 
             AdmNotification()
-                .withTitle("Link to hastebin copied to clipboard")
+                .withTitle(text)
                 .show()
         }
     }
