@@ -43,9 +43,8 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         init()
 
         myPasswordInput.addKeyListener(object : KeyAdapter() {
-            override fun keyTyped(e: KeyEvent) {
-                val char = e.keyChar
-                if (!char.isLetterOrDigit() || char in 'А'..'я') {
+            override fun keyReleased(e: KeyEvent) {
+                if (getPassword().any { it in 'А'..'я' || it == 'ё' || it == 'Ё' }) {
                     warningLabel.text = "PIN should contain only English characters and numbers!"
                 } else {
                     warningLabel.text = ""
