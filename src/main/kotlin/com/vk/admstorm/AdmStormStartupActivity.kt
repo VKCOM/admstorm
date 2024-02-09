@@ -3,11 +3,13 @@ package com.vk.admstorm
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.InstalledPluginsState
 import com.intellij.openapi.application.invokeLater
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.util.registry.Registry
@@ -29,8 +31,7 @@ class AdmStormStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
         setupLogger(project)
 
-        // TODO: move to using DumbService?
-        invokeLater {
+        project.service<DumbService>().runWhenSmart {
             initPlugin(project)
         }
     }
@@ -40,6 +41,8 @@ class AdmStormStartupActivity : ProjectActivity {
             // We don't connect if this is not a vkcom project
             return
         }
+
+        LOG.info("Plugin has been initialized")
 
         measureTime(LOG, "patch cpp highlight") {
             val cppType = FileTypeChooser.getKnownFileTypeOrAssociate(".c") as AbstractFileType
