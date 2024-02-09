@@ -14,6 +14,7 @@ import com.vk.admstorm.services.SentryService
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.startup.ChangeSshBackendStartup
+import com.vk.admstorm.startup.PluginsUpdateStartup
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
@@ -38,7 +39,7 @@ class AdmStormStartupActivity : ProjectActivity {
         }
 
         ChangeSshBackendStartup.changeConfigurationProcess(project)
-        PluginsUpdateCenter(project).checkUpdates()
+        PluginsUpdateStartup.checkUpdates(project)
 
         measureTime(LOG, "patch cpp highlight") {
             val cppType = FileTypeChooser.getKnownFileTypeOrAssociate(".c") as AbstractFileType

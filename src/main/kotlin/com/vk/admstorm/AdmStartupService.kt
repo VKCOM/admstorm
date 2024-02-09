@@ -139,7 +139,7 @@ class AdmStartupService(private var project: Project) {
     }
 
     private fun showWelcomeMessage() {
-        val plugin = PluginManagerCore.getPlugin(AdmService.ADM_PLUGIN_ID) ?: return
+        val plugin = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID) ?: return
         RunOnceUtil.runOnceForApp("com.vk.admstorm.welcome.test.message.${plugin.version}") {
             AdmNotification(
                 """
