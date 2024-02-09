@@ -29,20 +29,19 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         }
     }
 
-    private var myPasswordInput = JBPasswordField()
-    private val myRememberCheckBox = JBCheckBox("Remember", true)
-
-    fun getPassword() = String(myPasswordInput.password)
-    fun isRemember() = myRememberCheckBox.isSelected
-
+    private var passwordInput = JBPasswordField()
+    private val rememberCheckBox = JBCheckBox("Remember", true)
     private val warningLabel = JLabel().apply { foreground = JBColor.RED }
+
+    fun getPassword() = String(passwordInput.password)
+    fun isRemember() = rememberCheckBox.isSelected
 
     init {
         title = "Enter PIN"
 
         init()
 
-        myPasswordInput.addKeyListener(object : KeyAdapter() {
+        passwordInput.addKeyListener(object : KeyAdapter() {
             override fun keyReleased(e: KeyEvent) {
                 if (getPassword().any { it in 'А'..'я' || it == 'ё' || it == 'Ё' }) {
                     warningLabel.text = "PIN should contain only English characters and numbers!"
@@ -53,12 +52,12 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         })
     }
 
-    override fun getPreferredFocusedComponent() = myPasswordInput
+    override fun getPreferredFocusedComponent() = passwordInput
 
     override fun createSouthAdditionalPanel(): JPanel {
         return panel {
             row {
-                cell(myRememberCheckBox)
+                cell(rememberCheckBox)
             }
         }
     }
@@ -70,7 +69,7 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
             }.topGap(TopGap.NONE)
 
             row {
-                cell(myPasswordInput)
+                cell(passwordInput)
                     .align(AlignX.FILL)
             }.bottomGap(BottomGap.NONE)
 
