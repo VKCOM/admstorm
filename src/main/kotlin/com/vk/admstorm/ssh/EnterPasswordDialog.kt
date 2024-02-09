@@ -2,6 +2,7 @@ package com.vk.admstorm.ssh
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBPasswordField
 import com.intellij.ui.dsl.builder.AlignX
@@ -9,7 +10,10 @@ import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.TopGap
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.ui.JBDimension
+import java.awt.event.KeyAdapter
+import java.awt.event.KeyEvent
 import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
 
 class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeModalityType.PROJECT) {
@@ -25,24 +29,35 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
         }
     }
 
-    private var myPasswordInput = JBPasswordField()
-    private val myRememberCheckBox = JBCheckBox("Remember", true)
+    private var passwordInput = JBPasswordField()
+    private val rememberCheckBox = JBCheckBox("Remember", true)
+    private val warningLabel = JLabel().apply { foreground = JBColor.RED }
 
-    fun getPassword() = String(myPasswordInput.password)
-    fun isRemember() = myRememberCheckBox.isSelected
+    fun getPassword() = String(passwordInput.password)
+    fun isRemember() = rememberCheckBox.isSelected
 
     init {
-        title = "Enter Password"
+        title = "Enter PIN"
 
         init()
+
+        passwordInput.addKeyListener(object : KeyAdapter() {
+            override fun keyReleased(e: KeyEvent) {
+                if (getPassword().any { it in 'А'..'я' || it == 'ё' || it == 'Ё' }) {
+                    warningLabel.text = "PIN should contain only English characters and numbers!"
+                } else {
+                    warningLabel.text = ""
+                }
+            }
+        })
     }
 
-    override fun getPreferredFocusedComponent() = myPasswordInput
+    override fun getPreferredFocusedComponent() = passwordInput
 
     override fun createSouthAdditionalPanel(): JPanel {
         return panel {
             row {
-                cell(myRememberCheckBox)
+                cell(rememberCheckBox)
             }
         }
     }
@@ -50,13 +65,18 @@ class EnterPasswordDialog(project: Project) : DialogWrapper(project, true, IdeMo
     override fun createCenterPanel(): JComponent {
         return panel {
             row {
-                label("Enter password for Yubikey:")
+                label("Enter PIN for Yubikey:")
             }.topGap(TopGap.NONE)
 
             row {
-                cell(myPasswordInput)
+                cell(passwordInput)
                     .align(AlignX.FILL)
             }.bottomGap(BottomGap.NONE)
+
+            row{
+                cell(warningLabel)
+            }.bottomGap(BottomGap.NONE)
+
         }.apply {
             preferredSize = JBDimension(300, -1)
         }
