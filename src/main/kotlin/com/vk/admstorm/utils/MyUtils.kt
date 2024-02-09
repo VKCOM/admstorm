@@ -113,7 +113,7 @@ object MyUtils {
                 "OS_Arch: ${SystemInfo.OS_ARCH} \n" +
                 "IDE_version: ${ApplicationInfo.getInstance().fullVersion} \n" +
                 "IDE_plugins: \n" +
-                pluginsList
+                pluginsList + "\n"
     }
 
     fun readIdeaLogFile(full: Boolean = false): String {
