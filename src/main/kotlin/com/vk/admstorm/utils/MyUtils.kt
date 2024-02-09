@@ -1,13 +1,10 @@
 package com.vk.admstorm.utils
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.invokeAndWaitIfNeeded
-import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.options.advanced.AdvancedSettings
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -20,8 +17,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.ssh.config.SshConnectionConfigService
-import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.utils.extensions.toHex
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.awt.Toolkit
@@ -233,48 +228,5 @@ object MyUtils {
                 block()
             }
         }, delay)
-    }
-
-    fun changeSshConfiguration(configValue: Enum<SshConnectionConfigService.Kind>) {
-        AdvancedSettings.setEnum("ssh.config.backend", configValue)
-    }
-
-    fun changeConfigurationProcess(project: Project) {
-        val sshSettingValue =
-            AdvancedSettings.getEnum("ssh.config.backend", SshConnectionConfigService.Kind::class.java)
-        if (sshSettingValue == SshConnectionConfigService.Kind.LEGACY) {
-            return
-        }
-
-        val dntShow = PropertiesComponent.getInstance(project).getBoolean("dntShowSshLegacy")
-        if (dntShow) {
-            return
-        } else {
-            val isSshLegacy = PropertiesComponent.getInstance(project).getBoolean("isSshLegacy")
-            if (isSshLegacy) {
-                return
-            }
-
-            changeSshConfiguration(SshConnectionConfigService.Kind.LEGACY)
-
-            AdmNotification("We changed your ssh type to LEGACY")
-                .withActions(
-                    AdmNotification.Action("Don`t show it again") { _, notification ->
-                        invokeLater {
-                            PropertiesComponent.getInstance(project).setValue("dntShowSshLegacy", true)
-                            notification.expire()
-                        }
-                    }
-                ).withActions(
-                    AdmNotification.Action("Rollback and turn off this notification") { _, notification ->
-                        invokeLater {
-                            changeSshConfiguration(SshConnectionConfigService.Kind.OPENSSH)
-                            PropertiesComponent.getInstance(project).setValue("dntShowSshLegacy", true)
-                            notification.expire()
-                        }
-                    }
-                )
-                .show(project)
-        }
     }
 }

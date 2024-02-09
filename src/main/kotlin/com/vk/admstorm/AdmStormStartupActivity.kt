@@ -17,7 +17,7 @@ import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.services.SentryService
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
-import com.vk.admstorm.utils.MyUtils.changeConfigurationProcess
+import com.vk.admstorm.startup.ChangeSshBackendStartup
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.ServerNameProvider
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -42,6 +42,9 @@ class AdmStormStartupActivity : ProjectActivity {
             return
         }
 
+        ChangeSshBackendStartup.changeConfigurationProcess(project)
+        checkUpdates(project)
+
         measureTime(LOG, "patch cpp highlight") {
             val cppType = FileTypeChooser.getKnownFileTypeOrAssociate(".c") as AbstractFileType
             CppTypeHighlightPatcher.patch(cppType)
@@ -52,9 +55,6 @@ class AdmStormStartupActivity : ProjectActivity {
                 AdmStartupService.getInstance(project).afterConnectionTasks()
             }
         }
-
-        changeConfigurationProcess(project)
-        checkUpdates(project)
 
         // Это необходимо чтобы для бенчмарков показывались все пункты в списке
         // который открывается при клике на иконку рядом с классом или методом.
