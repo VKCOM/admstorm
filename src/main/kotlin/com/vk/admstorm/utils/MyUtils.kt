@@ -1,6 +1,5 @@
 package com.vk.admstorm.utils
 
-import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
@@ -22,10 +21,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.ssh.config.SshConnectionConfigService
-import com.vk.admstorm.env.Env
-import com.vk.admstorm.env.getByKey
 import com.vk.admstorm.notifications.AdmNotification
-import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.utils.extensions.toHex
 import org.apache.commons.io.input.ReversedLinesFileReader
 import java.awt.Toolkit
@@ -246,11 +242,9 @@ object MyUtils {
     fun changeConfigurationProcess(project: Project) {
         val sshSettingValue =
             AdvancedSettings.getEnum("ssh.config.backend", SshConnectionConfigService.Kind::class.java)
-        if (sshSettingValue.name.length == 6) {   // is LEGACY, OPENSSH == 7
+        if (sshSettingValue == SshConnectionConfigService.Kind.LEGACY) {
             return
         }
-
-        val docLink = Env.data.services.getByKey("sshLegacyWhy")?.url ?: return
 
         val dntShow = PropertiesComponent.getInstance(project).getBoolean("dntShowSshLegacy")
         if (dntShow) {
@@ -281,15 +275,6 @@ object MyUtils {
                     }
                 )
                 .show(project)
-
-            AdmWarningNotification("We changed your ssh type to LEGACY", true).withActions(
-                AdmNotification.Action("Why do we need this?") { _, notification ->
-                    invokeLater {
-                        BrowserUtil.browse(docLink)
-                        notification.expire()
-                    }
-                }
-            ).show(project)
         }
     }
 }
