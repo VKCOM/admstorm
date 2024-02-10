@@ -2,6 +2,8 @@ package com.vk.admstorm.startup
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.InstalledPluginsState
+import com.intellij.ide.plugins.PluginManagerConfigurable
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
@@ -21,28 +23,40 @@ object PluginsUpdateStartup {
         MODULITE_PLUGIN_ID to null,
     )
 
-    private fun hasNewVersion(pluginId: PluginId): Boolean {
-        return InstalledPluginsState.getInstance().hasNewerVersion(pluginId)
+    private fun hasNewVersion(pluginID: PluginId): Boolean {
+        return InstalledPluginsState.getInstance().hasNewerVersion(pluginID)
     }
 
     fun checkUpdates(project: Project) {
         for ((pluginID, changelogURL) in PLUGINS) {
-            if (!hasNewVersion(pluginID)) {
-                return
+            val pluginDescriptor = PluginManagerCore.getPlugin(pluginID)
+            if (pluginDescriptor == null || !pluginDescriptor.isEnabled) {
+                continue
             }
 
+            if (!hasNewVersion(pluginID)) {
+                continue
+            }
+
+            val pluginName = pluginDescriptor.name
             val updateNotification = AdmNotification("New version of the plugin is available")
+                .withTitle(pluginName)
                 .withActions(
                     AdmNotification.Action("Update") { _, _ ->
                         invokeLater {
-                            ShowSettingsUtil.getInstance().showSettingsDialog(project, "Plugins")
+                            ShowSettingsUtil.getInstance().showSettingsDialog(
+                                project,
+                                PluginManagerConfigurable::class.java,
+                            ) {
+                                it.openInstalledTab(pluginName)
+                            }
                         }
                     }
                 )
 
             if (changelogURL == null) {
                 updateNotification.show()
-                return
+                continue
             }
 
             updateNotification.withActions(
