@@ -39,7 +39,6 @@ class AdmStormStartupActivity : ProjectActivity {
         }
 
         ChangeSshBackendStartup.changeConfigurationProcess(project)
-        PluginsUpdateStartup.checkUpdates(project)
 
         measureTime(LOG, "patch cpp highlight") {
             val cppType = FileTypeChooser.getKnownFileTypeOrAssociate(".c") as AbstractFileType
@@ -51,6 +50,8 @@ class AdmStormStartupActivity : ProjectActivity {
                 AdmStartupService.getInstance(project).afterConnectionTasks()
             }
         }
+
+        PluginsUpdateStartup.checkUpdates(project)
 
         // Это необходимо чтобы для бенчмарков показывались все пункты в списке
         // который открывается при клике на иконку рядом с классом или методом.
