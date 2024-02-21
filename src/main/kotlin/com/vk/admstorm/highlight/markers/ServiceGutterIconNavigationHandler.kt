@@ -43,10 +43,18 @@ class ServiceGutterIconNavigationHandler(private val keyName: String, private va
 
         executeOnPooledThread {
             val response = service.execCommand(keyName)
-
             val popup = when {
                 response.errorMessage != null -> {
-                    service.errorMessage(response.errorMessage)
+                    val firstQuoteIndex = response.errorMessage.indexOfFirst { it == '\'' }
+                    val lastQuoteIndex = response.errorMessage.indexOfLast { it == '\'' }
+
+                    if (lastQuoteIndex - firstQuoteIndex > 15) {
+                        val resp = "<html>"+ response.errorMessage.substring(0, lastQuoteIndex + 1) +
+                                "<br>" + response.errorMessage.substring(lastQuoteIndex + 1) +"</html>"
+                        service.errorMessage(resp)
+                    } else {
+                        service.errorMessage(response.errorMessage)
+                    }
                 }
 
                 response.value == null        -> {
@@ -57,7 +65,6 @@ class ServiceGutterIconNavigationHandler(private val keyName: String, private va
                     service.generatePopup(response.value)
                 }
             }
-
             invokeLater {
                 if (loader.isVisible) {
                     loader.dispose()
