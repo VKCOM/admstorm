@@ -45,10 +45,11 @@ class ServiceGutterIconNavigationHandler(private val keyName: String, private va
             val response = service.execCommand(keyName)
             val popup = when {
                 response.errorMessage != null -> {
+                    val limitWordLength = 15
                     val firstQuoteIndex = response.errorMessage.indexOfFirst { it == '\'' }
                     val lastQuoteIndex = response.errorMessage.indexOfLast { it == '\'' }
 
-                    if (lastQuoteIndex - firstQuoteIndex > 15) {
+                    if (lastQuoteIndex - firstQuoteIndex > limitWordLength) {
                         val resp = "<html>"+ response.errorMessage.substring(0, lastQuoteIndex + 1) +
                                 "<br>" + response.errorMessage.substring(lastQuoteIndex + 1) +"</html>"
                         service.errorMessage(resp)
