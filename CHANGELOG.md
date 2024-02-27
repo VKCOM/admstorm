@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## 2.0.3 — 14.02.2024
+
+- Adapt code for PhpStorm 2023.3
+- Jira tickets are now highlighted again
+- Added yubikey PIN characters validator
+- Added notifications about new versions of plugins
+
 ## 2.0.2 — 21.08.2023
 
 - Adapt code for PhpStorm 2023.2

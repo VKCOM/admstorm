@@ -102,7 +102,7 @@ object MyUtils {
     }
 
     private fun getInternalLogInfo(): String {
-        val pluginsList = PluginManagerCore.getPlugins().associate { item ->
+        val pluginsList = PluginManagerCore.loadedPlugins.associate { item ->
             item.pluginId to item.name
         }.entries.joinToString("\n") { pair ->
             "${pair.key} => ${pair.value}"
