@@ -2,8 +2,10 @@ package com.vk.admstorm.admscript
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.vk.admstorm.AdmService
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.admscript.utils.DataResponse
 import com.vk.admstorm.admscript.utils.DataResponseSerializer
@@ -28,9 +30,10 @@ abstract class AdmScript<TModel>(private val project: Project) : IService<TModel
     protected fun <TModel : Any> execCommand(keyName: String, serializer: KSerializer<TModel>): DataResponse<TModel> {
         val workingDir = "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
         val admScriptName = Env.data.admScriptName
+        val admVersion = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)?.version ?: "0.0.0"
 
         val baseCommand = "php ${workingDir}/${admScriptName}"
-        val command = "$baseCommand --method $methodName --key $keyName"
+        val command = "$baseCommand --method $methodName --key $keyName --version $admVersion"
 
         var isFromCache = true
         val cacheValue = resultCache.getIfPresent(keyName)

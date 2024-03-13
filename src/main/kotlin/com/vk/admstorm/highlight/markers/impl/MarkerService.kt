@@ -109,7 +109,7 @@ abstract class MarkerService<TModel>(project: Project) : AdmScript<TModel>(proje
                 icon(AllIcons.General.NotificationError)
                     .gap(RightGap.SMALL)
 
-                label(textError)
+                text(textError)
             }
         }.apply {
             background = JBUI.CurrentTheme.NotificationError.backgroundColor()
