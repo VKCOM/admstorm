@@ -30,7 +30,7 @@ abstract class AdmScript<TModel>(private val project: Project) : IService<TModel
     protected fun <TModel : Any> execCommand(keyName: String, serializer: KSerializer<TModel>): DataResponse<TModel> {
         val workingDir = "${Env.data.projectRoot}/${Env.data.phpSourceFolder}"
         val admScriptName = Env.data.admScriptName
-        val admVersion = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)?.version
+        val admVersion = PluginManagerCore.getPlugin(AdmService.PLUGIN_ID)?.version ?: "0.0.0"
 
         val baseCommand = "php ${workingDir}/${admScriptName}"
         val command = "$baseCommand --method $methodName --key $keyName --version $admVersion"
