@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.ExecBuilder
+import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.ReflectionUtil
