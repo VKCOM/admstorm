@@ -27,6 +27,7 @@ import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.sftp.SFTPClient
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * Service responsible for connecting via SSH to the development server.
@@ -144,10 +145,12 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
                 override fun run(indicator: ProgressIndicator) {
                     try {
-                        mySftpChannel = myConnectionBuilder!!.openSftpChannel(2)
-                        mySftpClient = MySshUtils.getSftpClient(mySftpChannel!!)
+                        SshHandler.handle {
+                            mySftpChannel = myConnectionBuilder!!.openSftpChannel(2)
+                            mySftpClient = MySshUtils.getSftpClient(mySftpChannel!!)
 
-                        onSuccessful?.run()
+                            onSuccessful?.run()
+                        }
                     } catch (e: SshException) {
                         if (!cancelled && e.message == "Cancelled by user") {
                             LOG.warn("Cancelled by user", e)
@@ -186,6 +189,15 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             .show()
 
                         LOG.warn("Failed to connect", e)
+                    } catch (e: TimeoutException) {
+                        AdmNotification("Don't forget to touch the yubikey if it blinks when using the AdmStorm plugin's features")
+                            .withTitle("Yubikey waiting timeout")
+                            .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
+                                notification.expire()
+                                connectWithConnector(connector, onSuccessful)
+                            }).show()
+
+                        LOG.warn("Yubikey waiting timeout", e)
                     }
                 }
 

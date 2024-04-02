@@ -16,6 +16,7 @@ import com.vk.admstorm.notifications.AdmErrorNotification
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
 import com.vk.admstorm.ssh.SshConnectionService
+import com.vk.admstorm.ssh.SshHandler
 import com.vk.admstorm.ssh.YubikeyHandler
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
@@ -85,7 +86,9 @@ object MySshUtils {
         }
 
         val process = try {
-            execSync(builder)
+            SshHandler.handle {
+                execSync(builder)
+            }
         } catch (e: SshException) {
             handleSshException(project, e)
             null
@@ -144,7 +147,6 @@ object MySshUtils {
                 }
             )
             .show()
-
         LOG.warn("Unexpected exception for execSync(builder)", e)
     }
 
