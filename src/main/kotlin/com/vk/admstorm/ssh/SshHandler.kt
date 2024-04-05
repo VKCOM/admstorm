@@ -17,8 +17,6 @@ object SshHandler {
             cause = cause.cause
         }
 
-        if (cause == null) return ex
-
-        return cause
+        return cause?: ex
     }
 }

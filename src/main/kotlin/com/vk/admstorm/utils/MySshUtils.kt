@@ -6,7 +6,6 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.remote.ColoredRemoteProcessHandler
 import com.intellij.ssh.ExecBuilder
-import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.process.SshExecProcess
 import com.intellij.util.ReflectionUtil
@@ -20,6 +19,7 @@ import com.vk.admstorm.ssh.SshHandler
 import com.vk.admstorm.ssh.YubikeyHandler
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
+import net.schmizz.sshj.connection.channel.OpenFailException
 import net.schmizz.sshj.sftp.SFTPClient
 import java.lang.reflect.Field
 import java.nio.charset.Charset
@@ -89,20 +89,20 @@ object MySshUtils {
             SshHandler.handle {
                 execSync(builder)
             }
-        } catch (e: SshException) {
-            handleSshException(project, e)
+        } catch (ex: OpenFailException)  {
+            handleSshException(project, ex)
             null
-        } catch (e: TimeoutException) {
+        } catch (ex: TimeoutException) {
             AdmWarningNotification("Don't forget to touch the yubikey if it blinks when using the AdmStorm plugin's features")
                 .withTitle("Yubikey waiting timeout")
                 .show()
-            LOG.warn("Yubikey waiting timeout", e)
+            LOG.info("Yubikey waiting timeout", ex)
             null
-        } catch (e: IllegalStateException) {
-            handleSshException(project, e)
+        } catch (ex: IllegalStateException) {
+            handleSshException(project, ex)
             null
-        } catch (e: Exception) {
-            handleSshException(project, e)
+        } catch (ex: Exception) {
+            LOG.error("Unhandled exception ${ex.javaClass.name}")
             null
         } ?: return null
 
@@ -112,17 +112,11 @@ object MySshUtils {
         return ColoredRemoteProcessHandler(process, firstLine, Charset.defaultCharset())
     }
 
-    private fun handleSshException(project: Project, e: Exception) {
-        val exceptionMessage = e.message
-            ?.removePrefix("java.net.SocketTimeoutException: ")
-            ?.replaceFirstChar { it.uppercaseChar() }
-            ?.plus("<br>")
-            ?: ""
-
-        val message = """
-            ${exceptionMessage}Plugin can try to automatically reset the Yubikey and reconnect or you can do it 
-            yourself with ${code("ssh-agent")} and push 'Reconnect' button.
-            """.trimIndent()
+    private fun handleSshException(project: Project, ex: Exception) {
+        val message =
+            "${ex.message}<br> Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
+                code("ssh-agent")
+            }"
 
         AdmWarningNotification(message)
             .withTitle("SSH connection lost")
@@ -147,7 +141,7 @@ object MySshUtils {
                 }
             )
             .show()
-        LOG.warn("Unexpected exception for execSync(builder)", e)
+        LOG.warn("Unexpected exception for execSync(builder)", ex)
     }
 
     private fun execSync(builder: ExecBuilder): SshExecProcess {

@@ -10,8 +10,10 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.remote.RemoteConnector
 import com.intellij.remote.RemoteCredentials
-import com.intellij.ssh.*
+import com.intellij.ssh.ConnectionBuilder
+import com.intellij.ssh.ExecBuilder
 import com.intellij.ssh.channels.SftpChannel
+import com.intellij.ssh.connectionBuilder
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
 import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.notifications.AdmErrorNotification
@@ -178,7 +180,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         LOG.warn("Failed to connect", ex)
                     } catch (ex: TimeoutException) {
                         if (indicator.isCanceled) {
-                            LOG.warn("Cancelled by user", ex)
+                            LOG.info("Cancelled by user", ex)
                             return
                         }
 
@@ -189,7 +191,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 connectWithConnector(connector, onSuccessful)
                             }).show()
 
-                        LOG.warn("Yubikey waiting timeout", ex)
+                        LOG.info("Yubikey waiting timeout", ex)
                     } catch (ex: Exception) {
                         LOG.error("Unhandled exception ${ex.javaClass.name}")
                         return
