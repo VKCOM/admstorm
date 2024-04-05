@@ -10,11 +10,8 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.remote.RemoteConnector
 import com.intellij.remote.RemoteCredentials
-import com.intellij.ssh.ConnectionBuilder
-import com.intellij.ssh.ExecBuilder
-import com.intellij.ssh.SshException
+import com.intellij.ssh.*
 import com.intellij.ssh.channels.SftpChannel
-import com.intellij.ssh.connectionBuilder
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
 import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.notifications.AdmErrorNotification
@@ -24,6 +21,7 @@ import com.vk.admstorm.transfer.TransferService
 import com.vk.admstorm.utils.MySshUtils
 import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
+import net.schmizz.sshj.connection.channel.OpenFailException
 import net.schmizz.sshj.sftp.SFTPClient
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -151,20 +149,9 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
                             onSuccessful?.run()
                         }
-                    } catch (e: SshException) {
-                        if (!cancelled && e.message == "Cancelled by user") {
-                            LOG.warn("Cancelled by user", e)
-                            return
-                        }
-
-                        val exceptionMessage = e.message
-                            ?.removePrefix("java.net.SocketTimeoutException: ")
-                            ?.replaceFirstChar { it.uppercaseChar() }
-                            ?.plus("<br>")
-                            ?: ""
-
+                    } catch (ex: OpenFailException) {
                         val message =
-                            "${exceptionMessage}Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
+                            "${ex.message}<br> Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
                                 code("ssh-agent")
                             }"
 
@@ -188,8 +175,13 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             })
                             .show()
 
-                        LOG.warn("Failed to connect", e)
-                    } catch (e: TimeoutException) {
+                        LOG.warn("Failed to connect", ex)
+                    } catch (ex: TimeoutException) {
+                        if (indicator.isCanceled) {
+                            LOG.warn("Cancelled by user", ex)
+                            return
+                        }
+
                         AdmNotification("Don't forget to touch the yubikey if it blinks when using the AdmStorm plugin's features")
                             .withTitle("Yubikey waiting timeout")
                             .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
@@ -197,7 +189,10 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 connectWithConnector(connector, onSuccessful)
                             }).show()
 
-                        LOG.warn("Yubikey waiting timeout", e)
+                        LOG.warn("Yubikey waiting timeout", ex)
+                    } catch (ex: Exception) {
+                        LOG.error("Unhandled exception ${ex.javaClass.name}")
+                        return
                     }
                 }
 

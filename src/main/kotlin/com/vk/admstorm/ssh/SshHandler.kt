@@ -1,14 +1,13 @@
 package com.vk.admstorm.ssh
 
 import com.intellij.ssh.SshException
-import java.util.concurrent.TimeoutException
 
 object SshHandler {
     inline fun <reified T> handle(call: () -> T): T {
         return try {
             call()
-        } catch (e: SshException) {
-            throw unwrap(e)
+        } catch (ex: SshException) {
+            throw unwrap(ex)
         }
     }
 
@@ -18,9 +17,8 @@ object SshHandler {
             cause = cause.cause
         }
 
-        if (cause is TimeoutException) {
-            return cause
-        }
-        return ex
+        if (cause == null) return ex
+
+        return cause
     }
 }
