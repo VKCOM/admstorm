@@ -25,6 +25,7 @@ import com.vk.admstorm.utils.MyUtils.executeOnPooledThread
 import git4idea.util.GitUIUtil.code
 import net.schmizz.sshj.connection.channel.OpenFailException
 import net.schmizz.sshj.sftp.SFTPClient
+import net.schmizz.sshj.transport.TransportException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -192,6 +193,32 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             }).show()
 
                         LOG.info("Yubikey waiting timeout", ex)
+                    } catch (ex: TransportException) {
+                        if (ex.message == null) {
+                            LOG.error("Transport exception: ${ex.javaClass.name}")
+                            return
+                        }
+
+                        val message =
+                            "${ex.javaClass.name}: ${ex.message}"
+                        if (ex.message!!.contains("HostKeyAlgorithms")) {
+                            AdmErrorNotification(message, true)
+                                .withTitle("Did you switch your SSH config type to LEGACY?")
+                                .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
+                                    notification.expire()
+                                    connectWithConnector(connector, onSuccessful)
+                                }).show()
+                            LOG.info("Not correct ssh config type", ex)
+                            return
+                        }
+
+                        AdmErrorNotification(message, true)
+                            .withTitle("Did you connect to corporate access system?")
+                            .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
+                                notification.expire()
+                                connectWithConnector(connector, onSuccessful)
+                            }).show()
+                        LOG.info("Corporate access error", ex)
                     } catch (ex: Exception) {
                         LOG.error("Unhandled exception ${ex.javaClass.name}")
                         return
