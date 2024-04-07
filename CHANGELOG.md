@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## 2.0.4 - 09.04.2024
+
+- Adapt code for PhpStorm 2024.1
+- More readable warnings & error while connecting to servers
+- Friendly reminders about yubikey
+
 ## 2.0.3 — 14.02.2024
 
 - Adapt code for PhpStorm 2023.3
