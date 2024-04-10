@@ -44,9 +44,10 @@ class YubikeyHandler {
             PasswordSafe.instance.getPassword(credentialAttributes)!!
         }
 
-        val killOutput = CommandRunner.runLocally(project, "pkill ssh-agen")
-        if (killOutput.exitCode != 0) {
-            LOG.warn("pkill ssh-agen exited with non-zero code while Yubikey reset")
+        val openscPath = if (SystemInfo.isLinux) {
+            "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
+        } else {
+            "/usr/local/lib/opensc-pkcs11.so"
         }
 
         val evalOutput = CommandRunner.runLocallyEval("ssh-agent -s")
@@ -63,11 +64,15 @@ class YubikeyHandler {
 
         val echoBuilder = ProcessBuilder("echo", password)
 
-        val openscPath = if (SystemInfo.isLinux) {
-            "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
-        } else {
-            "/usr/local/lib/opensc-pkcs11.so"
+        val sshResetKey = CommandRunner.runLocally(project,"ssh-add -e $openscPath")
+
+        val resetOk = sshResetKey.stderr.contains("Card removed")
+
+        if (!resetOk) {
+            LOG.warn("Yubikey reset error: ${sshResetKey.stderr}")
+            showYubikeyResetFailNotification(project, "Unable to reset yubikey", null, onFail)
         }
+
         val sshAddBuilder = ProcessBuilder("ssh-add", "-s", openscPath)
 
         sshAddBuilder.environment().apply {
@@ -82,9 +87,9 @@ class YubikeyHandler {
                     sshAddBuilder
                 )
             )
-        } catch (e: IOException) {
-            LOG.warn("Unexpected exception while startPipeline for Yubikey reset", e)
-            showYubikeyResetFailNotification(project, "Unable to run reset commands", null, onFail)
+        } catch (ex: IOException) {
+            LOG.warn("Unexpected exception while startPipeline for Yubikey add", ex)
+            showYubikeyResetFailNotification(project, "Unable to run add commands", null, onFail)
             return false
         }
 
@@ -160,12 +165,12 @@ class YubikeyHandler {
                     )
                     return null
                 }
-            } catch (e: Exception) {
+            } catch (ex: Exception) {
                 MessageDialog.showWarning(
                     """
                         Can't create script '${GitUIUtil.code(resetScript.absolutePath)}' for reset Yubikey:
                         
-                        ${e.message}
+                        ${ex.message}
                     """.trimIndent(),
                     "Problem with creating Yubikey reset script"
                 )
