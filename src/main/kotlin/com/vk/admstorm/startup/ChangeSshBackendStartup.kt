@@ -11,28 +11,30 @@ object ChangeSshBackendStartup {
     private val LOG = logger<ChangeSshBackendStartup>()
 
     private const val LEGACY_SSH_NOTIFICATOR_OPTION = "sshLegacyChanges"
-    private const val SSH_CONFIG_BACKEND = "ssh.config.backend"
     private const val SSH_NOTIFICATOR_OPTION = "sshOpenSSHChanges"
+    private const val SSH_CONFIG_BACKEND = "ssh.config.backend"
 
     private fun changeSshConfiguration(configValue: SshConnectionConfigService.Kind) {
         AdvancedSettings.setEnum(SSH_CONFIG_BACKEND, configValue)
     }
 
     fun changeConfigurationProcess(project: Project) {
-        //TODO: Remove it after 2 month
-        if (PropertiesComponent.getInstance(project).getValue(LEGACY_SSH_NOTIFICATOR_OPTION) != null) {
-            PropertiesComponent.getInstance(project).unsetValue(LEGACY_SSH_NOTIFICATOR_OPTION)
-        }
+        val prpCmp = PropertiesComponent.getInstance(project)
 
-        val dntShow = PropertiesComponent.getInstance(project).getBoolean(SSH_NOTIFICATOR_OPTION)
+        val dntShow = prpCmp.getBoolean(SSH_NOTIFICATOR_OPTION)
         if (dntShow) {
             LOG.info("OPENSSH option was enabled")
             return
         }
 
+        //TODO: Remove it after 2 month
+        if (prpCmp.getValue(LEGACY_SSH_NOTIFICATOR_OPTION) != null) {
+            prpCmp.unsetValue(LEGACY_SSH_NOTIFICATOR_OPTION)
+        }
+
         val sshSettingValue = AdvancedSettings.getEnum(SSH_CONFIG_BACKEND, SshConnectionConfigService.Kind::class.java)
         if (sshSettingValue == SshConnectionConfigService.Kind.OPENSSH) {
-            PropertiesComponent.getInstance(project).setValue(LEGACY_SSH_NOTIFICATOR_OPTION, true)
+            prpCmp.setValue(SSH_NOTIFICATOR_OPTION, true)
             LOG.info("OPENSSH option was enabled before")
             return
         }
@@ -54,6 +56,6 @@ object ChangeSshBackendStartup {
                 }
             ).show(project)
 
-        PropertiesComponent.getInstance(project).setValue(LEGACY_SSH_NOTIFICATOR_OPTION, true)
+        prpCmp.setValue(LEGACY_SSH_NOTIFICATOR_OPTION, true)
     }
 }
