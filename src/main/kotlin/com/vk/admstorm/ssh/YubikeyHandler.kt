@@ -22,6 +22,12 @@ class YubikeyHandler {
         private val LOG = logger<YubikeyHandler>()
     }
 
+    private val openscPath = if (SystemInfo.isLinux) {
+        "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
+    } else {
+        "/usr/local/lib/opensc-pkcs11.so"
+    }
+
     fun autoReset(project: Project, onFail: Runnable): Boolean {
         LOG.info("Try auto reset Yubikey")
         val resetScript = createScriptIfNotExists(project) ?: return false
@@ -44,11 +50,7 @@ class YubikeyHandler {
             PasswordSafe.instance.getPassword(credentialAttributes)!!
         }
 
-        val openscPath = if (SystemInfo.isLinux) {
-            "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
-        } else {
-            "/usr/local/lib/opensc-pkcs11.so"
-        }
+
 
         val evalOutput = CommandRunner.runLocallyEval("ssh-agent -s")
         if (evalOutput == null) {
@@ -64,10 +66,8 @@ class YubikeyHandler {
 
         val echoBuilder = ProcessBuilder("echo", password)
 
-        val sshResetKey = CommandRunner.runLocally(project,"ssh-add -e $openscPath")
-
+        val sshResetKey = CommandRunner.runLocally(project, "ssh-add -e $openscPath")
         val resetOk = sshResetKey.stderr.contains("Card removed")
-
         if (!resetOk) {
             LOG.warn("Yubikey reset error: ${sshResetKey.stderr}")
             showYubikeyResetFailNotification(project, "Unable to reset yubikey", null, onFail)
