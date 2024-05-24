@@ -1,6 +1,7 @@
 package com.vk.admstorm.ssh
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.logger
@@ -14,6 +15,7 @@ import com.intellij.ssh.ConnectionBuilder
 import com.intellij.ssh.ExecBuilder
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.connectionBuilder
+import com.intellij.util.ConcurrencyUtil
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
 import com.vk.admstorm.AdmStartupService
 import com.vk.admstorm.notifications.AdmErrorNotification
@@ -123,6 +125,14 @@ class SshConnectionService(private var myProject: Project) : Disposable {
         // Disconnect the current connection, if it exists.
         disconnect()
 
+        val scheduler = ConcurrencyUtil.newSingleScheduledThreadExecutor("YubiKeyTouchingNotification")
+        scheduler.schedule({
+            ApplicationManager.getApplication().invokeLater {
+                AdmNotification("Did you forget to touch yubikey?")
+                    .show()
+            }
+        }, 5, TimeUnit.SECONDS)
+
         executeOnPooledThread {
             // See also [com.jetbrains.plugins.remotesdk.tools.RemoteTool.startRemoteProcess]
             @Suppress("UnstableApiUsage")
@@ -153,6 +163,8 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             onSuccessful?.run()
                         }
                     } catch (ex: OpenFailException) {
+                        scheduler.shutdownNow()
+
                         val message = "${ex.message}<br>" +
                                 "Plugin can try to automatically reset the Yubikey or you can do it yourself with " +
                                 code("ssh-agent")
@@ -179,6 +191,8 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
                         LOG.warn("Failed to connect", ex)
                     } catch (ex: TimeoutException) {
+                        scheduler.shutdownNow()
+
                         if (indicator.isCanceled) {
                             LOG.info("Cancelled by user", ex)
                             return
@@ -193,6 +207,8 @@ class SshConnectionService(private var myProject: Project) : Disposable {
 
                         LOG.info("Yubikey waiting timeout", ex)
                     } catch (ex: TransportException) {
+                        scheduler.shutdownNow()
+
                         if (ex.message == null) {
                             LOG.error("Transport exception:", ex.javaClass.name)
                             return
@@ -217,6 +233,8 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             }).show()
                         LOG.info("Corporate access error", ex)
                     } catch (ex: Exception) {
+                        scheduler.shutdownNow()
+
                         val exceptionName = ex.javaClass.name
                         LOG.error("Unhandled exception", ex)
                         AdmErrorNotification("Unhandled exception $exceptionName").show()
