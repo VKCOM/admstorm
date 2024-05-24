@@ -185,7 +185,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             return
                         }
 
-                        AdmNotification("Don't forget to touch the yubikey if it blinks when using the AdmStorm plugin's features")
+                        AdmNotification("Touch the yubikey when it blinks while using AdmStorm")
                             .withTitle("Yubikey waiting timeout")
                             .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
                                 notification.expire()
@@ -220,7 +220,9 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             }).show()
                         LOG.info("Corporate access error", ex)
                     } catch (ex: Exception) {
-                        LOG.error("Unhandled exception ${ex.javaClass.name}")
+                        val errorMessage = ex.javaClass.name
+                        LOG.error("Unhandled exception $errorMessage")
+                        AdmErrorNotification("Unhandled exception $errorMessage").show()
                         return
                     }
                 }
