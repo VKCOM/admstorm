@@ -113,10 +113,9 @@ object MySshUtils {
     }
 
     private fun handleSshException(project: Project, ex: Exception) {
-        val message =
-            "${ex.message}<br> Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
+        val message = "${ex.message}<br>" +
+                "Plugin can try to automatically reset the Yubikey or you can do it yourself with " +
                 code("ssh-agent")
-            }"
 
         AdmWarningNotification(message)
             .withTitle("SSH connection lost")
