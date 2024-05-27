@@ -102,7 +102,9 @@ object MySshUtils {
             handleSshException(project, ex)
             null
         } catch (ex: Exception) {
-            LOG.error("Unhandled exception ${ex.javaClass.name}")
+            val message = ex.javaClass.name
+            LOG.error("Unhandled exception $message: ${ex.message}")
+            AdmErrorNotification("Unhandled exception $message").show()
             null
         } ?: return null
 
