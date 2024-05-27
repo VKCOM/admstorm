@@ -221,7 +221,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         LOG.info("Corporate access error", ex)
                     } catch (ex: Exception) {
                         val errorMessage = ex.javaClass.name
-                        LOG.error("Unhandled exception $errorMessage")
+                        LOG.error("Unhandled exception $errorMessage: ${ex.message}")
                         AdmErrorNotification("Unhandled exception $errorMessage").show()
                         return
                     }
