@@ -19,22 +19,22 @@ object ChangeSshBackendStartup {
     }
 
     fun changeConfigurationProcess(project: Project) {
-        val prpCmp = PropertiesComponent.getInstance(project)
+        val properties = PropertiesComponent.getInstance(project)
 
-        val dntShow = prpCmp.getBoolean(SSH_NOTIFICATOR_OPTION)
+        val dntShow = properties.getBoolean(SSH_NOTIFICATOR_OPTION)
         if (dntShow) {
             LOG.info("OPENSSH option was enabled")
             return
         }
 
         //TODO: Remove it after 2 month
-        if (prpCmp.getValue(LEGACY_SSH_NOTIFICATOR_OPTION) != null) {
-            prpCmp.unsetValue(LEGACY_SSH_NOTIFICATOR_OPTION)
+        if (properties.isValueSet(LEGACY_SSH_NOTIFICATOR_OPTION)) {
+            properties.unsetValue(LEGACY_SSH_NOTIFICATOR_OPTION)
         }
 
         val sshSettingValue = AdvancedSettings.getEnum(SSH_CONFIG_BACKEND, SshConnectionConfigService.Kind::class.java)
         if (sshSettingValue == SshConnectionConfigService.Kind.OPENSSH) {
-            prpCmp.setValue(SSH_NOTIFICATOR_OPTION, true)
+            properties.setValue(SSH_NOTIFICATOR_OPTION, true)
             LOG.info("OPENSSH option was enabled before")
             return
         }
@@ -56,6 +56,6 @@ object ChangeSshBackendStartup {
                 }
             ).show(project)
 
-        prpCmp.setValue(LEGACY_SSH_NOTIFICATOR_OPTION, true)
+        properties.setValue(SSH_NOTIFICATOR_OPTION, true)
     }
 }
