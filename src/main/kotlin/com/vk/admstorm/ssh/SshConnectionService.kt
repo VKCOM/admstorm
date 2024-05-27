@@ -153,10 +153,9 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             onSuccessful?.run()
                         }
                     } catch (ex: OpenFailException) {
-                        val message =
-                            "${ex.message}<br> Plugin can try to automatically reset the Yubikey or you can do it yourself with ${
+                        val message = "${ex.message}<br>" +
+                                "Plugin can try to automatically reset the Yubikey or you can do it yourself with " +
                                 code("ssh-agent")
-                            }"
 
                         AdmErrorNotification(message, true)
                             .withTitle("Failed to connect to server")
@@ -195,15 +194,13 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         LOG.info("Yubikey waiting timeout", ex)
                     } catch (ex: TransportException) {
                         if (ex.message == null) {
-                            LOG.error("Transport exception: ${ex.javaClass.name}")
+                            LOG.error("Transport exception:", ex.javaClass.name)
                             return
                         }
 
-                        val message =
-                            "${ex.javaClass.name}: ${ex.message}"
-                        if (ex.message!!.contains("HostKeyAlgorithms")) {
-                            AdmErrorNotification(message, true)
-                                .withTitle("Did you switch your SSH config type to LEGACY?")
+                        if (ex.message?.contains("HostKeyAlgorithms") == true) {
+                            AdmErrorNotification("Recheck your config or the documentation", true)
+                                .withTitle("Did you add HostKeyAlgorithms to your config?")
                                 .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
                                     notification.expire()
                                     connectWithConnector(connector, onSuccessful)
@@ -212,17 +209,17 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                             return
                         }
 
-                        AdmErrorNotification(message, true)
-                            .withTitle("Did you connect to corporate access system?")
+                        AdmErrorNotification("Check the documentation about connection to network", true)
+                            .withTitle("Did you miss your connection?")
                             .withActions(AdmNotification.Action("Reconnect...") { _, notification ->
                                 notification.expire()
                                 connectWithConnector(connector, onSuccessful)
                             }).show()
                         LOG.info("Corporate access error", ex)
                     } catch (ex: Exception) {
-                        val message = ex.javaClass.name
-                        LOG.error("Unhandled exception $message: ${ex.message}")
-                        AdmErrorNotification("Unhandled exception $message").show()
+                        val exceptionName = ex.javaClass.name
+                        LOG.error("Unhandled exception", ex)
+                        AdmErrorNotification("Unhandled exception $exceptionName").show()
                         return
                     }
                 }
