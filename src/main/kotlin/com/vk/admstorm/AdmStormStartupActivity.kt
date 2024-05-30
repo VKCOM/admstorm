@@ -12,6 +12,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.vk.admstorm.diagnostic.AdmStormLoggerFactory
 import com.vk.admstorm.highlight.CppTypeHighlightPatcher
 import com.vk.admstorm.notifications.AdmErrorNotification
+import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.services.SentryService
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
@@ -42,7 +43,11 @@ class AdmStormStartupActivity : ProjectActivity {
 
         //TODO: remove it after release AdmStorm on Windows
         if (SystemInfo.isWindows) {
-            AdmErrorNotification("AdmStorm is not available on Windows yet").show()
+            AdmErrorNotification("AdmStorm is not available on Windows yet").withActions(
+                AdmNotification.Action("Close this notification") { _, notification ->
+                    notification.expire()
+                }
+            ).show()
         }
 
         ChangeSshBackendStartup.changeConfigurationProcess(project)
