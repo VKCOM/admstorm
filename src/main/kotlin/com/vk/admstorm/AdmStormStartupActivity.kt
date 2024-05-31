@@ -1,5 +1,6 @@
 package com.vk.admstorm
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
@@ -43,11 +44,16 @@ class AdmStormStartupActivity : ProjectActivity {
 
         //TODO: remove it after release AdmStorm on Windows
         if (SystemInfo.isWindows) {
-            AdmErrorNotification("AdmStorm is not available on Windows yet").withActions(
-                AdmNotification.Action("Close this notification") { _, notification ->
-                    notification.expire()
-                }
-            ).show()
+            val properties = PropertiesComponent.getInstance(project)
+
+            if (!properties.getBoolean("windowsSupportNotification")) {
+                AdmErrorNotification("AdmStorm is not available on Windows yet").withActions(
+                    AdmNotification.Action("Turn off this notification") { _, notification ->
+                        properties.setValue("windowsSupportNotification", true)
+                        notification.expire()
+                    }
+                ).show()
+            }
         }
 
         ChangeSshBackendStartup.changeConfigurationProcess(project)
