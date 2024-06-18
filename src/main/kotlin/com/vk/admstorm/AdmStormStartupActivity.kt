@@ -1,6 +1,5 @@
 package com.vk.admstorm
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
@@ -8,17 +7,15 @@ import com.intellij.openapi.fileTypes.ex.FileTypeChooser
 import com.intellij.openapi.fileTypes.impl.AbstractFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.registry.Registry
 import com.vk.admstorm.diagnostic.AdmStormLoggerFactory
 import com.vk.admstorm.highlight.CppTypeHighlightPatcher
-import com.vk.admstorm.notifications.AdmErrorNotification
-import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.services.SentryService
 import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.startup.ChangeSshBackendStartup
 import com.vk.admstorm.startup.PluginsUpdateStartup
+import com.vk.admstorm.startup.WindowsAvailabilityStartup
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
@@ -42,20 +39,7 @@ class AdmStormStartupActivity : ProjectActivity {
             return
         }
 
-        //TODO: remove it after release AdmStorm on Windows
-        if (SystemInfo.isWindows) {
-            val properties = PropertiesComponent.getInstance(project)
-
-            if (!properties.getBoolean("windowsSupportNotification")) {
-                AdmErrorNotification("AdmStorm is not available on Windows yet").withActions(
-                    AdmNotification.Action("Turn off this notification") { _, notification ->
-                        properties.setValue("windowsSupportNotification", true)
-                        notification.expire()
-                    }
-                ).show()
-            }
-        }
-
+        WindowsAvailabilityStartup.checkAvailability(project)
         ChangeSshBackendStartup.changeConfigurationProcess(project)
 
         measureTime(LOG, "patch cpp highlight") {
