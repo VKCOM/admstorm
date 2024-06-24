@@ -15,6 +15,7 @@ import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ssh.SshConnectionService
 import com.vk.admstorm.startup.ChangeSshBackendStartup
 import com.vk.admstorm.startup.PluginsUpdateStartup
+import com.vk.admstorm.startup.WindowsAvailabilityStartup
 import com.vk.admstorm.utils.MyUtils.measureTime
 import com.vk.admstorm.utils.extensions.pluginEnabled
 
@@ -38,6 +39,7 @@ class AdmStormStartupActivity : ProjectActivity {
             return
         }
 
+        WindowsAvailabilityStartup.checkAvailability(project)
         ChangeSshBackendStartup.changeConfigurationProcess(project)
 
         measureTime(LOG, "patch cpp highlight") {
