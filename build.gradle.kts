@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // IntelliJ Platform Gradle Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
+    alias(libs.plugins.kotlinSerialization) // Kotlinx serialization
     alias(libs.plugins.gradleDetektPlugin) // Gradle Detekt Plugin
     alias(libs.plugins.gradleDiktatPlugin) // Gradle Diktat Plugin
 }
