@@ -4,6 +4,10 @@
 
 ## 2.0.5 - 28.06.2024
 
+- Adapt code for PhpStorm 2024.2
+
+## 2.0.5 - 28.06.2024
+
 - More human readable ssh errors
 - Notification about not availability on Windows
 - Fixed not correct yubikey reset
