@@ -1,6 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.markdownToHTML
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
@@ -99,6 +98,17 @@ detekt {
 }
 
 tasks {
+    processResources {
+        val tokens = mapOf(
+            "sentry_dsn" to (System.getenv("SENTRY_DSN") ?: ""),
+        )
+
+        filesMatching("plugin_config.json") {
+            filteringCharset = "UTF-8"
+            filter<ReplaceTokens>("tokens" to tokens)
+        }
+    }
+
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
