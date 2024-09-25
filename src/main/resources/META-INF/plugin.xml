@@ -152,8 +152,8 @@
                 factoryClass="com.vk.admstorm.ui.ServiceListToolWindow"/>
   </extensions>
 
-  <extensions defaultExtensionNs="com.jetbrains.php">
-    <docTagParserExtension tagName="admstorm-marker" implementationClass="com.vk.admstorm.tags.phptags.AdmStormMarkerTag"/>
+  <extensions defaultExtensionNs="com.intellij">
+    <php.docTagParserExtension tagName="admstorm-marker" implementationClass="com.vk.admstorm.tags.phptags.AdmStormMarkerTag"/>
   </extensions>
 
   <actions>
