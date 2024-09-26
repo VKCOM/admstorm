@@ -9,7 +9,6 @@ detektFormatting = "1.23.1"
 kotlin = "1.9.25"
 changelog = "2.2.1"
 intelliJPlatform = "2.0.1"
-gradleIntelliJPlugin = "1.17.2"
 kotlinSerialization = "2.0.20"
 gradleDiktatPlugin = "1.2.5"
 gradleDetektPlugin = "1.23.7"
@@ -23,7 +22,6 @@ detektFormatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-forma
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
-gradleIntelliJPlugin = { id = "org.jetbrains.intellij", version.ref = "gradleIntelliJPlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 gradleDiktatPlugin = { id = "org.cqfn.diktat.diktat-gradle-plugin", version.ref = "gradleDiktatPlugin" }
 gradleDetektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "gradleDetektPlugin" }
