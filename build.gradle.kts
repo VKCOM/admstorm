@@ -22,7 +22,7 @@ kotlin {
 // Configure project's dependencies
 repositories {
     mavenCentral()
-
+    gradlePluginPortal()
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
@@ -78,6 +78,8 @@ intellijPlatform {
     }
 
     pluginVerification {
+        freeArgs = listOf("-ip", file("ignored-problems.txt").absolutePath)
+
         ides {
             recommended()
         }
