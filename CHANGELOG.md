@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## 2.0.6 - 16.09.2024
+
+- Adapt code for PhpStorm 2024.2
+
 ## 2.0.5 - 28.06.2024
 
 - More human readable ssh errors

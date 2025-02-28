@@ -2,16 +2,16 @@
 # libraries
 markdown = "0.2.4"
 sentry = "6.1.0"
-kotlinxSerializationJson = "1.3.3"
+kotlinxSerializationJson = "1.7.3"
 detektFormatting = "1.23.1"
 
 # plugins
-kotlin = "1.9.23"
-changelog = "2.2.0"
-gradleIntelliJPlugin = "1.17.2"
-kotlinSerialization = "1.6.21"
+kotlin = "1.9.25"
+changelog = "2.2.1"
+intelliJPlatform = "2.0.1"
+kotlinSerialization = "2.0.20"
 gradleDiktatPlugin = "1.2.5"
-gradleDetektPlugin = "1.23.1"
+gradleDetektPlugin = "1.23.7"
 
 [libraries]
 markdown = { group = "org.jetbrains", name = "markdown", version.ref = "markdown" }
@@ -22,7 +22,7 @@ detektFormatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-forma
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
-gradleIntelliJPlugin = { id = "org.jetbrains.intellij", version.ref = "gradleIntelliJPlugin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 gradleDiktatPlugin = { id = "org.cqfn.diktat.diktat-gradle-plugin", version.ref = "gradleDiktatPlugin" }
 gradleDetektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "gradleDetektPlugin" }
+intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
