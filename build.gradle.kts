@@ -115,10 +115,6 @@ tasks {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
     }
 
-    publishPlugin {
-        dependsOn(patchChangelog)
-    }
-
     detekt.configure {
         reports {
             html.required.set(true)
