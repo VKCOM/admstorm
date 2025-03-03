@@ -1,6 +1,6 @@
 [versions]
 # libraries
-markdown = "0.2.4"
+junit = "4.13.2"
 sentry = "6.1.0"
 kotlinxSerializationJson = "1.7.3"
 detektFormatting = "1.23.1"
@@ -8,13 +8,13 @@ detektFormatting = "1.23.1"
 # plugins
 kotlin = "1.9.25"
 changelog = "2.2.1"
-intelliJPlatform = "2.0.1"
+intelliJPlatform = "2.0.1" # TODO: update this in next update: https://youtrack.jetbrains.com/issue/MP-7019
 kotlinSerialization = "2.0.20"
 gradleDiktatPlugin = "1.2.5"
 gradleDetektPlugin = "1.23.7"
 
 [libraries]
-markdown = { group = "org.jetbrains", name = "markdown", version.ref = "markdown" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 sentry = { group = "io.sentry", name = "sentry", version.ref = "sentry" }
 kotlinxSerializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 detektFormatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detektFormatting" }

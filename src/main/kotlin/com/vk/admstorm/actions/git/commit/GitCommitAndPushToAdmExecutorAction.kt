@@ -9,6 +9,7 @@ import com.intellij.openapi.vcs.changes.CommitContext
 import com.intellij.openapi.vcs.changes.CommitSession
 import com.intellij.openapi.vcs.changes.LocalCommitExecutor
 import com.intellij.openapi.vcs.changes.actions.BaseCommitExecutorAction
+import com.intellij.vcs.commit.CommitWorkflowHandlerState
 import com.intellij.vcs.commit.commitProperty
 import com.vk.admstorm.utils.ServerNameProvider
 import com.vk.admstorm.utils.extensions.pluginEnabled
@@ -42,7 +43,10 @@ class GitCommitAndPushToAdmExecutorAction : BaseCommitExecutorAction() {
     override fun update(e: AnActionEvent) {
         val workflowHandler = e.getData(VcsDataKeys.COMMIT_WORKFLOW_HANDLER)
         if (workflowHandler != null) {
-            val templateText = workflowHandler.getCommitAndPushActionName()
+            val state = CommitWorkflowHandlerState(
+                isAmend = workflowHandler.amendCommitHandler.isAmendCommitMode, isSkipCommitChecks = false
+            )
+            val templateText = getCommitAndPushActionName(state)
 
             e.presentation.text =
                 templateText.removeSuffix("…") + " → ${ServerNameProvider.name()} → Gitlab…"

@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java") // Java support
@@ -23,6 +24,7 @@ kotlin {
 repositories {
     mavenCentral()
     gradlePluginPortal()
+
     // IntelliJ Platform Gradle Plugin Repositories Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-repositories-extension.html
     intellijPlatform {
         defaultRepositories()
@@ -34,8 +36,8 @@ dependencies {
     detektPlugins(libs.detektFormatting)
 
     implementation(libs.kotlinxSerializationJson)
-    implementation(libs.markdown)
     implementation(libs.sentry)
+    testImplementation(libs.junit)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
@@ -50,6 +52,7 @@ dependencies {
         instrumentationTools()
         pluginVerifier()
         zipSigner()
+        testFramework(TestFrameworkType.Platform)
     }
 }
 
@@ -113,10 +116,6 @@ tasks {
 
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
-    }
-
-    publishPlugin {
-        dependsOn(patchChangelog)
     }
 
     detekt.configure {

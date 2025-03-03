@@ -90,9 +90,9 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
 
                 row("Directory:") {
                     textFieldWithBrowseButton(
-                        "Select PHPUnit Tests Folder",
+                        FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle("Select PHPUnit Tests Folder"),
                         project,
-                        FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                        null
                     )
                         .align(AlignX.FILL)
                         .bindText(model::directory)
@@ -124,25 +124,25 @@ open class RemotePhpUnitConfigurationEditor(val project: Project) :
             group("Command Line") {
                 row("PHPUnit Executable:") {
                     textFieldWithBrowseButton(
-                        "Select PHPUnit Executable",
+                        FileChooserDescriptorFactory.createSingleFolderDescriptor().withTitle("Select PHPUnit Executable"),
                         project,
-                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        null
                     )
                         .align(AlignX.FILL)
                         .bindText(model::phpUnitExe)
                 }
                 row("Configuration file:") {
                     textFieldWithBrowseButton(
-                        "Select PHPUnit Configuration File",
-                        project,
                         FileChooserDescriptorFactory.createSingleFileDescriptor(XmlFileType.INSTANCE)
+                            .withTitle("Select PHPUnit Configuration File"),
+                        project,
+                        null
                     )
                         .align(AlignX.FILL)
                         .bindText(model::phpUnitConfig)
                 }
             }.topGap(TopGap.NONE)
         }
-
         classTextField.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
                 mainPanel.reset()
