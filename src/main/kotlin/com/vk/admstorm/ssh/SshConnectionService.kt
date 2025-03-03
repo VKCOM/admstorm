@@ -169,25 +169,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 "Plugin can try to automatically reset the Yubikey or you can do it yourself with " +
                                 code("ssh-agent")
 
-                        AdmErrorNotification(message, true)
-                            .withTitle("Failed to connect to server")
-                            .withActions(AdmNotification.Action("Reset Yubikey and Connect...") { _, notification ->
-                                notification.expire()
-
-                                val success = YubikeyHandler().autoReset(project) {
-                                    connectWithConnector(connector, onSuccessful)
-                                }
-
-                                if (!success) {
-                                    return@Action
-                                }
-                                connectWithConnector(connector, onSuccessful)
-                            })
-                            .withActions(AdmNotification.Action("Connect...") { _, notification ->
-                                notification.expire()
-                                connectWithConnector(connector, onSuccessful)
-                            })
-                            .show()
+                        resetYubikeyNotification(message)
 
                         LOG.warn("Failed to connect", ex)
                     } catch (ex: TimeoutException) {
@@ -235,11 +217,47 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                     } catch (ex: Exception) {
                         scheduler.shutdownNow()
 
+                        if (ex.message?.contains("Failed to open SSH channel in a just created TCP session") == true) {
+                            handleOpenTcpSessionError()
+                            return
+                        }
+
                         val exceptionName = ex.javaClass.name
                         LOG.error("Unhandled exception", ex)
                         AdmErrorNotification("Unhandled exception $exceptionName").show()
                         return
                     }
+                }
+
+                fun resetYubikeyNotification(message: String) {
+                    AdmErrorNotification(message, true)
+                        .withTitle("Failed to connect to server")
+                        .withActions(AdmNotification.Action("Reset Yubikey and Connect...") { _, notification ->
+                            notification.expire()
+
+                            val success = YubikeyHandler().autoReset(project) {
+                                connectWithConnector(connector, onSuccessful)
+                            }
+
+                            if (!success) {
+                                return@Action
+                            }
+                            connectWithConnector(connector, onSuccessful)
+                        })
+                        .withActions(AdmNotification.Action("Connect...") { _, notification ->
+                            notification.expire()
+                            connectWithConnector(connector, onSuccessful)
+                        })
+                        .show()
+                }
+
+                fun handleOpenTcpSessionError() {
+                    val message = "Failed to open SSH channel in a just created TCP session"
+                    resetYubikeyNotification(message)
+                    LOG.warn(
+                        "Failed to connect",
+                        OpenFailException("TCP", OpenFailException.Reason.CONNECT_FAILED, message)
+                    )
                 }
 
                 override fun onCancel() {
