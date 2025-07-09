@@ -158,6 +158,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = model.showYarnWatchWidget
             showWatchDebugLogWidget = model.showWatchDebugLogWidget
             userNameForSentry = model.userNameForSentry
+            localDeployConfig = model.localDeployConfig
         }
 
         StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
@@ -189,6 +190,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = settings.showYarnWatchWidget
             showWatchDebugLogWidget = settings.showWatchDebugLogWidget
             userNameForSentry = settings.userNameForSentry
+            localDeployConfig = settings.localDeployConfig
         }
 
         mainPanel.reset()

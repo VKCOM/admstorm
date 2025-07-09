@@ -8,6 +8,7 @@ import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.phplinter.PhpLinterCheckers
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
+import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.measureTime
 import git4idea.util.GitUIUtil.bold
@@ -129,11 +130,15 @@ object Env {
             LOG.warn("Exception while deserialize data, further work of the plugin is impossible:", e)
             return
         }
-        val publishConfig = project.getService(PublishConfig::class.java)
-        val defServer = publishConfig.findDefaultServers().firstOrNull()
-        if (defServer != null) {
-            data.projectRoot = defServer.fileTransferConfig.rootFolder
+        val config = AdmStormSettingsState.getInstance()
+        if (config.localDeployConfig) {
+            val publishConfig = project.getService(PublishConfig::class.java)
+            val defServer = publishConfig.findDefaultServers().firstOrNull()
+            if (defServer != null) {
+                data.projectRoot = defServer.fileTransferConfig.rootFolder
+            }
         }
+
 
         try {
             data.kphpCommands.forEach {
