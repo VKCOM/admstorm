@@ -2,6 +2,7 @@ package com.vk.admstorm.env
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.jetbrains.plugins.webDeployment.config.PublishConfig
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.phplinter.PhpLinterCheckers
@@ -127,6 +128,11 @@ object Env {
 
             LOG.warn("Exception while deserialize data, further work of the plugin is impossible:", e)
             return
+        }
+        val publishConfig = project.getService(PublishConfig::class.java)
+        val defServer = publishConfig.findDefaultServers().firstOrNull()
+        if (defServer != null) {
+            data.projectRoot = defServer.fileTransferConfig.rootFolder
         }
 
         try {

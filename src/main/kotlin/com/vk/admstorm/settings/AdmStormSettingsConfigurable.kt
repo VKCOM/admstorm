@@ -25,6 +25,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         var showYarnWatchWidget: Boolean,
         var showWatchDebugLogWidget: Boolean,
         var userNameForSentry: String,
+        var localDeployConfig: Boolean,
     )
 
     private val mainPanel: DialogPanel
@@ -39,6 +40,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         showYarnWatchWidget = true,
         showWatchDebugLogWidget = true,
         userNameForSentry = "",
+        localDeployConfig = false,
     )
 
     init {
@@ -46,6 +48,11 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             row {
                 checkBox("Automatically connect to ${ServerNameProvider.name()} when the project starts")
                     .bindSelected(model::connectWhenProjectStarts)
+            }
+
+            row {
+                checkBox("Get root folder for sync from local config")
+                    .bindSelected(model::localDeployConfig)
             }
 
             row {
