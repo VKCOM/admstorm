@@ -137,10 +137,11 @@ object Env {
             val defServer = publishConfig.findDefaultServerOrGroup()
 
             if (defServer != null) {
-                data.projectRoot = defServer.getFirst().servers.firstOrNull()
-                    ?.fileTransferConfig
-                    ?.rootFolder
-                    ?.takeIf { it.isNotBlank() } ?: data.projectRoot            }
+                val rootFolder = defServer.second?.fileTransferConfig?.rootFolder
+                if (!rootFolder.isNullOrBlank()) {
+                    data.projectRoot = rootFolder
+                }
+            }
         }
 
         try {
