@@ -130,15 +130,18 @@ object Env {
             LOG.warn("Exception while deserialize data, further work of the plugin is impossible:", e)
             return
         }
+
         val config = AdmStormSettingsState.getInstance()
         if (config.localDeployConfig) {
-            val publishConfig = project.getService(PublishConfig::class.java)
-            val defServer = publishConfig.findDefaultServers().firstOrNull()
-            if (defServer != null) {
-                data.projectRoot = defServer.fileTransferConfig.rootFolder
-            }
-        }
+            val publishConfig = PublishConfig.getInstance(project)
+            val defServer = publishConfig.findDefaultServerOrGroup()
 
+            if (defServer != null) {
+                data.projectRoot = defServer.getFirst().servers.firstOrNull()
+                    ?.fileTransferConfig
+                    ?.rootFolder
+                    ?.takeIf { it.isNotBlank() } ?: data.projectRoot            }
+        }
 
         try {
             data.kphpCommands.forEach {

@@ -140,7 +140,8 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
                 model.askYubikeyPassword != settings.askYubikeyPassword ||
                 model.showYarnWatchWidget != settings.showYarnWatchWidget ||
                 model.showWatchDebugLogWidget != settings.showWatchDebugLogWidget ||
-                model.userNameForSentry != settings.userNameForSentry
+                model.userNameForSentry != settings.userNameForSentry ||
+                model.localDeployConfig != settings.localDeployConfig
     }
 
     override fun apply() {
