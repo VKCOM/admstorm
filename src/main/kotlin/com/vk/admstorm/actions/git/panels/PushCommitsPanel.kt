@@ -156,7 +156,7 @@ class PushCommitsPanel(
     private fun buildTree(
         commits: List<Commit>,
         count: Int,
-        rootNode: TreeBaseNode
+        rootNode: TreeBaseNode,
     ) {
         if (count > commits.size) {
             val commitsExceptLast = commits.dropLast(1)
@@ -207,7 +207,7 @@ class PushCommitsPanel(
     private inline fun <reified T> getChildNodesByType(
         node: DefaultMutableTreeNode,
         type: Class<T>,
-        reverseOrder: Boolean
+        reverseOrder: Boolean,
     ): List<T> {
         val nodes: MutableList<T> = ArrayList()
         if (node.childCount < 1) {
@@ -298,11 +298,12 @@ class PushCommitsPanel(
             expanded: Boolean,
             leaf: Boolean,
             row: Int,
-            hasFocus: Boolean
+            hasFocus: Boolean,
         ) {
             if (value !is DefaultMutableTreeNode) {
                 return
             }
+
             myCheckbox.border = null
             myCheckbox.isVisible = false
 
@@ -312,6 +313,12 @@ class PushCommitsPanel(
             val userObject = value.userObject
 
             if (value is EditableTreeNode) {
+                if (value is AdmRenderedTreeNode) {
+                    (value as AdmRenderedTreeNode).render(renderer)
+                    return
+                }
+
+                // Вот тут может быть ошибка доступа.
                 value.render(renderer)
             } else {
                 renderer.append(userObject?.toString() ?: "")
