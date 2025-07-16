@@ -7,7 +7,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicReference
 import javax.swing.JTree
 
-abstract class TreeBaseNode : CheckedTreeNode(null), EditableTreeNode {
+abstract class TreeBaseNode : CheckedTreeNode(null), EditableTreeNode, AdmRenderedTreeNode {
     override fun fireOnChange() {}
     override fun fireOnCancel() {}
     override fun fireOnSelectionChange(isSelected: Boolean) {}
