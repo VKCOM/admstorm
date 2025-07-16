@@ -22,11 +22,6 @@ class YubikeyHandler {
         private val LOG = logger<YubikeyHandler>()
     }
 
-    private val openscPath = if (SystemInfo.isLinux) {
-        "usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
-    } else {
-        "/usr/local/lib/opensc-pkcs11.so"
-    }
 
     fun autoReset(project: Project, onFail: Runnable): Boolean {
         LOG.info("Try auto reset Yubikey")
@@ -50,7 +45,12 @@ class YubikeyHandler {
             PasswordSafe.instance.getPassword(credentialAttributes)!!
         }
 
-
+        val openscPath = OpenSCProviderManager.getInstance().getOpenSCPath()
+        if (openscPath == null) {
+            LOG.warn("Path to OpenSC Provider is not specified")
+            showYubikeyResetFailNotification(project, "Path to OpenSC Provider is not specified", null, onFail)
+            return false
+        }
 
         val evalOutput = CommandRunner.runLocallyEval("ssh-agent -s")
         if (evalOutput == null) {
@@ -71,6 +71,7 @@ class YubikeyHandler {
         if (!resetOk) {
             LOG.warn("Yubikey reset error: ${sshResetKey.stderr}")
             showYubikeyResetFailNotification(project, "Unable to reset yubikey", null, onFail)
+            return false
         }
 
         val sshAddBuilder = ProcessBuilder("ssh-add", "-s", openscPath)

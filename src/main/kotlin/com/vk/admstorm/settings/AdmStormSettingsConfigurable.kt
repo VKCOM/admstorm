@@ -1,10 +1,12 @@
 package com.vk.admstorm.settings
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.dsl.builder.*
 import com.vk.admstorm.git.GitConflictResolutionStrategy
+import com.vk.admstorm.ssh.OpenSCProviderManager
 import com.vk.admstorm.ui.StatusBarUtils
 import com.vk.admstorm.ui.WatchDebugLogStatusBarWidgetFactory
 import com.vk.admstorm.ui.YarnWatchStatusBarWidgetFactory
@@ -25,6 +27,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         var showYarnWatchWidget: Boolean,
         var showWatchDebugLogWidget: Boolean,
         var userNameForSentry: String,
+        var customOpenSCPath: String,
         var localDeployConfig: Boolean,
     )
 
@@ -40,6 +43,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         showYarnWatchWidget = true,
         showWatchDebugLogWidget = true,
         userNameForSentry = "",
+        customOpenSCPath = "",
         localDeployConfig = false,
     )
 
@@ -59,6 +63,23 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
                 checkBox("Check for sync when the focus was switched to IDE")
                     .comment("Each time you collapse and expand the IDE plugin will check the synchronization.", 80)
                     .bindSelected(model::checkSyncOnFocus)
+            }
+
+            group("Yubikey Setting") {
+                row("Path to OpenSC provider:") {
+                    val fileDescriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
+                        .withTitle("Select OpenSC Provider File")
+                        .withExtensionFilter("OpenSC provider file", "so", "dylib")
+
+                    textFieldWithBrowseButton(fileDescriptor, project)
+                        .align(AlignX.FILL)
+                        .bindText(model::customOpenSCPath)
+                }
+
+                row {
+                    checkBox("Ask password for Yubikey when it is automatically reset")
+                        .bindSelected(model::askYubikeyPassword)
+                }
             }
 
             group("Automatic Synchronization") {
@@ -106,13 +127,6 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
                 }
             }
 
-            group("Additional") {
-                row {
-                    checkBox("Ask password for Yubikey when it is automatically reset")
-                        .bindSelected(model::askYubikeyPassword)
-                }
-            }
-
             group("Sentry Error Reporting") {
                 row("User name:") {
                     textField()
@@ -141,6 +155,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
                 model.showYarnWatchWidget != settings.showYarnWatchWidget ||
                 model.showWatchDebugLogWidget != settings.showWatchDebugLogWidget ||
                 model.userNameForSentry != settings.userNameForSentry ||
+                model.customOpenSCPath != settings.customOpenSCPath ||
                 model.localDeployConfig != settings.localDeployConfig
     }
 
@@ -159,11 +174,17 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = model.showYarnWatchWidget
             showWatchDebugLogWidget = model.showWatchDebugLogWidget
             userNameForSentry = model.userNameForSentry
+            customOpenSCPath = model.customOpenSCPath
             localDeployConfig = model.localDeployConfig
         }
 
+        OpenSCProviderManager.getInstance().dropCache()
         StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
-        StatusBarUtils.setEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID, model.showWatchDebugLogWidget)
+        StatusBarUtils.setEnabled(
+            project,
+            WatchDebugLogStatusBarWidgetFactory.FACTORY_ID,
+            model.showWatchDebugLogWidget
+        )
     }
 
     override fun reset() {
@@ -171,7 +192,8 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
 
         // Users can change settings in a context menu of the status bar, so need check.
         val actualYarnWatchVisibility = StatusBarUtils.getEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID)
-        val actualWatchDebugLogVisibility = StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID)
+        val actualWatchDebugLogVisibility =
+            StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID)
 
         if (settings.showYarnWatchWidget != actualYarnWatchVisibility) {
             settings.showYarnWatchWidget = actualYarnWatchVisibility
@@ -191,6 +213,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = settings.showYarnWatchWidget
             showWatchDebugLogWidget = settings.showWatchDebugLogWidget
             userNameForSentry = settings.userNameForSentry
+            customOpenSCPath = settings.customOpenSCPath
             localDeployConfig = settings.localDeployConfig
         }
 
