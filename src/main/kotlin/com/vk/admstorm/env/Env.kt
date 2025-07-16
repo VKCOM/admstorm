@@ -2,11 +2,13 @@ package com.vk.admstorm.env
 
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
+import com.jetbrains.plugins.webDeployment.config.PublishConfig
 import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.configuration.kphp.KphpRunType
 import com.vk.admstorm.configuration.phplinter.PhpLinterCheckers
 import com.vk.admstorm.notifications.AdmNotification
 import com.vk.admstorm.notifications.AdmWarningNotification
+import com.vk.admstorm.settings.AdmStormSettingsState
 import com.vk.admstorm.ui.MessageDialog
 import com.vk.admstorm.utils.MyUtils.measureTime
 import git4idea.util.GitUIUtil.bold
@@ -127,6 +129,19 @@ object Env {
 
             LOG.warn("Exception while deserialize data, further work of the plugin is impossible:", e)
             return
+        }
+
+        val config = AdmStormSettingsState.getInstance()
+        if (config.localDeployConfig) {
+            val publishConfig = PublishConfig.getInstance(project)
+            val defServer = publishConfig.findDefaultServerOrGroup()
+
+            if (defServer != null) {
+                val rootFolder = defServer.second?.fileTransferConfig?.rootFolder
+                if (!rootFolder.isNullOrBlank()) {
+                    data.projectRoot = rootFolder
+                }
+            }
         }
 
         try {

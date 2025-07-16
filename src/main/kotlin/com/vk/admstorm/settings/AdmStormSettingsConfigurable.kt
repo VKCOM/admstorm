@@ -25,6 +25,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         var showYarnWatchWidget: Boolean,
         var showWatchDebugLogWidget: Boolean,
         var userNameForSentry: String,
+        var localDeployConfig: Boolean,
     )
 
     private val mainPanel: DialogPanel
@@ -39,6 +40,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         showYarnWatchWidget = true,
         showWatchDebugLogWidget = true,
         userNameForSentry = "",
+        localDeployConfig = false,
     )
 
     init {
@@ -46,6 +48,11 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             row {
                 checkBox("Automatically connect to ${ServerNameProvider.name()} when the project starts")
                     .bindSelected(model::connectWhenProjectStarts)
+            }
+
+            row {
+                checkBox("Get root folder for sync from local config")
+                    .bindSelected(model::localDeployConfig)
             }
 
             row {
@@ -133,7 +140,8 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
                 model.askYubikeyPassword != settings.askYubikeyPassword ||
                 model.showYarnWatchWidget != settings.showYarnWatchWidget ||
                 model.showWatchDebugLogWidget != settings.showWatchDebugLogWidget ||
-                model.userNameForSentry != settings.userNameForSentry
+                model.userNameForSentry != settings.userNameForSentry ||
+                model.localDeployConfig != settings.localDeployConfig
     }
 
     override fun apply() {
@@ -151,6 +159,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = model.showYarnWatchWidget
             showWatchDebugLogWidget = model.showWatchDebugLogWidget
             userNameForSentry = model.userNameForSentry
+            localDeployConfig = model.localDeployConfig
         }
 
         StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
@@ -182,6 +191,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
             showYarnWatchWidget = settings.showYarnWatchWidget
             showWatchDebugLogWidget = settings.showWatchDebugLogWidget
             userNameForSentry = settings.userNameForSentry
+            localDeployConfig = settings.localDeployConfig
         }
 
         mainPanel.reset()
