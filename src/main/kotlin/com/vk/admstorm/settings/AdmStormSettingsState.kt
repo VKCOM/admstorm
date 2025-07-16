@@ -31,6 +31,7 @@ class AdmStormSettingsState : PersistentStateComponent<AdmStormSettingsState?> {
     var showYarnWatchWidget = true
     var showWatchDebugLogWidget = true
     var userNameForSentry = ""
+    var customOpenSCPath: String = ""
     var localDeployConfig = false
 
     override fun getState() = this
