@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization) // Kotlinx serialization
     alias(libs.plugins.gradleDetektPlugin) // Gradle Detekt Plugin
     alias(libs.plugins.gradleDiktatPlugin) // Gradle Diktat Plugin
+    alias(libs.plugins.kover) // Gradle Kover Plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -17,7 +18,7 @@ version = providers.gradleProperty("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 // Configure project's dependencies
@@ -38,20 +39,21 @@ dependencies {
     implementation(libs.kotlinxSerializationJson)
     implementation(libs.sentry)
     testImplementation(libs.junit)
+    testImplementation(libs.opentest4j)
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
-        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
-
+        create(
+            providers.gradleProperty("platformType"),
+            providers.gradleProperty("platformVersion")
+        )
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
 
         // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
-        instrumentationTools()
-        pluginVerifier()
-        zipSigner()
+        phpstorm("2025.1")
         testFramework(TestFrameworkType.Platform)
     }
 }
@@ -59,6 +61,7 @@ dependencies {
 // Configure IntelliJ Platform Gradle Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-extension.html
 intellijPlatform {
     pluginConfiguration {
+        name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")
 
         val changelog = project.changelog // local variable for configuration cache compatibility
@@ -102,7 +105,29 @@ detekt {
     buildUponDefaultConfig = true
 }
 
+// Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
+kover {
+    reports {
+        total {
+            xml {
+                onCheck = true
+            }
+        }
+    }
+
+    currentProject {
+        instrumentation {
+            excludedClasses.add("org.apache.velocity.*")
+        }
+    }
+}
+
 tasks {
+
+    runIde {
+        jvmArgumentProviders += CommandLineArgumentProvider { listOfNotNull(System.getenv("IDE_JVM_ARGS")) }
+    }
+
     processResources {
         val tokens = mapOf(
             "sentry_dsn" to (System.getenv("SENTRY_DSN") ?: ""),

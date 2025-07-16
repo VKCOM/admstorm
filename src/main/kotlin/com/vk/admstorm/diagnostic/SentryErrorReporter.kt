@@ -41,10 +41,12 @@ class SentryErrorReporter : ErrorReportSubmitter() {
                 continue
             }
 
-            val sentryId = sentry.sendError(event.message, event.data.throwable)
+            val sentryId = event.message?.let { sentry.sendError(it, event.data.throwable) }
             return if (sentryId != SentryId.EMPTY_ID) {
                 consumer.consume(SubmittedReportInfo(SubmissionStatus.NEW_ISSUE))
-                onSuccess(project, sentryId)
+                if (sentryId != null) {
+                    onSuccess(project, sentryId)
+                }
                 true
             } else {
                 LOG.info("An error occurred when sending an error to Sentry")
