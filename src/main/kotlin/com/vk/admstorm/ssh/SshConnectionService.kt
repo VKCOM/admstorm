@@ -13,6 +13,7 @@ import com.intellij.remote.RemoteConnector
 import com.intellij.remote.RemoteCredentials
 import com.intellij.ssh.ConnectionBuilder
 import com.intellij.ssh.ExecBuilder
+import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.connectionBuilder
 import com.intellij.util.ConcurrencyUtil
@@ -169,25 +170,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 "Plugin can try to automatically reset the Yubikey or you can do it yourself with " +
                                 code("ssh-agent")
 
-                        AdmErrorNotification(message, true)
-                            .withTitle("Failed to connect to server")
-                            .withActions(AdmNotification.Action("Reset Yubikey and Connect...") { _, notification ->
-                                notification.expire()
-
-                                val success = YubikeyHandler().autoReset(project) {
-                                    connectWithConnector(connector, onSuccessful)
-                                }
-
-                                if (!success) {
-                                    return@Action
-                                }
-                                connectWithConnector(connector, onSuccessful)
-                            })
-                            .withActions(AdmNotification.Action("Connect...") { _, notification ->
-                                notification.expire()
-                                connectWithConnector(connector, onSuccessful)
-                            })
-                            .show()
+                        resetYubikeyNotification(message)
 
                         LOG.warn("Failed to connect", ex)
                     } catch (ex: TimeoutException) {
@@ -232,6 +215,14 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 connectWithConnector(connector, onSuccessful)
                             }).show()
                         LOG.info("Corporate access error", ex)
+                    } catch (ex: SshException) {
+                        scheduler.shutdownNow()
+
+                        if (ex.message?.contains("Failed to open SSH channel in a just created TCP session") == true) {
+                            handleOpenTcpSessionError()
+                            return
+                        }
+                        throw ex
                     } catch (ex: Exception) {
                         scheduler.shutdownNow()
 
@@ -240,6 +231,37 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         AdmErrorNotification("Unhandled exception $exceptionName").show()
                         return
                     }
+                }
+
+                fun resetYubikeyNotification(message: String) {
+                    AdmErrorNotification(message, true)
+                        .withTitle("Failed to connect to server")
+                        .withActions(AdmNotification.Action("Reset Yubikey and Connect...") { _, notification ->
+                            notification.expire()
+
+                            val success = YubikeyHandler().autoReset(project) {
+                                connectWithConnector(connector, onSuccessful)
+                            }
+
+                            if (!success) {
+                                return@Action
+                            }
+                            connectWithConnector(connector, onSuccessful)
+                        })
+                        .withActions(AdmNotification.Action("Connect...") { _, notification ->
+                            notification.expire()
+                            connectWithConnector(connector, onSuccessful)
+                        })
+                        .show()
+                }
+
+                private fun handleOpenTcpSessionError() {
+                    val message = "Failed to open SSH channel in a just created TCP session"
+                    resetYubikeyNotification(message)
+                    LOG.warn(
+                        "Failed to connect",
+                        OpenFailException("TCP", OpenFailException.Reason.CONNECT_FAILED, message)
+                    )
                 }
 
                 override fun onCancel() {
