@@ -1,6 +1,5 @@
 package com.vk.admstorm.diagnostic
 
-import com.intellij.diagnostic.IdeaReportingEvent
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
@@ -37,16 +36,10 @@ class SentryErrorReporter : ErrorReportSubmitter() {
 
         val sentry = SentryService.getInstance(project)
         for (event in events) {
-            if (event !is IdeaReportingEvent) {
-                continue
-            }
-
-            val sentryId = event.message?.let { sentry.sendError(it, event.data.throwable) }
+            val sentryId = sentry.sendError(event.message, event.throwable)
             return if (sentryId != SentryId.EMPTY_ID) {
                 consumer.consume(SubmittedReportInfo(SubmissionStatus.NEW_ISSUE))
-                if (sentryId != null) {
-                    onSuccess(project, sentryId)
-                }
+                onSuccess(project, sentryId)
                 true
             } else {
                 LOG.info("An error occurred when sending an error to Sentry")
