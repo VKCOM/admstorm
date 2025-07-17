@@ -1,1 +1,1 @@
-com.vk.admstorm:2.0.7:Illegal access to package-private class com.intellij.dvcs.push.ui.CustomRenderedTreeNode
+com.vk.admstorm:2.0.8:Illegal access to package-private class com.intellij.dvcs.push.ui.CustomRenderedTreeNode
