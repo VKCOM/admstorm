@@ -2,7 +2,14 @@
 
 ## [Unreleased]
 
-## 2.0.7 - 01.03.2024
+## 2.0.8 - 17.07.2025
+
+- Added option to select a remote synchronization folder
+- Added possibility to specify custom path to `OpenSC` provider
+- Fixed access to closed api ui in commit synchronization check window
+- Fixed an exception when SSH channel could not be opened without Yubikey key
+
+## 2.0.7 - 01.03.2025
 
 - Adapt code for PhpStorm 2024.3
 
