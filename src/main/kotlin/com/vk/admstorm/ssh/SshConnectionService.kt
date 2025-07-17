@@ -13,6 +13,7 @@ import com.intellij.remote.RemoteConnector
 import com.intellij.remote.RemoteCredentials
 import com.intellij.ssh.ConnectionBuilder
 import com.intellij.ssh.ExecBuilder
+import com.intellij.ssh.SshException
 import com.intellij.ssh.channels.SftpChannel
 import com.intellij.ssh.connectionBuilder
 import com.intellij.util.ConcurrencyUtil
@@ -214,13 +215,16 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                                 connectWithConnector(connector, onSuccessful)
                             }).show()
                         LOG.info("Corporate access error", ex)
-                    } catch (ex: Exception) {
+                    } catch (ex: SshException) {
                         scheduler.shutdownNow()
 
                         if (ex.message?.contains("Failed to open SSH channel in a just created TCP session") == true) {
                             handleOpenTcpSessionError()
                             return
                         }
+                        throw ex
+                    } catch (ex: Exception) {
+                        scheduler.shutdownNow()
 
                         val exceptionName = ex.javaClass.name
                         LOG.error("Unhandled exception", ex)
@@ -251,7 +255,7 @@ class SshConnectionService(private var myProject: Project) : Disposable {
                         .show()
                 }
 
-                fun handleOpenTcpSessionError() {
+                private fun handleOpenTcpSessionError() {
                     val message = "Failed to open SSH channel in a just created TCP session"
                     resetYubikeyNotification(message)
                     LOG.warn(
