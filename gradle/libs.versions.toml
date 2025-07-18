@@ -1,23 +1,26 @@
 [versions]
 # libraries
 junit = "4.13.2"
+opentest4j = "1.3.0"
 sentry = "6.1.0"
 kotlinxSerializationJson = "1.7.3"
 detektFormatting = "1.23.1"
 
 # plugins
-kotlin = "1.9.25"
+kotlin = "2.1.20"
 changelog = "2.2.1"
-intelliJPlatform = "2.0.1" # TODO: update this in next update: https://youtrack.jetbrains.com/issue/MP-7019
+intelliJPlatform = "2.5.0"
 kotlinSerialization = "2.0.20"
 gradleDiktatPlugin = "1.2.5"
 gradleDetektPlugin = "1.23.7"
+kover = "0.9.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 sentry = { group = "io.sentry", name = "sentry", version.ref = "sentry" }
 kotlinxSerializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 detektFormatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detektFormatting" }
+opentest4j = { group = "org.opentest4j", name = "opentest4j", version.ref = "opentest4j" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -26,3 +29,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 gradleDiktatPlugin = { id = "org.cqfn.diktat.diktat-gradle-plugin", version.ref = "gradleDiktatPlugin" }
 gradleDetektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "gradleDetektPlugin" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
