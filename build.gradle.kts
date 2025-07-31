@@ -1,5 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -43,17 +44,14 @@ dependencies {
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
-        create(
-            providers.gradleProperty("platformType"),
-            providers.gradleProperty("platformVersion")
-        )
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
 
         // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
-        phpstorm("2025.1")
         testFramework(TestFrameworkType.Platform)
     }
 }
@@ -98,13 +96,6 @@ changelog {
     repositoryUrl = providers.gradleProperty("pluginRepositoryUrl")
 }
 
-// Configure detekt plugin.
-// Read more: https://detekt.github.io/detekt/kotlindsl.html
-detekt {
-    config.setFrom("./detekt-config.yml")
-    buildUponDefaultConfig = true
-}
-
 // Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
 kover {
     reports {
@@ -114,15 +105,20 @@ kover {
             }
         }
     }
-
-    currentProject {
-        instrumentation {
-            excludedClasses.add("org.apache.velocity.*")
-        }
-    }
 }
 
 tasks {
+    wrapper {
+        gradleVersion = providers.gradleProperty("gradleVersion").get()
+    }
+
+    detekt.configure {
+        reports {
+            html.required.set(true)
+            xml.required.set(false)
+            txt.required.set(false)
+        }
+    }
 
     runIde {
         jvmArgumentProviders += CommandLineArgumentProvider { listOfNotNull(System.getenv("IDE_JVM_ARGS")) }
@@ -139,15 +135,28 @@ tasks {
         }
     }
 
-    wrapper {
-        gradleVersion = providers.gradleProperty("gradleVersion").get()
+    publishPlugin {
+        dependsOn(patchChangelog)
     }
+}
 
-    detekt.configure {
-        reports {
-            html.required.set(true)
-            xml.required.set(false)
-            txt.required.set(false)
+intellijPlatformTesting {
+    runIde {
+        register("runIdeForUiTests") {
+            task {
+                jvmArgumentProviders += CommandLineArgumentProvider {
+                    listOf(
+                        "-Drobot-server.port=8082",
+                        "-Dide.mac.message.dialogs.as.sheets=false",
+                        "-Djb.privacy.policy.text=<!--999.999-->",
+                        "-Djb.consents.confirmation.enabled=false",
+                    )
+                }
+            }
+
+            plugins {
+                robotServerPlugin()
+            }
         }
     }
 }
