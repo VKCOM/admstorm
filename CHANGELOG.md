@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+# 2.0.9 - 04.08.2025
+
+- Adapt code for PhpStorm 2025.1
+
 ## 2.0.8 - 17.07.2025
 
 - Added option to select a remote synchronization folder

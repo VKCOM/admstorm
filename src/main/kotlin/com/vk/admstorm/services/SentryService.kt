@@ -81,11 +81,11 @@ class SentryService(project: Project) {
         }
     }
 
-    fun sendError(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
+    fun sendError(message: String?, t: Throwable?): SentryId = sendEvent(SentryLevel.ERROR, message, t)
 
     fun sendWarn(message: String, t: Throwable?): SentryId = sendEvent(SentryLevel.WARNING, message, t)
 
-    private fun sendEvent(level: SentryLevel, message: String, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
+    private fun sendEvent(level: SentryLevel, message: String?, t: Throwable? = null, withFullLog: Boolean = false): SentryId {
         var sentryId = SentryId.EMPTY_ID
 
         Sentry.withScope { scope ->
