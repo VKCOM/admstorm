@@ -1,6 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -120,10 +119,6 @@ tasks {
         }
     }
 
-    runIde {
-        jvmArgumentProviders += CommandLineArgumentProvider { listOfNotNull(System.getenv("IDE_JVM_ARGS")) }
-    }
-
     processResources {
         val tokens = mapOf(
             "sentry_dsn" to (System.getenv("SENTRY_DSN") ?: ""),
@@ -134,29 +129,5 @@ tasks {
             filter<ReplaceTokens>("tokens" to tokens)
         }
     }
-
-    publishPlugin {
-        dependsOn(patchChangelog)
-    }
 }
 
-intellijPlatformTesting {
-    runIde {
-        register("runIdeForUiTests") {
-            task {
-                jvmArgumentProviders += CommandLineArgumentProvider {
-                    listOf(
-                        "-Drobot-server.port=8082",
-                        "-Dide.mac.message.dialogs.as.sheets=false",
-                        "-Djb.privacy.policy.text=<!--999.999-->",
-                        "-Djb.consents.confirmation.enabled=false",
-                    )
-                }
-            }
-
-            plugins {
-                robotServerPlugin()
-            }
-        }
-    }
-}
