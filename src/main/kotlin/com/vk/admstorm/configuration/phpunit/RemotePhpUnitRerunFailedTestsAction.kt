@@ -61,7 +61,7 @@ open class RemotePhpUnitRerunFailedTestsAction(container: ComponentContainer, pr
             do {
                 do {
                     if (!iterator.hasNext()) {
-                        return ContainerUtil.flatten(result.values)
+                        return result.values.filterNotNull().flatten()
                     }
                     testProxy = iterator.next() as AbstractTestProxy
                 } while (!testProxy.isLeaf)
