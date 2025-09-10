@@ -44,7 +44,7 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         showWatchDebugLogWidget = true,
         userNameForSentry = "",
         customOpenSCPath = "",
-        localDeployConfig = false,
+        localDeployConfig = true,
     )
 
     init {
