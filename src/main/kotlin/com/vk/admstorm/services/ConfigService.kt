@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 @Service
 class ConfigService {
     companion object {
-        fun getInstance(project: Project) = project.service<ConfigService>()
+        fun getInstance() = service<ConfigService>()
     }
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
@@ -33,4 +33,3 @@ class ConfigService {
 
     val sentryDsn: String = config.sentryDsn
 }
-

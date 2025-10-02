@@ -30,9 +30,9 @@ class YarnWatchStatusBarWidgetFactory : StatusBarWidgetFactory {
 
     override fun canBeEnabledOn(statusBar: StatusBar) = true
 
-    internal class Listener(private val project: Project) : EnvListener {
+    internal class Listener() : EnvListener {
         override fun onResolve() {
-            project.service<StatusBarWidgetsManager>().updateWidget(YarnWatchStatusBarWidgetFactory::class.java)
+            service<StatusBarWidgetsManager>().updateWidget(YarnWatchStatusBarWidgetFactory::class.java)
         }
     }
 }
