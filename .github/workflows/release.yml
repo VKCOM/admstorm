@@ -41,6 +41,8 @@ jobs:
 
       # Build the plugin artifact
       - name: Build the Plugin
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           ./gradlew buildPlugin
 
