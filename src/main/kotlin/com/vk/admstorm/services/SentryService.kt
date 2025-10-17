@@ -30,16 +30,16 @@ class SentryService(project: Project) {
     private val user = GitUtils.currentUser(project)
 
     init {
-        initSentry(project)
+        initSentry()
     }
 
-    private fun initSentry(project: Project) {
+    private fun initSentry() {
         if (ApplicationManager.getApplication().isInternal) {
             LOG.info("Sending errors to Sentry is disabled. The IDE is running in development mode")
             return
         }
 
-        val config = ConfigService.getInstance(project)
+        val config = ConfigService.getInstance()
         if (config.sentryDsn.isEmpty()) {
             LOG.info("Sending errors to Sentry is disabled. DSN is not specified")
             return

@@ -29,9 +29,9 @@ class WatchDebugLogStatusBarWidgetFactory : StatusBarWidgetFactory {
 
     override fun canBeEnabledOn(statusBar: StatusBar) = true
 
-    internal class Listener(private val project: Project) : EnvListener {
+    internal class Listener() : EnvListener {
         override fun onResolve() {
-            project.service<StatusBarWidgetsManager>().updateWidget(WatchDebugLogStatusBarWidgetFactory::class.java)
+            service<StatusBarWidgetsManager>().updateWidget(WatchDebugLogStatusBarWidgetFactory::class.java)
         }
     }
 }

@@ -2,16 +2,14 @@ package com.vk.admstorm.services
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.project.Project
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 @Service
 class ConfigService {
     companion object {
-        fun getInstance(project: Project) = project.service<ConfigService>()
+        fun getInstance() = service<ConfigService>()
     }
 
     @Suppress("PROVIDED_RUNTIME_TOO_LOW")
@@ -33,4 +31,3 @@ class ConfigService {
 
     val sentryDsn: String = config.sentryDsn
 }
-

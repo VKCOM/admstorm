@@ -179,9 +179,8 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         }
 
         OpenSCProviderManager.getInstance().dropCache()
-        StatusBarUtils.setEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
+        StatusBarUtils.setEnabled(YarnWatchStatusBarWidgetFactory.FACTORY_ID, model.showYarnWatchWidget)
         StatusBarUtils.setEnabled(
-            project,
             WatchDebugLogStatusBarWidgetFactory.FACTORY_ID,
             model.showWatchDebugLogWidget
         )
@@ -191,9 +190,9 @@ class AdmStormSettingsConfigurable(private val project: Project) : Configurable 
         val settings = AdmStormSettingsState.getInstance()
 
         // Users can change settings in a context menu of the status bar, so need check.
-        val actualYarnWatchVisibility = StatusBarUtils.getEnabled(project, YarnWatchStatusBarWidgetFactory.FACTORY_ID)
+        val actualYarnWatchVisibility = StatusBarUtils.getEnabled(YarnWatchStatusBarWidgetFactory.FACTORY_ID)
         val actualWatchDebugLogVisibility =
-            StatusBarUtils.getEnabled(project, WatchDebugLogStatusBarWidgetFactory.FACTORY_ID)
+            StatusBarUtils.getEnabled(WatchDebugLogStatusBarWidgetFactory.FACTORY_ID)
 
         if (settings.showYarnWatchWidget != actualYarnWatchVisibility) {
             settings.showYarnWatchWidget = actualYarnWatchVisibility

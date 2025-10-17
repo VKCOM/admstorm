@@ -10,8 +10,8 @@ import com.vk.admstorm.CommandRunner
 import com.vk.admstorm.env.Env
 import com.vk.admstorm.executors.DeployTestDomainExecutor
 
-@Service
-class DeployTestDomainService(private val project: Project) {
+@Service(Service.Level.PROJECT)
+class DeployTestDomainService private constructor(private val project: Project) {
     companion object {
         private val LOG = logger<DeployTestDomainService>()
         private const val PROPERTY_ID = "admstorm.deploy.test.domain"
