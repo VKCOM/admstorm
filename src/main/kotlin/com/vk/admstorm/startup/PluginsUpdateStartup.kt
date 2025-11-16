@@ -15,12 +15,14 @@ import com.vk.admstorm.utils.ServerNameProvider
 object PluginsUpdateStartup {
     private val KPHPSTORM_PLUGIN_ID = PluginId.getId("com.vk.kphpstorm")
     private val MODULITE_PLUGIN_ID = PluginId.getId("com.vk.modulite")
+    private val TLSCHEMA_PLUGIN_ID = PluginId.getId("com.vk.tlschema")
     private val ADMSTORM_PLUGIN_ID = AdmService.PLUGIN_ID
 
     private val PLUGINS = mapOf(
         ADMSTORM_PLUGIN_ID to "https://vkcom.github.io/admstorm/whatsnew.html?server_name=${ServerNameProvider.name()}",
         KPHPSTORM_PLUGIN_ID to null,
         MODULITE_PLUGIN_ID to null,
+        TLSCHEMA_PLUGIN_ID to null,
     )
 
     private fun hasNewVersion(pluginID: PluginId): Boolean {
