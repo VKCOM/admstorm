@@ -142,6 +142,7 @@
       <w>strtr</w>
       <w>strval</w>
       <w>tempnam</w>
+      <w>tlschema</w>
       <w>uasort</w>
       <w>ucfirst</w>
       <w>ucwords</w>
