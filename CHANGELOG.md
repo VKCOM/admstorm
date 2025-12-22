@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## 2.0.12 - 24.12.2025
+
+- Adapt code for PhpStorm 2025.3
+
 # 2.0.11 - 10.09.2025
 
 - Changed default value for sync folder in settings
