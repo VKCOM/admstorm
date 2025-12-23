@@ -11,7 +11,6 @@ changelog = "2.5.0"
 intelliJPlatform = "2.10.5"
 kotlin = "2.2.21"
 kover = "0.9.3"
-qodana = "2025.2.2"
 kotlinSerialization = "2.0.20"
 gradleDiktatPlugin = "1.2.5"
 gradleDetektPlugin = "1.23.7"
@@ -28,7 +27,6 @@ changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 gradleDiktatPlugin = { id = "org.cqfn.diktat.diktat-gradle-plugin", version.ref = "gradleDiktatPlugin" }
 gradleDetektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "gradleDetektPlugin" }
