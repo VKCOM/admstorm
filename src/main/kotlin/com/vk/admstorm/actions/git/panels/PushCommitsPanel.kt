@@ -91,7 +91,7 @@ class PushCommitsPanel(
                 return isEditable && path.lastPathComponent is DefaultMutableTreeNode
             }
 
-            override fun onNodeStateChanged(node: CheckedTreeNode) {
+            override fun onNodeStateChanged(node: CheckedTreeNode?) {
                 if (node is EditableTreeNode) {
                     (node as EditableTreeNode).fireOnSelectionChange(node.isChecked)
                 }

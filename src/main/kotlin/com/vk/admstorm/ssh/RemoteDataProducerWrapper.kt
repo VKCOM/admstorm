@@ -14,7 +14,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.remote.RemoteConnectionType
 import com.intellij.remote.RemoteConnector
 import com.jetbrains.plugins.remotesdk.RemoteSdkBundle
-import com.jetbrains.plugins.remotesdk.console.RemoteConnectionSettingsForm
+import com.jetbrains.plugins.remotesdk.console.NonSpecifiedRemoteConnector
 import com.jetbrains.plugins.remotesdk.console.RemoteConnectionUtil
 import com.jetbrains.plugins.remotesdk.console.RemoteDataProducer
 import com.jetbrains.plugins.remotesdk.console.SshConfigConnector
@@ -110,7 +110,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                 getSuperProject(), getEmptyConnectorsMessageProxy(),
                 (NO_HOST_TO_CONNECT_SUPPLIER.get() as String)
             )
-        } else if (connectors.size == 1 && connectors[0] === RemoteConnectionSettingsForm.NONE_CONNECTOR) {
+        } else if (connectors.size == 1 && connectors[0] === NonSpecifiedRemoteConnector) {
             // do nothing
         } else {
             invokeLater {
@@ -126,7 +126,7 @@ class RemoteDataProducerWrapper : RemoteDataProducer() {
                 getSuperProject(), getEmptyConnectorsMessageProxy(),
                 (NO_HOST_TO_CONNECT_SUPPLIER.get() as String)
             )
-        } else if (connectors.size == 1 && connectors[0] === RemoteConnectionSettingsForm.NONE_CONNECTOR) {
+        } else if (connectors.size == 1 && connectors[0] === NonSpecifiedRemoteConnector) {
             openSshConfigurationsSettings()
         } else {
             connectors.sortWith { c1: RemoteConnector, c2: RemoteConnector ->
